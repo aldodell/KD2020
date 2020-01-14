@@ -1,0 +1,25 @@
+<html>
+
+<body>
+    <script src="api.js"></script>
+    <script>
+
+
+        var kdwin = new KDWindow();
+        kdwin.publish()
+            .setSize(new KDSize(400, 200))
+            .setPosition(new KDPosition(100, 100));
+
+        var l1 = new KDLayer();
+        kdwin.add(l1);
+        l1.setPosition(new KDPosition(10, 10)).setSize(new KDSize(100, 20));
+
+        var b1 = new KDButton();
+        kdwin.add(b1);
+        b1.setPosition(new KDPosition(10, 50)).setSize(new KDSize(100, 20));
+
+
+    </script>
+</body>
+
+</html>
