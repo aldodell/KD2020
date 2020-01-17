@@ -5,10 +5,25 @@
     <script>
 
 
+        var desktop = new KDDesktop();
+
+        var app1 = new KDApplication(desktop, "First app");
+        app1.icon.setSource = "media/mario.jpg";
+
+
+        desktop.applications.push(app1);
+        
+
+
+
+
+/*
         var kdwin = new KDWindow();
         kdwin.publish()
             .setSize(new KDSize(400, 200))
-            .setPosition(new KDPosition(100, 100));
+            .setPosition(new KDPosition(100, 100))
+            .setTitle("Hello world!");
+
 
         var l1 = new KDLayer();
         kdwin.add(l1);
@@ -17,6 +32,22 @@
         var b1 = new KDButton();
         kdwin.add(b1);
         b1.setPosition(new KDPosition(10, 50)).setSize(new KDSize(100, 20));
+
+
+        var im = new KDImage().build();
+        im.setSource("media/mario.jpg")
+            .setSize(new KDSize(100, 100));
+
+
+        kdwin.add(im);
+
+*/
+
+
+
+
+
+
 
 
     </script>

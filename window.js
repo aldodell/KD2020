@@ -19,6 +19,7 @@ class KDWindowTheme {
 
         this.body.backgroundColor = "oldLace";
         this.foot.backgroundColor = "wheat";
+        this.head.textAlign = "center";
     }
 
     apply(kdWindow) {
@@ -30,8 +31,6 @@ class KDWindowTheme {
 }
 
 var KDWindowThemeByDefault = new KDWindowTheme();
-
-
 
 /** Window class */
 class KDWindow extends KDLayer {
@@ -60,7 +59,6 @@ class KDWindow extends KDLayer {
         this.foot.publish(this);
         this.theme.apply(this);
         this.head.setDraggable(true, this);
-
         return this;
     }
 
@@ -81,6 +79,13 @@ class KDWindow extends KDLayer {
         if (this.domObject) {
             kdComponent.publish(this.body);
         }
+    }
+
+    setTitle(title) {
+        if (this.domObject) {
+            this.head.domObject.innerHTML = title;
+        }
+        return this;
     }
 
 }

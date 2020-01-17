@@ -53,6 +53,8 @@ class KDUnits {
 
 
 
+
+
 class KDStyle {
     constructor() {
         this.backgroundColor = "BurlyWood";
@@ -120,6 +122,7 @@ class KDComponent extends KDObject {
             obj = kdComponent.domObject;
         }
         obj.appendChild(this.domObject);
+        return this;
     }
 
     /** Add a child component */
@@ -250,7 +253,24 @@ class KDButton extends KDVisualComponent {
         super();
         this.htmlName = "input";
         this.htmlType = "button";
-        this.style.backgroundColor="";
+        this.style.backgroundColor = "";
+    }
+}
+
+/** Simple image 
+ * */
+class KDImage extends KDVisualComponent {
+    constructor() {
+        super();
+        this.htmlName = "img";
+    }
+
+    setSource(source) {
+        if (!this.domObject) {
+            this.build();
+        }
+        this.domObject.src = source;
+        return this;
     }
 }
 
@@ -279,6 +299,7 @@ class KDWindowTheme {
 
         this.body.backgroundColor = "oldLace";
         this.foot.backgroundColor = "wheat";
+        this.head.textAlign = "center";
     }
 
     apply(kdWindow) {
@@ -290,8 +311,6 @@ class KDWindowTheme {
 }
 
 var KDWindowThemeByDefault = new KDWindowTheme();
-
-
 
 /** Window class */
 class KDWindow extends KDLayer {
@@ -320,7 +339,6 @@ class KDWindow extends KDLayer {
         this.foot.publish(this);
         this.theme.apply(this);
         this.head.setDraggable(true, this);
-
         return this;
     }
 
@@ -343,14 +361,51 @@ class KDWindow extends KDLayer {
         }
     }
 
+    setTitle(title) {
+        if (this.domObject) {
+            this.head.domObject.innerHTML = title;
+        }
+        return this;
+    }
+
+}class KDApplication extends KDObject {
+    constructor(kdDesktop) {
+        super();
+        this.desktop = kdDesktop;
+        this.icon = new KDImage();
+        this.title = "This is a generic application test";
+        this.identifier = "generic application";
+    }
+
+    run() {
+        alert("OVERRIDE THIS");
+    }
+
 }
 /**
  * Desktop manager classes
  * */
-class KDDesktop extends KDComponent {
+class KDDesktop extends KDVisualComponent {
     constructor() {
-       //
+        super();
+        //this.requestFullScreen();
     }
+
+    /* When the openFullscreen() function is executed, open the video in fullscreen.
+    Note that we must include prefixes for different browsers, as they don't support the requestFullscreen method yet */
+    requestFullScreen() {
+        var elem = document.documentElement;
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.mozRequestFullScreen) { /* Firefox */
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+            elem.webkitRequestFullscreen();
+        } else if (elem.msRequestFullscreen) { /* IE/Edge */
+            elem.msRequestFullscreen();
+        }
+    }
+
 }
 
 

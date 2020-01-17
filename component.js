@@ -68,6 +68,7 @@ class KDComponent extends KDObject {
             obj = kdComponent.domObject;
         }
         obj.appendChild(this.domObject);
+        return this;
     }
 
     /** Add a child component */
@@ -198,7 +199,24 @@ class KDButton extends KDVisualComponent {
         super();
         this.htmlName = "input";
         this.htmlType = "button";
-        this.style.backgroundColor="";
+        this.style.backgroundColor = "";
+    }
+}
+
+/** Simple image 
+ * */
+class KDImage extends KDVisualComponent {
+    constructor() {
+        super();
+        this.htmlName = "img";
+    }
+
+    setSource(source) {
+        if (!this.domObject) {
+            this.build();
+        }
+        this.domObject.src = source;
+        return this;
     }
 }
 
