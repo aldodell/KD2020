@@ -1,6 +1,8 @@
 
 
-
+/** Wrap CSS style properties
+ * To use it simply add properties like form: .backgroundColor='blue' and then use 'apply' method
+ * */
 class KDStyle {
     constructor() {
         this.backgroundColor = "BurlyWood";
@@ -8,6 +10,8 @@ class KDStyle {
         this.borderWidth = 1;
     }
 
+    /** Apply CSS style properties to kdComponent
+     * */
     apply(kdComponent) {
         if (kdComponent.domObject) {
             for (let p in this) {
@@ -17,6 +21,7 @@ class KDStyle {
         }
     }
 
+    /** Copy all styles from other KDStyle object */
     copyFrom(kdStyle) {
         for (let s in kdStyle) {
             this[s] = kdStyle[s];
@@ -26,18 +31,34 @@ class KDStyle {
 }
 
 
+
+/**
+ * Font styles
+ * */
+var kdIconFont = new KDStyle();
+kdIconFont.fontSize = "10";
+kdIconFont.textAlign = "center";
+
 /**
  * Component class base
  * */
 class KDComponent extends KDObject {
     constructor() {
         super();
+        // HTML tag name
         this.htmlName = "div";
+        // HTML type component
         this.htmlType = "";
+        //Pointer to DOM representation
         this.domObject = false;
     }
 
-    /* Build component */
+    /**
+     *  Build component method.
+     * This method build the component and prepare it to show
+     * Use then @method publish to merge this component on the DOM hierarchy.
+     * @returns itself reference to do chain property handling.
+     *  */
     build() {
         this.domObject = document.createElement(this.htmlName);
         this.domObject.setAttribute("id", "kd" + this.index);
@@ -48,8 +69,10 @@ class KDComponent extends KDObject {
         return this;
     }
 
-    /* Publish component on antoher component or
-    in document DOM level if argument is null
+    /** Publish component on antoher component or
+     * in document DOM level if argument is null
+     *  @returns itself reference to do chain property handling.
+
     */
     publish(kdComponent) {
 
@@ -93,7 +116,8 @@ class KDVisualComponent extends KDComponent {
         this.size = new KDSize(100, 20);
     }
     /**
-     * Set component size. @param size is a KDSize object
+     * Set component size. @param size is a KDSize object.
+     *  @returns itself reference to do chain property handling.
      * */
 
     setSize(kdSize) {
@@ -105,6 +129,9 @@ class KDVisualComponent extends KDComponent {
         return this;
     }
 
+    /** Set the actually position of a component
+     *  @returns itself reference to do chain property handling.
+     */
     setPosition(kdPosition) {
         if (this.domObject) {
             this.position = kdPosition;
@@ -123,12 +150,40 @@ class KDVisualComponent extends KDComponent {
         return false;
     }
 
+    /**
+     *  @returns itself reference to do chain property handling.
+     * */
     publish(kdObject) {
         super.publish(kdObject);
         this.style.apply(this);
         return this;
     }
 
+
+    /** Change visibility property to show the component.
+     *  @returns itself reference to do chain property handling.
+     * */
+    show() {
+        if (this.domObject) {
+            this.domObject.style.visibility = "visible";
+        }
+        return this;
+    }
+
+    /** Change visibility property to hide the component.
+   *  @returns itself reference to do chain property handling.
+   * */
+    hide() {
+        if (this.domObject) {
+            this.domObject.style.visibility = "hidden";
+        }
+        return this;
+    }
+
+
+    /** Make the component grant dragging operation.
+      *  @returns itself reference to do chain property handling.
+      * */
     setDraggable(booleanValue, objectToBeMoved) {
         this.draggable = booleanValue;
         if (objectToBeMoved == undefined) { objectToBeMoved = this; }
@@ -177,6 +232,19 @@ class KDLayer extends KDVisualComponent {
     constructor() {
         super();
     }
+
+    /** Show a centered text  on a DIV (layer) 
+     *  @returns itself reference to do chain property handling.
+  * */
+    showCenterText(text) {
+        if (this.domObject) {
+            this.domObject.style.textAlign = "center";
+            this.domObject.style.display = "table-cell";
+            this.domObject.style.verticalAlign = "middle";
+            this.domObject.innerHTML = text;
+        }
+        return this;
+    }
 }
 
 
@@ -189,6 +257,27 @@ class KDTextBox extends KDVisualComponent {
         super();
         this.htmlName = "input";
         this.htmlType = "text";
+    }
+
+    setText(text) {
+        if (this.domObject) {
+            this.domObject.value = text;
+        }
+        return this;
+    }
+
+    appendText(text) {
+        if (this.domObject) {
+            this.domObject.value += text;
+        }
+        return this;
+    }
+
+    getText() {
+        if (this.domObject) {
+            return this.domObject.value;
+        }
+        return "";
     }
 }
 
@@ -217,6 +306,20 @@ class KDImage extends KDVisualComponent {
         }
         this.domObject.src = source;
         return this;
+    }
+}
+
+/** TextArea HTML wrapper
+ * */
+class KDTextArea extends KDVisualComponent {
+    constructor() {
+        super();
+        this.htmlName = "textarea";
+    }
+    setText(text) {
+        if (this.domObject) {
+            this.domObject.value = text;
+        }
     }
 }
 

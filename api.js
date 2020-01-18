@@ -3,6 +3,7 @@
  * */
 
 
+ /** KicsyDell Index object */
 var KD_OBJECTS_INDEX = 0;
 
 
@@ -13,19 +14,28 @@ class KDObject {
     }
 }
 
+/** Wrap size for components*/
 class KDSize {
     constructor(width, height) {
         this.height = height;
         this.width = width;
-        this.heightpx = function () { return this.height  + "px" };
+        this.heightpx = function () { return this.height + "px" };
         this.widthpx = function () { return this.width + "px" };
         this.set = function (width, height) {
             this.width = width;
             this.height = height;
         };
     }
+
+    
+/** Increment (or decrement) size by (dx,dy)*/
+    offset(dx, dy) {
+        return new KDSize(this.width + dx, this.height + dy);
+    }
 }
 
+
+/** Wrap position for components*/
 class KDPosition {
     constructor(x, y) {
         this.x = x;
@@ -35,13 +45,38 @@ class KDPosition {
         this.set = function (x, y) {
             this.x = x;
             this.y = y;
+            return this;
         };
+
+        /** Move component by (dx,dy) */
         this.move = function (dx, dy) {
             this.x += dx;
             this.y += dy;
+            return this;
+        };
+
+        /**
+         * Calculate position to center a component
+         * @param kdSize1 is container size
+         * @param kdSize2 is component size
+         * @returns a KDSize object with coordinates to center the object.
+         * */
+        this.centerVertically = function (kdSize1, kdSize2) {
+            return this.move((kdSize1.width - kdSize2.width) / 2, 0);
         };
 
     }
+
+    /** Static method
+     * @param kdSize is the component size
+     * @returns KDPosition object with coordinates to center an object in the screen.
+     * */
+    static centerScreen(kdSize) {
+        var x = (screen.availWidth - kdSize.width) / 2;
+        var y = (screen.availHeight - kdSize.height) / 2;
+        return new KDPosition(x, y);
+    }
+
 }
 
 class KDUnits {
@@ -51,10 +86,9 @@ class KDUnits {
 }
 
 
-
-
-
-
+/** Wrap CSS style properties
+ * To use it simply add properties like form: .backgroundColor='blue' and then use 'apply' method
+ * */
 class KDStyle {
     constructor() {
         this.backgroundColor = "BurlyWood";
@@ -62,6 +96,8 @@ class KDStyle {
         this.borderWidth = 1;
     }
 
+    /** Apply CSS style properties to kdComponent
+     * */
     apply(kdComponent) {
         if (kdComponent.domObject) {
             for (let p in this) {
@@ -71,6 +107,7 @@ class KDStyle {
         }
     }
 
+    /** Copy all styles from other KDStyle object */
     copyFrom(kdStyle) {
         for (let s in kdStyle) {
             this[s] = kdStyle[s];
@@ -80,18 +117,34 @@ class KDStyle {
 }
 
 
+
+/**
+ * Font styles
+ * */
+var kdIconFont = new KDStyle();
+kdIconFont.fontSize = "10";
+kdIconFont.textAlign = "center";
+
 /**
  * Component class base
  * */
 class KDComponent extends KDObject {
     constructor() {
         super();
+        // HTML tag name
         this.htmlName = "div";
+        // HTML type component
         this.htmlType = "";
+        //Pointer to DOM representation
         this.domObject = false;
     }
 
-    /* Build component */
+    /**
+     *  Build component method.
+     * This method build the component and prepare it to show
+     * Use then @method publish to merge this component on the DOM hierarchy.
+     * @returns itself reference to do chain property handling.
+     *  */
     build() {
         this.domObject = document.createElement(this.htmlName);
         this.domObject.setAttribute("id", "kd" + this.index);
@@ -102,8 +155,10 @@ class KDComponent extends KDObject {
         return this;
     }
 
-    /* Publish component on antoher component or
-    in document DOM level if argument is null
+    /** Publish component on antoher component or
+     * in document DOM level if argument is null
+     *  @returns itself reference to do chain property handling.
+
     */
     publish(kdComponent) {
 
@@ -147,7 +202,8 @@ class KDVisualComponent extends KDComponent {
         this.size = new KDSize(100, 20);
     }
     /**
-     * Set component size. @param size is a KDSize object
+     * Set component size. @param size is a KDSize object.
+     *  @returns itself reference to do chain property handling.
      * */
 
     setSize(kdSize) {
@@ -159,6 +215,9 @@ class KDVisualComponent extends KDComponent {
         return this;
     }
 
+    /** Set the actually position of a component
+     *  @returns itself reference to do chain property handling.
+     */
     setPosition(kdPosition) {
         if (this.domObject) {
             this.position = kdPosition;
@@ -177,12 +236,40 @@ class KDVisualComponent extends KDComponent {
         return false;
     }
 
+    /**
+     *  @returns itself reference to do chain property handling.
+     * */
     publish(kdObject) {
         super.publish(kdObject);
         this.style.apply(this);
         return this;
     }
 
+
+    /** Change visibility property to show the component.
+     *  @returns itself reference to do chain property handling.
+     * */
+    show() {
+        if (this.domObject) {
+            this.domObject.style.visibility = "visible";
+        }
+        return this;
+    }
+
+    /** Change visibility property to hide the component.
+   *  @returns itself reference to do chain property handling.
+   * */
+    hide() {
+        if (this.domObject) {
+            this.domObject.style.visibility = "hidden";
+        }
+        return this;
+    }
+
+
+    /** Make the component grant dragging operation.
+      *  @returns itself reference to do chain property handling.
+      * */
     setDraggable(booleanValue, objectToBeMoved) {
         this.draggable = booleanValue;
         if (objectToBeMoved == undefined) { objectToBeMoved = this; }
@@ -231,6 +318,19 @@ class KDLayer extends KDVisualComponent {
     constructor() {
         super();
     }
+
+    /** Show a centered text  on a DIV (layer) 
+     *  @returns itself reference to do chain property handling.
+  * */
+    showCenterText(text) {
+        if (this.domObject) {
+            this.domObject.style.textAlign = "center";
+            this.domObject.style.display = "table-cell";
+            this.domObject.style.verticalAlign = "middle";
+            this.domObject.innerHTML = text;
+        }
+        return this;
+    }
 }
 
 
@@ -243,6 +343,27 @@ class KDTextBox extends KDVisualComponent {
         super();
         this.htmlName = "input";
         this.htmlType = "text";
+    }
+
+    setText(text) {
+        if (this.domObject) {
+            this.domObject.value = text;
+        }
+        return this;
+    }
+
+    appendText(text) {
+        if (this.domObject) {
+            this.domObject.value += text;
+        }
+        return this;
+    }
+
+    getText() {
+        if (this.domObject) {
+            return this.domObject.value;
+        }
+        return "";
     }
 }
 
@@ -274,6 +395,20 @@ class KDImage extends KDVisualComponent {
     }
 }
 
+/** TextArea HTML wrapper
+ * */
+class KDTextArea extends KDVisualComponent {
+    constructor() {
+        super();
+        this.htmlName = "textarea";
+    }
+    setText(text) {
+        if (this.domObject) {
+            this.domObject.value = text;
+        }
+    }
+}
+
 
 
 
@@ -287,6 +422,7 @@ class KDWindowTheme {
         this.head = new KDStyle();
         this.body = new KDStyle();
         this.foot = new KDStyle();
+        this.commandArea = new KDStyle();
 
         //By default:
         this.frame.boxShadow = "10px 10px 10px gray";
@@ -300,6 +436,8 @@ class KDWindowTheme {
         this.body.backgroundColor = "oldLace";
         this.foot.backgroundColor = "wheat";
         this.head.textAlign = "center";
+
+
     }
 
     apply(kdWindow) {
@@ -319,16 +457,30 @@ class KDWindow extends KDLayer {
         this.head = new KDLayer();
         this.body = new KDLayer();
         this.foot = new KDLayer();
-        this.headHight = 30;
-        this.footHight = 30;
+        this.commandArea = new KDLayer();
+        this.hideCommand = new KDLayer();
+        this.headHeight = 30;
+        this.foodHeight = 30;
+        this.commandWidth = 30;
         this.theme = KDWindowThemeByDefault;
+        /** This method can be used for make window layout */
+        this.onSetSizeEvent = function (kdSize) { return kdSize; }
     }
 
     build() {
-        super.build();
+        super.build(); //Build frame
         super.add(this.head);
         super.add(this.body);
         super.add(this.foot);
+        super.add(this.commandArea);
+        this.commandArea.showCenterText("&#x2193");
+        var theWindow = this;
+        var commandArea = this.commandArea;
+        this.commandArea.domObject.addEventListener("click", function () { theWindow.hide() });
+        this.commandArea.domObject.addEventListener("mouseover", function () { commandArea.domObject.style.backgroundColor = "blue"; });
+        this.commandArea.domObject.addEventListener("mouseout", function () { commandArea.domObject.style.backgroundColor = theWindow.head.style.backgroundColor; });
+
+
         return this;
     }
 
@@ -337,6 +489,7 @@ class KDWindow extends KDLayer {
         this.head.publish(this);
         this.body.publish(this);
         this.foot.publish(this);
+        this.commandArea.publish(this);
         this.theme.apply(this);
         this.head.setDraggable(true, this);
         return this;
@@ -344,12 +497,16 @@ class KDWindow extends KDLayer {
 
     setSize(kdSize) {
         super.setSize(kdSize);
-        this.head.setSize(new KDSize(kdSize.width, this.headHight));
-        this.body.setSize(new KDSize(kdSize.width, kdSize.head - this.headHight - this.footHight));
-        this.foot.setSize(new KDSize(kdSize.width, this.footHight));
+        this.head.setSize(new KDSize(kdSize.width, this.headHeight));
+        this.body.setSize(new KDSize(kdSize.width, kdSize.height - this.headHeight - this.foodHeight));
+        this.foot.setSize(new KDSize(kdSize.width, this.foodHeight));
+        this.commandArea.setSize(new KDSize(this.headHeight, this.commandWidth));
         this.head.setPosition(new KDPosition(0, 0));
-        this.body.setPosition(new KDPosition(0, this.headHight));
-        this.foot.setPosition(new KDPosition(0, kdSize.height - this.footHight));
+        this.body.setPosition(new KDPosition(0, this.headHeight));
+        this.foot.setPosition(new KDPosition(0, kdSize.height - this.foodHeight));
+        this.commandArea.setPosition(new KDPosition(0, 0));
+
+        this.onSetSizeEvent(kdSize);
         return this;
     }
 
@@ -363,23 +520,123 @@ class KDWindow extends KDLayer {
 
     setTitle(title) {
         if (this.domObject) {
-            this.head.domObject.innerHTML = title;
+            this.head.showCenterText(title);
         }
         return this;
     }
 
-}class KDApplication extends KDObject {
-    constructor(kdDesktop) {
+}/** 
+ * KicsyDell Application class base.
+ * All KD application must inherate from this class.
+ * @param kdDesktop is a reference to a KDDesktop class.
+ * @param identifier is short name wich is used to call 
+ * the application from line command */
+class KDApplication extends KDObject {
+    constructor(kdDesktop, identifier) {
         super();
+        /**
+         * Reference to KDDesktop
+         * */
         this.desktop = kdDesktop;
-        this.icon = new KDImage();
+        /**
+         * Icon URL
+         * */
+        this.iconURL = "noIcon.jpg";
+        /**
+         * Descriptive application name
+         * */
         this.title = "This is a generic application test";
-        this.identifier = "generic application";
+        /** 
+         * short name wich is used to call 
+         * the application from line command
+         *  */
+        this.identifier = identifier == undefined ? "genApp" : identifier;
+
+    }
+
+    /** 
+     * Desktop script call run() method in order to
+     * make alive the application.
+     * This is a entry point.
+     * */
+    run() {
+        alert("Must override run() method on '" + this.identifier + "' application.");
+    }
+}
+
+
+class KDTerminal extends KDApplication {
+    constructor(kdDesktop) {
+        super(kdDesktop, "KDTerminal");
+        this.iconURL = "apps/KDTerminal/media/bash.png";
+        this.title = "Terminal";
+        var mainWindowSize = new KDSize(600, 400);
+        this.mainWindow = new KDWindow()
+            .publish(kdDesktop)
+            .setSize(mainWindowSize)
+            .setPosition(KDPosition.centerScreen(mainWindowSize))
+            .hide();
+
+        this.mainWindow.body.domObject.style.overflow = "scroll";
+        this.newCommandLine(this);
+        this.lines = new Array();
+
+    }
+
+    proccessCommand(kdTerminal, text) {
+
+    }
+
+    newOuputLayer(kdTerminal, htmlText) {
+        var ouputLayer = new KDLayer().build();
+        ouputLayer.position = "relative";
+        ouputLayer.width = "inherit";
+        ouputLayer.left = "0px";
+        ouputLayer.right = "0px";
+        ouputLayer.domObject.innerHTML = htmlText;
+
+    }
+
+    newCommandLine(kdTerminal) {
+        var commandLineStyle = new KDStyle();
+        commandLineStyle.position = "relative";
+        commandLineStyle.width = "inherit";
+        commandLineStyle.left = "0px";
+        commandLineStyle.right = "0px";
+
+        var commandLine = new KDTextBox()
+            .publish(this.mainWindow.body);
+
+        commandLine.domObject.addEventListener("keypress", function (e) {
+            if (e.code == "Enter") {
+                if (commandLine.getText() == "") {
+                    kdTerminal.newCommandLine(kdTerminal);
+                } else {
+                    proccessCommand(kdTerminal, commandLine.getText());
+                }
+
+            } else {
+                alert(e.key);
+            }
+        });
+
+
+
+
+        commandLine.domObject.focus();
+        commandLineStyle.apply(commandLine);
     }
 
     run() {
-        alert("OVERRIDE THIS");
+        this.mainWindow.show();
     }
+
+    onSetSizeEvent(kdSize) {
+
+
+
+    }
+
 
 }
 /**
@@ -388,7 +645,10 @@ class KDWindow extends KDLayer {
 class KDDesktop extends KDVisualComponent {
     constructor() {
         super();
+        this.applicationsClasses = new Array();
         //this.requestFullScreen();
+        this.publish();
+
     }
 
     /* When the openFullscreen() function is executed, open the video in fullscreen.
@@ -406,6 +666,62 @@ class KDDesktop extends KDVisualComponent {
         }
     }
 
+    /** Pass class type, not a instance of class*/
+    addApplicationClass(kdApplicationClass) {
+        this.applicationsClasses.push(kdApplicationClass);
+    }
+
+    run() {
+
+        //Create icons app
+        var appLayerHeight = 64;
+        var appLayerWidth = 64;
+        var appLayerSize = new KDSize(appLayerWidth, appLayerHeight);
+        var appIconSize = appLayerSize.offset(-8, -16);
+        var appIconPosition = new KDPosition(0, 0).centerVertically(appLayerSize, appIconSize);
+        var appLayerPosition = new KDPosition(0, 0);
+        var appLayerLabelPosition = new KDPosition(0, appLayerHeight);
+        var appIconStyle = new KDStyle();
+        var apps = new Array();
+
+        appIconStyle.backgroundColor = "transparent";
+        appIconStyle.border = "";
+
+
+        var i = 0;
+        for (i = 0; i < this.applicationsClasses.length; i++) {
+            apps[i] = new this.applicationsClasses[i](this);
+
+            var appLayer = new KDLayer().build()
+                .setSize(appLayerSize)
+                .setPosition(appLayerPosition.move(appLayerWidth, appLayerHeight + (i * appLayerHeight)))
+                .setDraggable(true)
+                .publish(this);
+
+            var appIcon = new KDImage().build()
+                .setSource(apps[i].iconURL)
+                .setPosition(appIconPosition)
+                .setSize(appIconSize)
+                .publish(appLayer);
+
+            var appLabel = new KDLayer().build()
+                .showCenterText(apps[i].title)
+                .setPosition(appLayerLabelPosition)
+                .publish(appLayer);
+
+            appIconStyle.apply(appLayer);
+            appIconStyle.apply(appLabel);
+            appIconStyle.apply(appIcon);
+            kdIconFont.apply(appLabel);
+
+            appLayer.domObject.app = apps[i];
+            appLayer.domObject.ondblclick = function () { this.app.run() };
+            appIcon.domObject.ondragstart = function () { return false; };
+
+        }
+    }
+
 }
+
 
 

@@ -1,47 +1,70 @@
 <html>
 
+<meta charset="UTF-8">
+
+
 <body>
     <script src="api.js"></script>
     <script>
 
-
         var desktop = new KDDesktop();
 
-        var app1 = new KDApplication(desktop, "First app");
-        app1.icon.setSource = "media/mario.jpg";
+        class ExampleApp extends KDApplication {
+            constructor(dkDesktop) {
+                super(dkDesktop, "FirstApp");
+                this.iconURL = "media/mario.jpg";
+                this.title = "Mario Bros 1";
+
+                var windowSize = new KDSize(400, 400);
+                this.mainWindow = new KDWindow()
+                    .build()
+                    .publish(dkDesktop)
+                    .setSize(windowSize)
+                    .setPosition(KDPosition.centerScreen(windowSize))
+                    .hide()
+                    .setTitle("Mario Bros main window");
+                    
+            }
+            run() {
+                this.mainWindow.show();
+            }
+        };
 
 
-        desktop.applications.push(app1);
-        
+        //var exampleApp = new ExampleApp(desktop);
+
+        desktop.addApplicationClass(ExampleApp);
+        desktop.addApplicationClass(KDTerminal);
+
+        desktop.run();
 
 
 
-
-/*
-        var kdwin = new KDWindow();
-        kdwin.publish()
-            .setSize(new KDSize(400, 200))
-            .setPosition(new KDPosition(100, 100))
-            .setTitle("Hello world!");
-
-
-        var l1 = new KDLayer();
-        kdwin.add(l1);
-        l1.setPosition(new KDPosition(10, 10)).setSize(new KDSize(100, 20));
-
-        var b1 = new KDButton();
-        kdwin.add(b1);
-        b1.setPosition(new KDPosition(10, 50)).setSize(new KDSize(100, 20));
+        /*
+                var kdwin = new KDWindow();
+                kdwin.publish()
+                    .setSize(new KDSize(400, 200))
+                    .setPosition(new KDPosition(100, 100))
+                    .setTitle("Hello world!");
 
 
-        var im = new KDImage().build();
-        im.setSource("media/mario.jpg")
-            .setSize(new KDSize(100, 100));
+                var l1 = new KDLayer();
+                kdwin.add(l1);
+                l1.setPosition(new KDPosition(10, 10)).setSize(new KDSize(100, 20));
+
+                var b1 = new KDButton();
+                kdwin.add(b1);
+                b1.setPosition(new KDPosition(10, 50)).setSize(new KDSize(100, 20));
 
 
-        kdwin.add(im);
+                var im = new KDImage().build();
+                im.setSource("media/mario.jpg")
+                    .setSize(new KDSize(100, 100));
 
-*/
+
+                kdwin.add(im);
+
+        */
 
 
 

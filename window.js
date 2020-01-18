@@ -7,6 +7,7 @@ class KDWindowTheme {
         this.head = new KDStyle();
         this.body = new KDStyle();
         this.foot = new KDStyle();
+        this.commandArea = new KDStyle();
 
         //By default:
         this.frame.boxShadow = "10px 10px 10px gray";
@@ -20,6 +21,8 @@ class KDWindowTheme {
         this.body.backgroundColor = "oldLace";
         this.foot.backgroundColor = "wheat";
         this.head.textAlign = "center";
+
+
     }
 
     apply(kdWindow) {
@@ -39,16 +42,30 @@ class KDWindow extends KDLayer {
         this.head = new KDLayer();
         this.body = new KDLayer();
         this.foot = new KDLayer();
-        this.headHight = 30;
-        this.footHight = 30;
+        this.commandArea = new KDLayer();
+        this.hideCommand = new KDLayer();
+        this.headHeight = 30;
+        this.foodHeight = 30;
+        this.commandWidth = 30;
         this.theme = KDWindowThemeByDefault;
+        /** This method can be used for make window layout */
+        this.onSetSizeEvent = function (kdSize) { return kdSize; }
     }
 
     build() {
-        super.build();
+        super.build(); //Build frame
         super.add(this.head);
         super.add(this.body);
         super.add(this.foot);
+        super.add(this.commandArea);
+        this.commandArea.showCenterText("&#x2193");
+        var theWindow = this;
+        var commandArea = this.commandArea;
+        this.commandArea.domObject.addEventListener("click", function () { theWindow.hide() });
+        this.commandArea.domObject.addEventListener("mouseover", function () { commandArea.domObject.style.backgroundColor = "blue"; });
+        this.commandArea.domObject.addEventListener("mouseout", function () { commandArea.domObject.style.backgroundColor = theWindow.head.style.backgroundColor; });
+
+
         return this;
     }
 
@@ -57,6 +74,7 @@ class KDWindow extends KDLayer {
         this.head.publish(this);
         this.body.publish(this);
         this.foot.publish(this);
+        this.commandArea.publish(this);
         this.theme.apply(this);
         this.head.setDraggable(true, this);
         return this;
@@ -64,12 +82,16 @@ class KDWindow extends KDLayer {
 
     setSize(kdSize) {
         super.setSize(kdSize);
-        this.head.setSize(new KDSize(kdSize.width, this.headHight));
-        this.body.setSize(new KDSize(kdSize.width, kdSize.head - this.headHight - this.footHight));
-        this.foot.setSize(new KDSize(kdSize.width, this.footHight));
+        this.head.setSize(new KDSize(kdSize.width, this.headHeight));
+        this.body.setSize(new KDSize(kdSize.width, kdSize.height - this.headHeight - this.foodHeight));
+        this.foot.setSize(new KDSize(kdSize.width, this.foodHeight));
+        this.commandArea.setSize(new KDSize(this.headHeight, this.commandWidth));
         this.head.setPosition(new KDPosition(0, 0));
-        this.body.setPosition(new KDPosition(0, this.headHight));
-        this.foot.setPosition(new KDPosition(0, kdSize.height - this.footHight));
+        this.body.setPosition(new KDPosition(0, this.headHeight));
+        this.foot.setPosition(new KDPosition(0, kdSize.height - this.foodHeight));
+        this.commandArea.setPosition(new KDPosition(0, 0));
+
+        this.onSetSizeEvent(kdSize);
         return this;
     }
 
@@ -83,7 +105,7 @@ class KDWindow extends KDLayer {
 
     setTitle(title) {
         if (this.domObject) {
-            this.head.domObject.innerHTML = title;
+            this.head.showCenterText(title);
         }
         return this;
     }
