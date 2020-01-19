@@ -1,5 +1,3 @@
-
-
 /** Wrap CSS style properties
  * To use it simply add properties like form: .backgroundColor='blue' and then use 'apply' method
  * */
@@ -26,6 +24,11 @@ class KDStyle {
         for (let s in kdStyle) {
             this[s] = kdStyle[s];
         }
+    }
+
+    add(property, value) {
+        this[property] = value;
+        return this;
     }
 
 }
@@ -320,10 +323,20 @@ class KDTextArea extends KDVisualComponent {
         if (this.domObject) {
             this.domObject.value = text;
         }
+        return this;
+    }
+
+    appendText(text) {
+        if (this.domObject) {
+            this.domObject.value += text;
+        }
+        return this;
+    }
+
+    getText() {
+        if (this.domObject) {
+            return this.domObject.value;
+        }
+        return "";
     }
 }
-
-
-
-
-

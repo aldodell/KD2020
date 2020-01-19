@@ -6,6 +6,7 @@ class KDDesktop extends KDVisualComponent {
     constructor() {
         super();
         this.applicationsClasses = new Array();
+        this.applicationsIntances = new Array();
         //this.requestFullScreen();
         this.publish();
 
@@ -42,15 +43,13 @@ class KDDesktop extends KDVisualComponent {
         var appLayerPosition = new KDPosition(0, 0);
         var appLayerLabelPosition = new KDPosition(0, appLayerHeight);
         var appIconStyle = new KDStyle();
-        var apps = new Array();
-
+       
         appIconStyle.backgroundColor = "transparent";
         appIconStyle.border = "";
 
-
         var i = 0;
         for (i = 0; i < this.applicationsClasses.length; i++) {
-            apps[i] = new this.applicationsClasses[i](this);
+            this.applicationsIntances[i] = new this.applicationsClasses[i](this);
 
             var appLayer = new KDLayer().build()
                 .setSize(appLayerSize)
@@ -59,13 +58,13 @@ class KDDesktop extends KDVisualComponent {
                 .publish(this);
 
             var appIcon = new KDImage().build()
-                .setSource(apps[i].iconURL)
+                .setSource(this.applicationsIntances[i].iconURL)
                 .setPosition(appIconPosition)
                 .setSize(appIconSize)
                 .publish(appLayer);
 
             var appLabel = new KDLayer().build()
-                .showCenterText(apps[i].title)
+                .showCenterText(this.applicationsIntances[i].title)
                 .setPosition(appLayerLabelPosition)
                 .publish(appLayer);
 
@@ -74,7 +73,7 @@ class KDDesktop extends KDVisualComponent {
             appIconStyle.apply(appIcon);
             kdIconFont.apply(appLabel);
 
-            appLayer.domObject.app = apps[i];
+            appLayer.domObject.app = this.applicationsIntances[i];
             appLayer.domObject.ondblclick = function () { this.app.run() };
             appIcon.domObject.ondragstart = function () { return false; };
 

@@ -114,6 +114,11 @@ class KDStyle {
         }
     }
 
+    add(property, value) {
+        this[property] = value;
+        return this;
+    }
+
 }
 
 
@@ -505,7 +510,6 @@ class KDWindow extends KDLayer {
         this.body.setPosition(new KDPosition(0, this.headHeight));
         this.foot.setPosition(new KDPosition(0, kdSize.height - this.foodHeight));
         this.commandArea.setPosition(new KDPosition(0, 0));
-
         this.onSetSizeEvent(kdSize);
         return this;
     }
@@ -576,34 +580,48 @@ class KDTerminal extends KDApplication {
             .setSize(mainWindowSize)
             .setPosition(KDPosition.centerScreen(mainWindowSize))
             .hide();
-
         this.mainWindow.body.domObject.style.overflow = "scroll";
+        this.lineStyle = new KDStyle()
+            .add("position", "relative")
+            .add("width", this.mainWindow.body.size.offset(-10, 0).widthpx())
+            .add("backgroundColor", "transparent")
+            .add("borderStyle", "none")
+            .add("padding", "4px")
+            .add("boxShadow", "")
+            .add("fontFamily", "'Lucida Console', Monaco, monospace")
+            .add("fontSize", "14");
+        this.currentCommandLine = undefined;
         this.newCommandLine(this);
-        this.lines = new Array();
-
     }
 
     proccessCommand(kdTerminal, text) {
 
+        if (text == "?") {
+            kdTerminal.newOuputLayer(kdTerminal, "Help:");
+            return true;
+        }
+
+        var i;
+        for (i = 0; i < kdTerminal.desktop.applicationsIntances.length; i++) {
+            var app = kdTerminal.desktop.applicationsIntances[i];
+            if (app.identifier == text) {
+                app.run();
+                this.newCommandLine(kdTerminal);
+                return true;
+            }
+        }
+        kdTerminal.newOuputLayer(kdTerminal, text + " is not a valid command.");
     }
 
     newOuputLayer(kdTerminal, htmlText) {
         var ouputLayer = new KDLayer().build();
-        ouputLayer.position = "relative";
-        ouputLayer.width = "inherit";
-        ouputLayer.left = "0px";
-        ouputLayer.right = "0px";
+        ouputLayer.publish(kdTerminal.mainWindow.body);
         ouputLayer.domObject.innerHTML = htmlText;
-
+        kdTerminal.lineStyle.apply(ouputLayer);
+        kdTerminal.newCommandLine(kdTerminal);
     }
 
     newCommandLine(kdTerminal) {
-        var commandLineStyle = new KDStyle();
-        commandLineStyle.position = "relative";
-        commandLineStyle.width = "inherit";
-        commandLineStyle.left = "0px";
-        commandLineStyle.right = "0px";
-
         var commandLine = new KDTextBox()
             .publish(this.mainWindow.body);
 
@@ -612,29 +630,42 @@ class KDTerminal extends KDApplication {
                 if (commandLine.getText() == "") {
                     kdTerminal.newCommandLine(kdTerminal);
                 } else {
-                    proccessCommand(kdTerminal, commandLine.getText());
+                    kdTerminal.proccessCommand(kdTerminal, commandLine.getText());
                 }
-
-            } else {
-                alert(e.key);
             }
         });
 
+        commandLine.domObject.addEventListener("keydown", function (e) {
 
+            /* Autocompletion pressing TAB */
+            if (e.code == "Tab") {
+                e.preventDefault();
+                var i, k, l;
+                var t = commandLine.getText();
+                if (t.length == 0) {
+                    this.focus();
+                    return false;
+                }
+                for (i = 0; i < kdTerminal.desktop.applicationsIntances.length; i++) {
+                    var app = kdTerminal.desktop.applicationsIntances[i];
+                    k = app.identifier.indexOf(t);
+                    l = t.length;
+                    if (k == 0) {
+                        commandLine.appendText(app.identifier.substr(l));
+                        return true;
+                    }
+                }
 
+            }
+        });
 
+        kdTerminal.lineStyle.apply(commandLine);
         commandLine.domObject.focus();
-        commandLineStyle.apply(commandLine);
+        kdTerminal.currentCommandLine = commandLine;
     }
-
     run() {
         this.mainWindow.show();
-    }
-
-    onSetSizeEvent(kdSize) {
-
-
-
+        this.currentCommandLine.domObject.focus();
     }
 
 
@@ -646,6 +677,7 @@ class KDDesktop extends KDVisualComponent {
     constructor() {
         super();
         this.applicationsClasses = new Array();
+        this.applicationsIntances = new Array();
         //this.requestFullScreen();
         this.publish();
 
@@ -682,15 +714,14 @@ class KDDesktop extends KDVisualComponent {
         var appLayerPosition = new KDPosition(0, 0);
         var appLayerLabelPosition = new KDPosition(0, appLayerHeight);
         var appIconStyle = new KDStyle();
-        var apps = new Array();
-
+       
         appIconStyle.backgroundColor = "transparent";
         appIconStyle.border = "";
 
 
         var i = 0;
         for (i = 0; i < this.applicationsClasses.length; i++) {
-            apps[i] = new this.applicationsClasses[i](this);
+            this.applicationsIntances[i] = new this.applicationsClasses[i](this);
 
             var appLayer = new KDLayer().build()
                 .setSize(appLayerSize)
@@ -699,13 +730,13 @@ class KDDesktop extends KDVisualComponent {
                 .publish(this);
 
             var appIcon = new KDImage().build()
-                .setSource(apps[i].iconURL)
+                .setSource(this.applicationsIntances[i].iconURL)
                 .setPosition(appIconPosition)
                 .setSize(appIconSize)
                 .publish(appLayer);
 
             var appLabel = new KDLayer().build()
-                .showCenterText(apps[i].title)
+                .showCenterText(this.applicationsIntances[i].title)
                 .setPosition(appLayerLabelPosition)
                 .publish(appLayer);
 
@@ -714,7 +745,7 @@ class KDDesktop extends KDVisualComponent {
             appIconStyle.apply(appIcon);
             kdIconFont.apply(appLabel);
 
-            appLayer.domObject.app = apps[i];
+            appLayer.domObject.app = this.applicationsIntances[i];
             appLayer.domObject.ondblclick = function () { this.app.run() };
             appIcon.domObject.ondragstart = function () { return false; };
 

@@ -49,34 +49,48 @@ class KDTerminal extends KDApplication {
             .setSize(mainWindowSize)
             .setPosition(KDPosition.centerScreen(mainWindowSize))
             .hide();
-
         this.mainWindow.body.domObject.style.overflow = "scroll";
+        this.lineStyle = new KDStyle()
+            .add("position", "relative")
+            .add("width", this.mainWindow.body.size.offset(-10, 0).widthpx())
+            .add("backgroundColor", "transparent")
+            .add("borderStyle", "none")
+            .add("padding", "4px")
+            .add("boxShadow", "")
+            .add("fontFamily", "'Lucida Console', Monaco, monospace")
+            .add("fontSize", "14");
+        this.currentCommandLine = undefined;
         this.newCommandLine(this);
-        this.lines = new Array();
-
     }
 
     proccessCommand(kdTerminal, text) {
 
+        if (text == "?") {
+            kdTerminal.newOuputLayer(kdTerminal, "Help:");
+            return true;
+        }
+
+        var i;
+        for (i = 0; i < kdTerminal.desktop.applicationsIntances.length; i++) {
+            var app = kdTerminal.desktop.applicationsIntances[i];
+            if (app.identifier == text) {
+                app.run();
+                this.newCommandLine(kdTerminal);
+                return true;
+            }
+        }
+        kdTerminal.newOuputLayer(kdTerminal, text + " is not a valid command.");
     }
 
     newOuputLayer(kdTerminal, htmlText) {
         var ouputLayer = new KDLayer().build();
-        ouputLayer.position = "relative";
-        ouputLayer.width = "inherit";
-        ouputLayer.left = "0px";
-        ouputLayer.right = "0px";
+        ouputLayer.publish(kdTerminal.mainWindow.body);
         ouputLayer.domObject.innerHTML = htmlText;
-
+        kdTerminal.lineStyle.apply(ouputLayer);
+        kdTerminal.newCommandLine(kdTerminal);
     }
 
     newCommandLine(kdTerminal) {
-        var commandLineStyle = new KDStyle();
-        commandLineStyle.position = "relative";
-        commandLineStyle.width = "inherit";
-        commandLineStyle.left = "0px";
-        commandLineStyle.right = "0px";
-
         var commandLine = new KDTextBox()
             .publish(this.mainWindow.body);
 
@@ -85,30 +99,41 @@ class KDTerminal extends KDApplication {
                 if (commandLine.getText() == "") {
                     kdTerminal.newCommandLine(kdTerminal);
                 } else {
-                    proccessCommand(kdTerminal, commandLine.getText());
+                    kdTerminal.proccessCommand(kdTerminal, commandLine.getText());
                 }
-
-            } else {
-                alert(e.key);
             }
         });
 
+        commandLine.domObject.addEventListener("keydown", function (e) {
 
+            /* Autocompletion pressing TAB */
+            if (e.code == "Tab") {
+                e.preventDefault();
+                var i, k, l;
+                var t = commandLine.getText();
+                if (t.length == 0) {
+                    this.focus();
+                    return false;
+                }
+                for (i = 0; i < kdTerminal.desktop.applicationsIntances.length; i++) {
+                    var app = kdTerminal.desktop.applicationsIntances[i];
+                    k = app.identifier.indexOf(t);
+                    l = t.length;
+                    if (k == 0) {
+                        commandLine.appendText(app.identifier.substr(l));
+                        return true;
+                    }
+                }
 
+            }
+        });
 
+        kdTerminal.lineStyle.apply(commandLine);
         commandLine.domObject.focus();
-        commandLineStyle.apply(commandLine);
+        kdTerminal.currentCommandLine = commandLine;
     }
-
     run() {
         this.mainWindow.show();
+        this.currentCommandLine.domObject.focus();
     }
-
-    onSetSizeEvent(kdSize) {
-
-
-
-    }
-
-
 }
