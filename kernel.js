@@ -3,7 +3,7 @@
  * */
 
 
- /** KicsyDell Index object */
+/** KicsyDell Index object */
 var KD_OBJECTS_INDEX = 0;
 
 
@@ -27,10 +27,20 @@ class KDSize {
         };
     }
 
-    
-/** Increment (or decrement) size by (dx,dy)*/
+
+    /** Increment (or decrement) size by (dx,dy)*/
     offset(dx, dy) {
         return new KDSize(this.width + dx, this.height + dy);
+    }
+
+    setWidth(w) {
+        this.width = w;
+        return this;
+    }
+
+    setHeight(h) {
+        this.height = h;
+        return this;
     }
 }
 
@@ -64,6 +74,20 @@ class KDPosition {
         this.centerVertically = function (kdSize1, kdSize2) {
             return this.move((kdSize1.width - kdSize2.width) / 2, 0);
         };
+
+        this.offset = function (dx, dy) {
+            return new KDPosition(this.x + dx, this.y + dy);
+        }
+
+        this.setX = function (X) {
+            this.x = X;
+            return this;
+        }
+
+        this.setY = function (Y) {
+            this.y = Y;
+            return this;
+        }
 
     }
 

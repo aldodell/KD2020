@@ -17,6 +17,7 @@ class KDStyle {
                 eval(s);
             }
         }
+        return this;
     }
 
     /** Copy all styles from other KDStyle object */
@@ -24,6 +25,7 @@ class KDStyle {
         for (let s in kdStyle) {
             this[s] = kdStyle[s];
         }
+        return this;
     }
 
     add(property, value) {
@@ -117,6 +119,7 @@ class KDVisualComponent extends KDComponent {
         this.initialPosition = null;
         this.position = null;
         this.size = new KDSize(100, 20);
+        this.style.zIndex = "0";
     }
     /**
      * Set component size. @param size is a KDSize object.
@@ -131,6 +134,8 @@ class KDVisualComponent extends KDComponent {
         }
         return this;
     }
+
+
 
     /** Set the actually position of a component
      *  @returns itself reference to do chain property handling.
@@ -339,4 +344,126 @@ class KDTextArea extends KDVisualComponent {
         }
         return "";
     }
+}
+
+class KDCanvas extends KDVisualComponent {
+    constructor() {
+        super();
+        this.htmlName = "canvas";
+    }
+
+    radians(degrees) { return (Math.PI / 180) * degrees; }
+
+    context2d() {
+        if (this.domObject) {
+            return this.domObject.getContext("2d");
+        }
+        return false;
+    }
+
+}
+
+class KDScript extends KDComponent {
+    constructor() {
+        super();
+        this.htmlName = "script";
+        this.style.add("overflow", "hidden")
+            .add("backgroundColor", "transparent")
+            .add("border", "");
+    }
+
+    load(url) {
+        if (this.domObject) {
+            this.domObject.src = url;
+        }
+    }
+}
+
+
+class KDSpriteViewer extends KDLayer {
+    constructor() {
+        super();
+        this.image = new KDImage();
+
+        this.initX = 0;
+        this.initY = 0;
+        this.spriteWidth = 32;
+        this.spriteHeight = 32;
+        this.verticalSeparator = 4;
+        this.horizontalSeparator = 4;
+        // this.spritesForRows = 8;
+        this.style.add("backgroundColor", "transparent")
+            .add("border", "0px")
+            .add("padding", "0px")
+            .add("margin", "0px");
+
+        this.image.style = this.style;
+    }
+
+    setParameters(initX,
+        initY,
+        spriteWidth,
+        spriteHeight,
+        horizontalSeparator,
+        verticalSeparator
+    ) {
+
+        this.initX = initX;
+        this.initY = initY;
+        this.spriteWidth = spriteWidth;
+        this.spriteHeight = spriteHeight;
+        this.horizontalSeparator = horizontalSeparator;
+        this.verticalSeparator = verticalSeparator;
+
+        //this.spritesForRows = spritesForRows;
+
+        this.setSize(new KDSize(spriteWidth, spriteHeight));
+
+        return this;
+
+    }
+
+
+
+    loadImage(url, width, height) {
+        if (this.image.domObject) {
+            this.image.setSource(url);
+            this.image.setSize(new KDSize(width, height));
+        }
+        return this;
+    }
+
+    build() {
+        super.build();
+        this.image.build();
+        return this;
+
+    }
+
+    publish(kdObject) {
+        super.publish(kdObject);
+        this.image.publish(this);
+        this.domObject.style.overflow = "hidden";
+        return this;
+    }
+
+    setSpritePosition(kdPosition) {
+        this.image.setPosition(kdPosition);
+        return this;
+    }
+
+    showSprite(row, column) {
+        // var x = this.initX + this.horizontalSeparator  + (row * (this.spriteWidth+this.horizontalSeparator));
+        // var y = this.initY + this.verticalSeparator + 1 + (column * (this.spriteHeight+this.verticalSeparator));
+
+
+        var x = this.initX + (column * (this.spriteWidth + this.horizontalSeparator));
+        var y = this.initY + (row * (this.spriteHeight + this.verticalSeparator));
+
+
+        this.image.setPosition(new KDPosition(-x, -y));
+        return this;
+    }
+
+
 }

@@ -1,3 +1,21 @@
+/** Helper class to parse arguments */
+class KDArgumentsParser extends KDObject {
+    constructor(text) {
+        super();
+        this.command = "";
+        this.arguments = new Array();
+        var re1 = new RegExp("\\s+(?=(?:[^\\\"]*\\\"[^\\\"]*\\\")*[^\\\"]*$)");
+        var tokens = text.split(re1);
+        this.command = tokens[0];
+        var i = 1;
+        for (i = 1; i < tokens.length; i++) {
+            this.arguments.push(tokens[i]);
+        }
+    }
+}
+
+
+
 /** 
  * KicsyDell Application class base.
  * All KD application must inherate from this class.
@@ -25,14 +43,20 @@ class KDApplication extends KDObject {
          *  */
         this.identifier = identifier == undefined ? "genApp" : identifier;
 
+        /**
+         * Save a pointer to application main window
+         * If this pointer is undefined means that
+         * this app is a console command
+         * */
+        this.mainWindow = undefined;
     }
 
     /** 
-     * Desktop script call run() method in order to
+     * Desktop script call run(arguments) method in order to
      * make alive the application.
      * This is a entry point.
      * */
-    run() {
+    run(args) {
         alert("Must override run() method on '" + this.identifier + "' application.");
     }
 }
@@ -42,12 +66,13 @@ class KDTerminal extends KDApplication {
     constructor(kdDesktop) {
         super(kdDesktop, "KDTerminal");
         this.iconURL = "apps/KDTerminal/media/bash.png";
-        this.title = "Terminal";
+        this.title = "KDTerminal";
         var mainWindowSize = new KDSize(600, 400);
         this.mainWindow = new KDWindow()
             .publish(kdDesktop)
             .setSize(mainWindowSize)
             .setPosition(KDPosition.centerScreen(mainWindowSize))
+            .setTitle(this.title)
             .hide();
         this.mainWindow.body.domObject.style.overflow = "scroll";
         this.lineStyle = new KDStyle()
@@ -61,6 +86,7 @@ class KDTerminal extends KDApplication {
             .add("fontSize", "14");
         this.currentCommandLine = undefined;
         this.newCommandLine(this);
+        this._indexCommandLine = 0;
     }
 
     proccessCommand(kdTerminal, text) {
@@ -70,16 +96,31 @@ class KDTerminal extends KDApplication {
             return true;
         }
 
-        var i;
-        for (i = 0; i < kdTerminal.desktop.applicationsIntances.length; i++) {
-            var app = kdTerminal.desktop.applicationsIntances[i];
-            if (app.identifier == text) {
-                app.run();
-                this.newCommandLine(kdTerminal);
-                return true;
+
+        /* This part splits text by '|'. So get first argument(command) and rests arguments
+        First argument or command is evalute to determine wich application will run
+        and pass rest of arguments like an string
+        */
+        var i, j;
+        var resultText = "";
+        var sentences = text.split("|");
+        var isValid = false;
+        for (j = 0; j < sentences.length; j++) {
+            var parser = new KDArgumentsParser(sentences[j]);
+            for (i = 0; i < kdTerminal.desktop.applicationsIntances.length; i++) {
+                var app = kdTerminal.desktop.applicationsIntances[i];
+                if (app.identifier == parser.command) {
+                    var args = parser.arguments;
+                    args.push(resultText);
+                    resultText = app.run(args);
+                    kdTerminal.newOuputLayer(kdTerminal, resultText);
+                    //this.newCommandLine(kdTerminal);
+                    isValid = true;
+                    break;
+                }
             }
         }
-        kdTerminal.newOuputLayer(kdTerminal, text + " is not a valid command.");
+        if (!isValid) { kdTerminal.newOuputLayer(kdTerminal, text + " is not a valid command."); }
     }
 
     newOuputLayer(kdTerminal, htmlText) {
@@ -91,6 +132,7 @@ class KDTerminal extends KDApplication {
     }
 
     newCommandLine(kdTerminal) {
+
         var commandLine = new KDTextBox()
             .publish(this.mainWindow.body);
 
@@ -125,15 +167,55 @@ class KDTerminal extends KDApplication {
                     }
                 }
 
+            } else if (e.code == "ArrowUp") {
+                var nodes = kdTerminal.mainWindow.body.domObject.getElementsByTagName("input");
+                kdTerminal._indexCommandLine--;
+                if (kdTerminal._indexCommandLine > -1) {
+                    commandLine.setText(nodes[kdTerminal._indexCommandLine].value);
+                }
+            } else if (e.code == "ArrowDown") {
+                var nodes = kdTerminal.mainWindow.body.domObject.getElementsByTagName("input");
+
+                if (kdTerminal._indexCommandLine < nodes.length) {
+                    kdTerminal._indexCommandLine++;
+                    commandLine.setText(nodes[kdTerminal._indexCommandLine].value);
+                }   
             }
         });
 
         kdTerminal.lineStyle.apply(commandLine);
         commandLine.domObject.focus();
         kdTerminal.currentCommandLine = commandLine;
+        kdTerminal._indexCommandLine = kdTerminal.mainWindow.body.domObject.getElementsByTagName("input").length;
+
     }
     run() {
         this.mainWindow.show();
         this.currentCommandLine.domObject.focus();
     }
 }
+
+
+class KDTerminalAlert extends KDApplication {
+    constructor(kdDesktop) {
+        super(kdDesktop, "alert");
+        this.mainWindow = undefined;
+    }
+    run(args) {
+        alert(args.join(" "));
+        return args;
+    }
+}
+
+
+class KDTerminalClock extends KDApplication {
+    constructor(kdDesktop) {
+        super(kdDesktop, "clock");
+        this.mainWindow = undefined;
+    }
+    run() {
+        return new Date();
+    }
+
+}
+

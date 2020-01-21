@@ -7,6 +7,8 @@
     <script src="api.js"></script>
     <script>
 
+
+
         var desktop = new KDDesktop();
 
         class ExampleApp extends KDApplication {
@@ -23,10 +25,18 @@
                     .setPosition(KDPosition.centerScreen(windowSize))
                     .hide()
                     .setTitle("Mario Bros main window");
-                    
+
+                this.spriteViewer = new KDSpriteViewer().build()
+                    .publish(this.mainWindow.body)
+                    .loadImage("media/mario2.png",738,603)
+                    .setPosition(new KDPosition(100, 100))
+                    .setParameters(7, 449, 16, 33, 12   , 13, 7)
+                    .showSprite(0, 2);
+
             }
             run() {
                 this.mainWindow.show();
+                return "Mario!!";
             }
         };
 
@@ -35,8 +45,13 @@
 
         desktop.addApplicationClass(ExampleApp);
         desktop.addApplicationClass(KDTerminal);
+        desktop.addApplicationClass(KDTerminalClock);
+        desktop.addApplicationClass(KDTerminalAlert);
+        desktop.addApplicationClass(QQSM);
+
 
         desktop.run();
+
 
 
 

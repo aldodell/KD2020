@@ -22,6 +22,8 @@ class KDWindowTheme {
         this.foot.backgroundColor = "wheat";
         this.head.textAlign = "center";
 
+        this.frame.zIndex = 1;
+
 
     }
 

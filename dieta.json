@@ -1,0 +1,16 @@
+var data = [
+    {
+        "q": "¿Cuál es el macronutriente que nos hace engordar más?",
+        "a": "La grasa",
+        "b": "Los carbohidratos o azúcares",
+        "c": "Las proteínas",
+        "d": "Los aminoácidos"
+    },
+    {
+        "q": "¿María está muy preocupada porque se está engordando. Entre estas opciones, cuál le recomendarías como la mejor para bajar de peso?",
+        "a": "Comer solo productos 'light' (ligeros)",
+        "b": "Hacer una hora de ejercicios todos los días.",
+        "c": "Reducir su ingesta de calorías en un 20%",
+        "d": "Eliminar las harinas de su dieta"
+    }
+]

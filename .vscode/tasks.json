@@ -34,7 +34,8 @@
                 "component.js",
                 "window.js",
                 "application.js",
-                "desktop.js"
+                "desktop.js",
+                "qqsm.js"
             ],
             "group": {
                 "kind": "build",
