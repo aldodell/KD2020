@@ -135,6 +135,10 @@ class KDVisualComponent extends KDComponent {
         return this;
     }
 
+    getSize() {
+        return this.size;
+    }
+
 
 
     /** Set the actually position of a component

@@ -134,10 +134,11 @@ class QQSM extends KDApplication {
         this.indexQuestion = -1;
 
         this.mainWindow = new KDWindow().build()
-            .setSize(new KDSize(600, 600))
-            .setPosition(new KDPosition(0, 0))
+            .setSize(new KDSize(800, 800))
             .publish(kdDesktop)
             .hide();
+
+
 
         this.nova = new KDLayer().build()
             .publish(this.mainWindow.body);
@@ -180,13 +181,13 @@ class QQSM extends KDApplication {
 
             this.mainWindow.setSize(kdSize);
 
-            var verticalSeparator = 20;
+            var verticalSeparator = 10;
             var horizontalSeparator = 8;
-            var questionHeight = kdSize.height / 4;
+            var questionHeight = kdSize.height / 2.5;
             var answerHeight = questionHeight / 2;
             var answerWidth = (this.mainWindow.body.size.width / 2) - (horizontalSeparator / 2);
             var questionWidth = this.mainWindow.body.size.width;
-            var row0 = this.mainWindow.body.size.height / 4;
+            var row0 = this.mainWindow.body.size.height / 20;
             var row1 = row0 + verticalSeparator + questionHeight;
             var row2 = row1 + answerHeight + verticalSeparator;
             var col0 = 0;
@@ -196,7 +197,7 @@ class QQSM extends KDApplication {
 
 
             this.nova.setPosition(new KDPosition(this.mainWindow.body.size.width - 2 * novaXY, novaXY / 2))
-                .setSize(new KDSize(2 * novaXY, 2 * novaXY));
+                .setSize(new KDSize(2 * novaXY, 2 * novaXY - verticalSeparator));
 
             this.question.setPosition(new KDPosition(col0, row0))
                 .setSize(new KDSize(questionWidth, questionHeight))
@@ -221,6 +222,10 @@ class QQSM extends KDApplication {
             this.playButton.setPosition(new KDPosition(0, 0))
                 .setSize(new KDSize(100, 20));
 
+            this.mainWindow
+                .setPosition(KDPosition.centerScreen(this.mainWindow.getSize()))
+
+
 
         }
 
@@ -244,7 +249,7 @@ class QQSM extends KDApplication {
         this.optionB.setText(data[this.indexQuestion].b);
         this.optionC.setText(data[this.indexQuestion].c);
         this.optionD.setText(data[this.indexQuestion].d);
-     }
+    }
 
 
     run(args) {
@@ -254,12 +259,26 @@ class QQSM extends KDApplication {
         var thisObj = this;
         this.playButton.domObject.addEventListener("click", function () { thisObj.nextQuestion() }, true);
 
+        var msg = "QQSM:\r\n";
         if (args != undefined) {
-            this.filename = args[0];
-            alert(this.filename);
-            this.loadData()
+            args.push(";");
+            var i = 0;
+            for (i = 0; i < args.length - 1; i++) {
+                var c = args[i];
+                var p = args[i + 1];
+
+                if (c == "-f") {
+                    this.filename = p;
+                    msg += "\t File loaded: " + p + "\r\n";
+                }
+                if (c == "-s") {
+                    this.setSize(new KDSize(parseInt(args[i + 1]), parseIt(args[i + 2])));
+                    msg += "\t Size changed to " + args[i + 1] + " x " + args[i + 2] + "\r\n";
+                }
+            }
+
         }
-        return args;
+        return msg;
     }
 
 }

@@ -125,7 +125,6 @@ class KDTerminal extends KDApplication {
                     args.push(resultText);
                     resultText = app.run(args);
                     kdTerminal.newOuputLayer(kdTerminal, resultText);
-                    //this.newCommandLine(kdTerminal);
                     isValid = true;
                     break;
                 }
