@@ -131,6 +131,7 @@ class QQSM extends KDApplication {
         this.title = "Millonario";
         this.identifier = "qqsm";
         this.filename = "";
+        this.indexQuestion = -1;
 
         this.mainWindow = new KDWindow().build()
             .setSize(new KDSize(600, 600))
@@ -155,6 +156,11 @@ class QQSM extends KDApplication {
 
         this.optionD = new QQSMBox().build()
             .publish(this.mainWindow.body);
+
+        this.playButton = new KDButton().build()
+            .publish(this.mainWindow.foot)
+            .setText(">>");
+
 
         //Set up background style
         var backgroundStyle = new KDStyle();
@@ -212,6 +218,10 @@ class QQSM extends KDApplication {
                 .setSize(new KDSize(answerWidth, answerHeight))
                 .setText("D");
 
+            this.playButton.setPosition(new KDPosition(0, 0))
+                .setSize(new KDSize(100, 20));
+
+
         }
 
         //Draw again all
@@ -225,15 +235,26 @@ class QQSM extends KDApplication {
             var loader = new KDScript().build().publish();
             loader.load(this.filename);
         }
-
     }
+
+    nextQuestion() {
+        this.indexQuestion++;
+        this.question.setText(data[this.indexQuestion].q);
+        this.optionA.setText(data[this.indexQuestion].a);
+        this.optionB.setText(data[this.indexQuestion].b);
+        this.optionC.setText(data[this.indexQuestion].c);
+        this.optionD.setText(data[this.indexQuestion].d);
+     }
 
 
     run(args) {
 
         this.mainWindow.show();
-        if (args != undefined) {
+        var thisObj = this;
+        this.playButton.domObject.addEventListener("click", function () { thisObj.nextQuestion() }, true);
 
+
+        if (args != undefined) {
             this.filename = args[0];
             alert(this.filename);
             this.loadData()

@@ -298,6 +298,11 @@ class KDButton extends KDVisualComponent {
         this.htmlType = "button";
         this.style.backgroundColor = "";
     }
+
+    setText(value) {
+        this.domObject.value = value;
+        return this;
+    }
 }
 
 /** Simple image 
@@ -367,9 +372,6 @@ class KDScript extends KDComponent {
     constructor() {
         super();
         this.htmlName = "script";
-        this.style.add("overflow", "hidden")
-            .add("backgroundColor", "transparent")
-            .add("border", "");
     }
 
     load(url) {
