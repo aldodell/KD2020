@@ -66,8 +66,6 @@ class KDWindow extends KDLayer {
         this.commandArea.domObject.addEventListener("click", function () { theWindow.hide() });
         this.commandArea.domObject.addEventListener("mouseover", function () { commandArea.domObject.style.backgroundColor = "blue"; });
         this.commandArea.domObject.addEventListener("mouseout", function () { commandArea.domObject.style.backgroundColor = theWindow.head.style.backgroundColor; });
-
-
         return this;
     }
 
