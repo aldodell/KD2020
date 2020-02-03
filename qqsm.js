@@ -250,15 +250,16 @@ class QQSM extends KDApplication {
     run(args) {
 
         this.mainWindow.show();
+        this.indexQuestion = -1;
         var thisObj = this;
         this.playButton.domObject.addEventListener("click", function () { thisObj.nextQuestion() }, true);
-
 
         if (args != undefined) {
             this.filename = args[0];
             alert(this.filename);
             this.loadData()
         }
+        return args;
     }
 
 }

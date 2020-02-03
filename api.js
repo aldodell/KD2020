@@ -790,6 +790,17 @@ class KDTerminal extends KDApplication {
         }
 
 
+        if (text == "!") {
+            var r = "";
+            for (i = 0; i < kdTerminal.desktop.applicationsIntances.length; i++) {
+                var app = kdTerminal.desktop.applicationsIntances[i];
+                r += app.identifier + " ";
+            }
+            kdTerminal.newOuputLayer(kdTerminal, "Programs availables:\r\n" + r);
+            return true;
+        }
+
+
         /* This part splits text by '|'. So get first argument(command) and rests arguments
         First argument or command is evalute to determine wich application will run
         and pass rest of arguments like an string
@@ -872,7 +883,7 @@ class KDTerminal extends KDApplication {
                 if (kdTerminal._indexCommandLine < nodes.length) {
                     kdTerminal._indexCommandLine++;
                     commandLine.setText(nodes[kdTerminal._indexCommandLine].value);
-                }   
+                }
             }
         });
 
@@ -1256,16 +1267,16 @@ class QQSM extends KDApplication {
     run(args) {
 
         this.mainWindow.show();
-
+        this.indexQuestion = -1;
         var thisObj = this;
         this.playButton.domObject.addEventListener("click", function () { thisObj.nextQuestion() }, true);
-
 
         if (args != undefined) {
             this.filename = args[0];
             alert(this.filename);
             this.loadData()
         }
+        return args;
     }
 
 }
