@@ -118,8 +118,8 @@ class KDTerminal extends KDApplication {
         var isValid = false;
         for (j = 0; j < sentences.length; j++) {
             var parser = new KDArgumentsParser(sentences[j]);
-            for (i = 0; i < kdTerminal.desktop.applicationsIntances.length; i++) {
-                var app = kdTerminal.desktop.applicationsIntances[i];
+            for (i = 0; i < kdTerminal.desktop.applicationsInstances.length; i++) {
+                var app = kdTerminal.desktop.applicationsInstances[i];
                 if (app.identifier == parser.command) {
                     var args = parser.arguments;
                     args.push(resultText);

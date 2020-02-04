@@ -871,8 +871,8 @@ class KDTerminal extends KDApplication {
         var isValid = false;
         for (j = 0; j < sentences.length; j++) {
             var parser = new KDArgumentsParser(sentences[j]);
-            for (i = 0; i < kdTerminal.desktop.applicationsIntances.length; i++) {
-                var app = kdTerminal.desktop.applicationsIntances[i];
+            for (i = 0; i < kdTerminal.desktop.applicationsInstances.length; i++) {
+                var app = kdTerminal.desktop.applicationsInstances[i];
                 if (app.identifier == parser.command) {
                     var args = parser.arguments;
                     args.push(resultText);
@@ -990,7 +990,7 @@ class KDDesktop extends KDVisualComponent {
     constructor() {
         super();
         this.applicationsClasses = new Array();
-        this.applicationsIntances = new Array();
+        this.applicationsInstances = new Array();
         //this.requestFullScreen();
         this.publish();
 
@@ -1017,6 +1017,15 @@ class KDDesktop extends KDVisualComponent {
         return this.applicationsClasses.length - 1;
     }
 
+    getApplicationInstance(identifier) {
+        for (var i = 0; i < this.applicationsInstances.length(); i++) {
+            if (identifier == this.applicationsInstances[i]) {
+                return this.applicationsInstances[i]
+            }
+        }
+        return undefined;
+    }
+
     run() {
 
         //Create icons app
@@ -1035,9 +1044,9 @@ class KDDesktop extends KDVisualComponent {
         var i = 0;
         var j = 0;
         for (i = 0; i < this.applicationsClasses.length; i++) {
-            this.applicationsIntances[i] = new this.applicationsClasses[i](this);
+            this.applicationsInstances[i] = new this.applicationsClasses[i](this);
 
-            if (this.applicationsIntances[i].mainWindow != undefined) {
+            if (this.applicationsInstances[i].mainWindow != undefined) {
                 var appLayer = new KDLayer().build()
                     .setSize(appLayerSize)
                     .setPosition(appLayerPosition.move(0, appLayerHeight + (j * appLayerHeight)))
@@ -1046,13 +1055,13 @@ class KDDesktop extends KDVisualComponent {
                 j++;
 
                 var appIcon = new KDImage().build()
-                    .setSource(this.applicationsIntances[i].iconURL)
+                    .setSource(this.applicationsInstances[i].iconURL)
                     .setPosition(appIconPosition)
                     .setSize(appIconSize)
                     .publish(appLayer);
 
                 var appLabel = new KDLayer().build()
-                    .showCenterText(this.applicationsIntances[i].title)
+                    .showCenterText(this.applicationsInstances[i].title)
                     .setPosition(appLayerLabelPosition)
                     .publish(appLayer);
 
@@ -1061,7 +1070,7 @@ class KDDesktop extends KDVisualComponent {
                 appIconStyle.apply(appIcon);
                 kdIconFont.apply(appLabel);
 
-                appLayer.domObject.app = this.applicationsIntances[i];
+                appLayer.domObject.app = this.applicationsInstances[i];
                 appLayer.domObject.ondblclick = function () { this.app.run() };
                 appIcon.domObject.ondragstart = function () { return false; };
 
@@ -1338,6 +1347,9 @@ class QQSM extends KDApplication {
 
     remoteControlCallback(q) {
         q.remoteControlThread.load("qqsm-remote-control-script.js");
+
+        //Clear queae
+        //q.remoteControlThread.load("qqsm-processor.php?q=clear");
     }
 
     run(args) {
@@ -1388,15 +1400,21 @@ class QQSM_control extends KDApplication {
 
         this.mainWindow = new KDWindow().build()
             .setSize(new KDSize(400, 400))
-            .setPosition(new KDPosition(0,0))
+            .setPosition(new KDPosition(0, 0))
             .publish(kdDesktop)
             .hide();
         //kdCenterSurfaceStyle.apply(this.mainWindow.body);
 
+
+        this.remoteControlThread = new KDScript().build().publish(this.mainWindow);
+
         this.nextButton = new KDButton().build().publish(this.mainWindow.body)
             .setSize(new KDSize(200, 60))
             .setText("Next");
-
+        this.nextButton.domObject.button = this;
+        this.nextButton.domObject.addEventListener("click", function () {
+            this.button.remoteControlThread.load("qqsm-processor.php?q=next");
+        });
     }
 
     run() {

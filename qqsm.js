@@ -249,6 +249,9 @@ class QQSM extends KDApplication {
 
     remoteControlCallback(q) {
         q.remoteControlThread.load("qqsm-remote-control-script.js");
+
+        //Clear queae
+        //q.remoteControlThread.load("qqsm-processor.php?q=clear");
     }
 
     run(args) {
@@ -299,15 +302,21 @@ class QQSM_control extends KDApplication {
 
         this.mainWindow = new KDWindow().build()
             .setSize(new KDSize(400, 400))
-            .setPosition(new KDPosition(0,0))
+            .setPosition(new KDPosition(0, 0))
             .publish(kdDesktop)
             .hide();
         //kdCenterSurfaceStyle.apply(this.mainWindow.body);
 
+
+        this.remoteControlThread = new KDScript().build().publish(this.mainWindow);
+
         this.nextButton = new KDButton().build().publish(this.mainWindow.body)
             .setSize(new KDSize(200, 60))
             .setText("Next");
-
+        this.nextButton.domObject.button = this;
+        this.nextButton.domObject.addEventListener("click", function () {
+            this.button.remoteControlThread.load("qqsm-processor.php?q=next");
+        });
     }
 
     run() {

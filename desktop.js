@@ -6,7 +6,7 @@ class KDDesktop extends KDVisualComponent {
     constructor() {
         super();
         this.applicationsClasses = new Array();
-        this.applicationsIntances = new Array();
+        this.applicationsInstances = new Array();
         //this.requestFullScreen();
         this.publish();
 
@@ -33,6 +33,15 @@ class KDDesktop extends KDVisualComponent {
         return this.applicationsClasses.length - 1;
     }
 
+    getApplicationInstance(identifier) {
+        for (var i = 0; i < this.applicationsInstances.length(); i++) {
+            if (identifier == this.applicationsInstances[i]) {
+                return this.applicationsInstances[i]
+            }
+        }
+        return undefined;
+    }
+
     run() {
 
         //Create icons app
@@ -51,9 +60,9 @@ class KDDesktop extends KDVisualComponent {
         var i = 0;
         var j = 0;
         for (i = 0; i < this.applicationsClasses.length; i++) {
-            this.applicationsIntances[i] = new this.applicationsClasses[i](this);
+            this.applicationsInstances[i] = new this.applicationsClasses[i](this);
 
-            if (this.applicationsIntances[i].mainWindow != undefined) {
+            if (this.applicationsInstances[i].mainWindow != undefined) {
                 var appLayer = new KDLayer().build()
                     .setSize(appLayerSize)
                     .setPosition(appLayerPosition.move(0, appLayerHeight + (j * appLayerHeight)))
@@ -62,13 +71,13 @@ class KDDesktop extends KDVisualComponent {
                 j++;
 
                 var appIcon = new KDImage().build()
-                    .setSource(this.applicationsIntances[i].iconURL)
+                    .setSource(this.applicationsInstances[i].iconURL)
                     .setPosition(appIconPosition)
                     .setSize(appIconSize)
                     .publish(appLayer);
 
                 var appLabel = new KDLayer().build()
-                    .showCenterText(this.applicationsIntances[i].title)
+                    .showCenterText(this.applicationsInstances[i].title)
                     .setPosition(appLayerLabelPosition)
                     .publish(appLayer);
 
@@ -77,7 +86,7 @@ class KDDesktop extends KDVisualComponent {
                 appIconStyle.apply(appIcon);
                 kdIconFont.apply(appLabel);
 
-                appLayer.domObject.app = this.applicationsIntances[i];
+                appLayer.domObject.app = this.applicationsInstances[i];
                 appLayer.domObject.ondblclick = function () { this.app.run() };
                 appIcon.domObject.ondragstart = function () { return false; };
 
