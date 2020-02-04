@@ -14,6 +14,19 @@ class KDObject {
     }
 }
 
+
+class KDKernel {
+    static isTouchAvailable() {
+        if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
+            return true;
+        }
+        return false;
+    }
+    constructor() {}
+}
+
+
+
 /** Wrap size for components*/
 class KDSize {
     constructor(width, height) {
@@ -154,6 +167,13 @@ var kdIconFont = new KDStyle();
 kdIconFont.fontSize = "10";
 kdIconFont.textAlign = "center";
 
+/** Ready to use style that make a surface where all its
+ * elements are horizontally centered
+ * */
+var kdCenterSurfaceStyle = new KDStyle();
+kdCenterSurfaceStyle.textAlign = "center";
+kdCenterSurfaceStyle.display = "inline-block";
+
 /**
  * Component class base
  * */
@@ -227,8 +247,9 @@ class KDVisualComponent extends KDComponent {
         this.draggable = false;
         this.moving = false;
         this.initialPosition = null;
-        this.position = null;
+        this.position = new KDPosition(0, 0);
         this.size = new KDSize(100, 20);
+
         this.style.zIndex = "0";
     }
     /**
@@ -247,6 +268,10 @@ class KDVisualComponent extends KDComponent {
 
     getSize() {
         return this.size;
+    }
+
+    setAvailableScreenSize() {
+        this.setSize(new KDSize(screen.availWidth, screen.availHeight));
     }
 
 
@@ -312,6 +337,7 @@ class KDVisualComponent extends KDComponent {
         if (booleanValue) {
             if (this.domObject) {
                 var obj = this;
+
                 this.domObject.addEventListener("mousemove", function (event) {
                     if (obj.moving) {
                         event.preventDefault();
@@ -334,13 +360,59 @@ class KDVisualComponent extends KDComponent {
                 this.domObject.addEventListener("mouseout", function (event) {
                     obj.moving = false;
                 });
+
+                //Touch avalible
+                if (KDKernel.isTouchAvailable()) {
+
+                    this.domObject.addEventListener("touchmove", function (event) {
+                      
+                        if (obj.moving) {
+                            event.preventDefault();
+                            event = event.touches[0];
+                            //alert( event);
+                            var dx = event.clientX - obj.initialPosition.x;
+                            var dy = event.clientY - obj.initialPosition.y;
+                            var p = objectToBeMoved.getPosition();
+                            p.move(dx, dy);
+                            objectToBeMoved.setPosition(p);
+                            obj.initialPosition.set(event.clientX, event.clientY);
+                        }
+                    });
+                    this.domObject.addEventListener("touchstart", function (event) {
+                        obj.initialPosition = new KDPosition(event.clientX, event.clientY);
+                        obj.moving = true;
+                    });
+
+                    this.domObject.addEventListener("touchend", function (event) {
+                        obj.moving = false;
+                    });
+
+                    this.domObject.addEventListener("touchcancel", function (event) {
+                        obj.moving = false;
+                    });
+
+                    this.domObject.addEventListener("touchleave", function (event) {
+                        obj.moving = false;
+                    });
+
+
+
+
+
+
+
+                }
+
+
+
+
+
             }
         } else {
             this.domObject.removeEventListener("mouseout", this, true);
             this.domObject.removeEventListener("mouseup", this, true);
             this.domObject.removeEventListener("mousedown", this, true);
             this.domObject.removeEventListener("mousemove", this, true);
-
         }
         return this;
     }
@@ -582,9 +654,7 @@ class KDSpriteViewer extends KDLayer {
     }
 
 
-}
-
-class KDWindowTheme {
+}class KDWindowTheme {
     constructor() {
 
         this.frame = new KDStyle();
@@ -650,8 +720,6 @@ class KDWindow extends KDLayer {
         this.commandArea.domObject.addEventListener("click", function () { theWindow.hide() });
         this.commandArea.domObject.addEventListener("mouseover", function () { commandArea.domObject.style.backgroundColor = "blue"; });
         this.commandArea.domObject.addEventListener("mouseout", function () { commandArea.domObject.style.backgroundColor = theWindow.head.style.backgroundColor; });
-
-
         return this;
     }
 
@@ -694,7 +762,6 @@ class KDWindow extends KDLayer {
         }
         return this;
     }
-
 }/** Helper class to parse arguments */
 class KDArgumentsParser extends KDObject {
     constructor(text) {
@@ -1008,7 +1075,10 @@ class KDDesktop extends KDVisualComponent {
                 appLayer.domObject.app = this.applicationsIntances[i];
                 appLayer.domObject.ondblclick = function () { this.app.run() };
                 appIcon.domObject.ondragstart = function () { return false; };
-
+                if (KDKernel.isTouchAvailable()) {
+                    
+                    appLayer.domObject.addEventListener("touchend", function () { this.app.run() });
+                }
             }
 
         }
@@ -1025,7 +1095,6 @@ class QQSMBox extends KDLayer {
         this.questionFrame = new KDCanvas();
         this.questionLabel = new KDLayer();
 
-
     }
 
     build() {
@@ -1040,8 +1109,6 @@ class QQSMBox extends KDLayer {
         super.publish(kdVisualComponent);
         this.questionFrame.publish(this);
         this.questionLabel.publish(this);
-
-
 
 
         var boxStyle = new KDStyle()
@@ -1158,8 +1225,6 @@ class QQSM extends KDApplication {
             .publish(kdDesktop)
             .hide();
 
-
-
         this.nova = new KDLayer().build()
             .publish(this.mainWindow.body);
 
@@ -1181,6 +1246,8 @@ class QQSM extends KDApplication {
         this.playButton = new KDButton().build()
             .publish(this.mainWindow.foot)
             .setText(">>");
+
+        this.remoteControlThread = new KDScript().build().publish(this.mainWindow);
 
 
         //Set up background style
@@ -1245,8 +1312,6 @@ class QQSM extends KDApplication {
             this.mainWindow
                 .setPosition(KDPosition.centerScreen(this.mainWindow.getSize()))
 
-
-
         }
 
         //Draw again all
@@ -1272,6 +1337,10 @@ class QQSM extends KDApplication {
     }
 
 
+    remoteControlCallback(q) {
+        q.remoteControlThread.load("qqsm-remote-control-script.js");
+    }
+
     run(args) {
 
         this.mainWindow.show();
@@ -1287,20 +1356,53 @@ class QQSM extends KDApplication {
                 var c = args[i];
                 var p = args[i + 1];
 
+                //Command for load file
                 if (c == "-f") {
                     this.filename = p;
+                    this.loadData();
                     msg += "\t File loaded: " + p + "\r\n";
                 }
-                if (c == "-s") {
+
+                //Commando to change window size
+                if (c == "-w") {
                     this.setSize(new KDSize(parseInt(args[i + 1]), parseIt(args[i + 2])));
                     msg += "\t Size changed to " + args[i + 1] + " x " + args[i + 2] + "\r\n";
-        }
+                }
             }
 
         }
+        this.remoteControlHandler = window.setInterval(this.remoteControlCallback, 5000, this);
         return msg;
     }
 
 }
 
+
+class QQSM_control extends KDApplication {
+
+    constructor(kdDesktop) {
+        super(kdDesktop, "qqsm-control");
+        this.title = "QQSM Control";
+        this.identifier = "qqsm-contol";
+        this.filename = "";
+        this.indexQuestion = -1;
+
+        this.mainWindow = new KDWindow().build()
+            .setSize(new KDSize(400, 400))
+            .setPosition(new KDPosition(0,0))
+            .publish(kdDesktop)
+            .hide();
+        //kdCenterSurfaceStyle.apply(this.mainWindow.body);
+
+        this.nextButton = new KDButton().build().publish(this.mainWindow.body)
+            .setSize(new KDSize(200, 60))
+            .setText("Next");
+
+    }
+
+    run() {
+        this.mainWindow.show();
+        this.mainWindow.setAvailableScreenSize();
+    }
+}
 

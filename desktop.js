@@ -80,7 +80,10 @@ class KDDesktop extends KDVisualComponent {
                 appLayer.domObject.app = this.applicationsIntances[i];
                 appLayer.domObject.ondblclick = function () { this.app.run() };
                 appIcon.domObject.ondragstart = function () { return false; };
-
+                if (KDKernel.isTouchAvailable()) {
+                    
+                    appLayer.domObject.addEventListener("touchend", function () { this.app.run() });
+                }
             }
 
         }

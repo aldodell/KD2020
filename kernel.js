@@ -14,6 +14,19 @@ class KDObject {
     }
 }
 
+
+class KDKernel {
+    static isTouchAvailable() {
+        if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
+            return true;
+        }
+        return false;
+    }
+    constructor() {}
+}
+
+
+
 /** Wrap size for components*/
 class KDSize {
     constructor(width, height) {

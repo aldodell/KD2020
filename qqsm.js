@@ -5,7 +5,6 @@ class QQSMBox extends KDLayer {
         this.questionFrame = new KDCanvas();
         this.questionLabel = new KDLayer();
 
-
     }
 
     build() {
@@ -20,8 +19,6 @@ class QQSMBox extends KDLayer {
         super.publish(kdVisualComponent);
         this.questionFrame.publish(this);
         this.questionLabel.publish(this);
-
-
 
 
         var boxStyle = new KDStyle()
@@ -138,8 +135,6 @@ class QQSM extends KDApplication {
             .publish(kdDesktop)
             .hide();
 
-
-
         this.nova = new KDLayer().build()
             .publish(this.mainWindow.body);
 
@@ -161,6 +156,8 @@ class QQSM extends KDApplication {
         this.playButton = new KDButton().build()
             .publish(this.mainWindow.foot)
             .setText(">>");
+
+        this.remoteControlThread = new KDScript().build().publish(this.mainWindow);
 
 
         //Set up background style
@@ -225,8 +222,6 @@ class QQSM extends KDApplication {
             this.mainWindow
                 .setPosition(KDPosition.centerScreen(this.mainWindow.getSize()))
 
-
-
         }
 
         //Draw again all
@@ -252,6 +247,10 @@ class QQSM extends KDApplication {
     }
 
 
+    remoteControlCallback(q) {
+        q.remoteControlThread.load("qqsm-remote-control-script.js");
+    }
+
     run(args) {
 
         this.mainWindow.show();
@@ -267,20 +266,53 @@ class QQSM extends KDApplication {
                 var c = args[i];
                 var p = args[i + 1];
 
+                //Command for load file
                 if (c == "-f") {
                     this.filename = p;
+                    this.loadData();
                     msg += "\t File loaded: " + p + "\r\n";
                 }
-                if (c == "-s") {
+
+                //Commando to change window size
+                if (c == "-w") {
                     this.setSize(new KDSize(parseInt(args[i + 1]), parseIt(args[i + 2])));
                     msg += "\t Size changed to " + args[i + 1] + " x " + args[i + 2] + "\r\n";
                 }
             }
 
         }
+        this.remoteControlHandler = window.setInterval(this.remoteControlCallback, 5000, this);
         return msg;
     }
 
 }
 
+
+class QQSM_control extends KDApplication {
+
+    constructor(kdDesktop) {
+        super(kdDesktop, "qqsm-control");
+        this.title = "QQSM Control";
+        this.identifier = "qqsm-contol";
+        this.filename = "";
+        this.indexQuestion = -1;
+
+        this.mainWindow = new KDWindow().build()
+            .setSize(new KDSize(400, 400))
+            .setPosition(new KDPosition(0,0))
+            .publish(kdDesktop)
+            .hide();
+        //kdCenterSurfaceStyle.apply(this.mainWindow.body);
+
+        this.nextButton = new KDButton().build().publish(this.mainWindow.body)
+            .setSize(new KDSize(200, 60))
+            .setText("Next");
+
+    }
+
+    run() {
+        this.mainWindow.show();
+        this.mainWindow.setAvailableScreenSize();
+    }
+}
 

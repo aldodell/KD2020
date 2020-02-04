@@ -1,5 +1,3 @@
-
-
 class KDWindowTheme {
     constructor() {
 
@@ -108,5 +106,4 @@ class KDWindow extends KDLayer {
         }
         return this;
     }
-
 }

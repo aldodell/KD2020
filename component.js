@@ -44,6 +44,13 @@ var kdIconFont = new KDStyle();
 kdIconFont.fontSize = "10";
 kdIconFont.textAlign = "center";
 
+/** Ready to use style that make a surface where all its
+ * elements are horizontally centered
+ * */
+var kdCenterSurfaceStyle = new KDStyle();
+kdCenterSurfaceStyle.textAlign = "center";
+kdCenterSurfaceStyle.display = "inline-block";
+
 /**
  * Component class base
  * */
@@ -117,8 +124,9 @@ class KDVisualComponent extends KDComponent {
         this.draggable = false;
         this.moving = false;
         this.initialPosition = null;
-        this.position = null;
+        this.position = new KDPosition(0, 0);
         this.size = new KDSize(100, 20);
+
         this.style.zIndex = "0";
     }
     /**
@@ -137,6 +145,10 @@ class KDVisualComponent extends KDComponent {
 
     getSize() {
         return this.size;
+    }
+
+    setAvailableScreenSize() {
+        this.setSize(new KDSize(screen.availWidth, screen.availHeight));
     }
 
 
@@ -202,6 +214,7 @@ class KDVisualComponent extends KDComponent {
         if (booleanValue) {
             if (this.domObject) {
                 var obj = this;
+
                 this.domObject.addEventListener("mousemove", function (event) {
                     if (obj.moving) {
                         event.preventDefault();
@@ -224,13 +237,59 @@ class KDVisualComponent extends KDComponent {
                 this.domObject.addEventListener("mouseout", function (event) {
                     obj.moving = false;
                 });
+
+                //Touch avalible
+                if (KDKernel.isTouchAvailable()) {
+
+                    this.domObject.addEventListener("touchmove", function (event) {
+                      
+                        if (obj.moving) {
+                            event.preventDefault();
+                            event = event.touches[0];
+                            //alert( event);
+                            var dx = event.clientX - obj.initialPosition.x;
+                            var dy = event.clientY - obj.initialPosition.y;
+                            var p = objectToBeMoved.getPosition();
+                            p.move(dx, dy);
+                            objectToBeMoved.setPosition(p);
+                            obj.initialPosition.set(event.clientX, event.clientY);
+                        }
+                    });
+                    this.domObject.addEventListener("touchstart", function (event) {
+                        obj.initialPosition = new KDPosition(event.clientX, event.clientY);
+                        obj.moving = true;
+                    });
+
+                    this.domObject.addEventListener("touchend", function (event) {
+                        obj.moving = false;
+                    });
+
+                    this.domObject.addEventListener("touchcancel", function (event) {
+                        obj.moving = false;
+                    });
+
+                    this.domObject.addEventListener("touchleave", function (event) {
+                        obj.moving = false;
+                    });
+
+
+
+
+
+
+
+                }
+
+
+
+
+
             }
         } else {
             this.domObject.removeEventListener("mouseout", this, true);
             this.domObject.removeEventListener("mouseup", this, true);
             this.domObject.removeEventListener("mousedown", this, true);
             this.domObject.removeEventListener("mousemove", this, true);
-
         }
         return this;
     }
