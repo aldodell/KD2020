@@ -365,11 +365,10 @@ class KDVisualComponent extends KDComponent {
                 if (KDKernel.isTouchAvailable()) {
 
                     this.domObject.addEventListener("touchmove", function (event) {
-                      
+
                         if (obj.moving) {
                             event.preventDefault();
                             event = event.touches[0];
-                            //alert( event);
                             var dx = event.clientX - obj.initialPosition.x;
                             var dy = event.clientY - obj.initialPosition.y;
                             var p = objectToBeMoved.getPosition();
@@ -395,17 +394,7 @@ class KDVisualComponent extends KDComponent {
                         obj.moving = false;
                     });
 
-
-
-
-
-
-
                 }
-
-
-
-
 
             }
         } else {
@@ -1075,9 +1064,19 @@ class KDDesktop extends KDVisualComponent {
                 appLayer.domObject.app = this.applicationsIntances[i];
                 appLayer.domObject.ondblclick = function () { this.app.run() };
                 appIcon.domObject.ondragstart = function () { return false; };
+
+                //Double touch
                 if (KDKernel.isTouchAvailable()) {
-                    
-                    appLayer.domObject.addEventListener("touchend", function () { this.app.run() });
+                    appLayer.domObject.lastTap = 0;
+                    appLayer.domObject.addEventListener("touchend", function (touchEvent) {
+                        var currentTime = new Date().getTime();
+                        var tapLength = currentTime - this.lastTap;
+                        if (tapLength < 500 && tapLength > 0) {
+                            touchEvent.preventDefault();
+                            this.app.run();
+                        }
+                        this.lastTap = currentTime;
+                    });
                 }
             }
 

@@ -242,11 +242,10 @@ class KDVisualComponent extends KDComponent {
                 if (KDKernel.isTouchAvailable()) {
 
                     this.domObject.addEventListener("touchmove", function (event) {
-                      
+
                         if (obj.moving) {
                             event.preventDefault();
                             event = event.touches[0];
-                            //alert( event);
                             var dx = event.clientX - obj.initialPosition.x;
                             var dy = event.clientY - obj.initialPosition.y;
                             var p = objectToBeMoved.getPosition();
@@ -272,17 +271,7 @@ class KDVisualComponent extends KDComponent {
                         obj.moving = false;
                     });
 
-
-
-
-
-
-
                 }
-
-
-
-
 
             }
         } else {
