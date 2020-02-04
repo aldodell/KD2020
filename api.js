@@ -852,8 +852,8 @@ class KDTerminal extends KDApplication {
 
         if (text == "!") {
             var r = "";
-            for (i = 0; i < kdTerminal.desktop.applicationsIntances.length; i++) {
-                var app = kdTerminal.desktop.applicationsIntances[i];
+            for (i = 0; i < kdTerminal.desktop.applicationsInstances.length; i++) {
+                var app = kdTerminal.desktop.applicationsInstances[i];
                 r += app.identifier + " ";
             }
             kdTerminal.newOuputLayer(kdTerminal, "Programs availables:\r\n" + r);
@@ -920,8 +920,8 @@ class KDTerminal extends KDApplication {
                     this.focus();
                     return false;
                 }
-                for (i = 0; i < kdTerminal.desktop.applicationsIntances.length; i++) {
-                    var app = kdTerminal.desktop.applicationsIntances[i];
+                for (i = 0; i < kdTerminal.desktop.applicationsInstances.length; i++) {
+                    var app = kdTerminal.desktop.applicationsInstances[i];
                     k = app.identifier.indexOf(t);
                     l = t.length;
                     if (k == 0) {
@@ -1018,10 +1018,12 @@ class KDDesktop extends KDVisualComponent {
     }
 
     getApplicationInstance(identifier) {
-        for (var i = 0; i < this.applicationsInstances.length(); i++) {
-            if (identifier == this.applicationsInstances[i]) {
-                return this.applicationsInstances[i]
-            }
+        var i;
+        for (i = 0; i < this.applicationsInstances.length; i++) {
+            var app = this.applicationsInstances[i];
+           if (identifier == app.identifier) {
+                return app;
+            } 
         }
         return undefined;
     }
@@ -1224,7 +1226,6 @@ class QQSM extends KDApplication {
     constructor(kdDesktop) {
         super(kdDesktop, "qqsm");
         this.title = "Millonario";
-        this.identifier = "qqsm";
         this.filename = "";
         this.indexQuestion = -1;
 
@@ -1256,6 +1257,10 @@ class QQSM extends KDApplication {
             .setText(">>");
 
         this.remoteControlThread = new KDScript().build().publish(this.mainWindow);
+
+        //Clear queae
+        //this.remoteControlThread.load("qqsm-processor.php?q=clear");
+
 
 
         //Set up background style
@@ -1324,6 +1329,7 @@ class QQSM extends KDApplication {
 
         //Draw again all
         this.setSize(new KDSize(800, 600));
+
     }
 
 
@@ -1346,10 +1352,13 @@ class QQSM extends KDApplication {
 
 
     remoteControlCallback(q) {
+
+        // q.remoteControlThread.load("qqsm-processor.php?q=next");
+
         q.remoteControlThread.load("qqsm-remote-control-script.js");
 
         //Clear queae
-        //q.remoteControlThread.load("qqsm-processor.php?q=clear");
+        q.remoteControlThread.load("qqsm-processor.php?q=clear");
     }
 
     run(args) {

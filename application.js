@@ -99,8 +99,8 @@ class KDTerminal extends KDApplication {
 
         if (text == "!") {
             var r = "";
-            for (i = 0; i < kdTerminal.desktop.applicationsIntances.length; i++) {
-                var app = kdTerminal.desktop.applicationsIntances[i];
+            for (i = 0; i < kdTerminal.desktop.applicationsInstances.length; i++) {
+                var app = kdTerminal.desktop.applicationsInstances[i];
                 r += app.identifier + " ";
             }
             kdTerminal.newOuputLayer(kdTerminal, "Programs availables:\r\n" + r);
@@ -167,8 +167,8 @@ class KDTerminal extends KDApplication {
                     this.focus();
                     return false;
                 }
-                for (i = 0; i < kdTerminal.desktop.applicationsIntances.length; i++) {
-                    var app = kdTerminal.desktop.applicationsIntances[i];
+                for (i = 0; i < kdTerminal.desktop.applicationsInstances.length; i++) {
+                    var app = kdTerminal.desktop.applicationsInstances[i];
                     k = app.identifier.indexOf(t);
                     l = t.length;
                     if (k == 0) {

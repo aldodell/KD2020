@@ -126,7 +126,6 @@ class QQSM extends KDApplication {
     constructor(kdDesktop) {
         super(kdDesktop, "qqsm");
         this.title = "Millonario";
-        this.identifier = "qqsm";
         this.filename = "";
         this.indexQuestion = -1;
 
@@ -158,6 +157,10 @@ class QQSM extends KDApplication {
             .setText(">>");
 
         this.remoteControlThread = new KDScript().build().publish(this.mainWindow);
+
+        //Clear queae
+        //this.remoteControlThread.load("qqsm-processor.php?q=clear");
+
 
 
         //Set up background style
@@ -226,6 +229,7 @@ class QQSM extends KDApplication {
 
         //Draw again all
         this.setSize(new KDSize(800, 600));
+
     }
 
 
@@ -248,10 +252,13 @@ class QQSM extends KDApplication {
 
 
     remoteControlCallback(q) {
+
+        // q.remoteControlThread.load("qqsm-processor.php?q=next");
+
         q.remoteControlThread.load("qqsm-remote-control-script.js");
 
         //Clear queae
-        //q.remoteControlThread.load("qqsm-processor.php?q=clear");
+        q.remoteControlThread.load("qqsm-processor.php?q=clear");
     }
 
     run(args) {

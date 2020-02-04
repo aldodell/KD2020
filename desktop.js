@@ -34,10 +34,12 @@ class KDDesktop extends KDVisualComponent {
     }
 
     getApplicationInstance(identifier) {
-        for (var i = 0; i < this.applicationsInstances.length(); i++) {
-            if (identifier == this.applicationsInstances[i]) {
-                return this.applicationsInstances[i]
-            }
+        var i;
+        for (i = 0; i < this.applicationsInstances.length; i++) {
+            var app = this.applicationsInstances[i];
+           if (identifier == app.identifier) {
+                return app;
+            } 
         }
         return undefined;
     }
