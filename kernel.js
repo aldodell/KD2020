@@ -16,6 +16,12 @@ class KDObject {
     getId() {
         return "kd" + this.index;
     }
+
+    getNameOfInstance() {
+        for (name in window) {
+            if (window[name] == this) return name;
+        }
+    }
 }
 
 
@@ -34,12 +40,17 @@ class KDKernel {
 */
 class KDMessage extends KDObject {
     constructor(sourceIdentifier, destinationIdentifier) {
+        super();
         this.sourceIdentifier = sourceIdentifier;
         this.destinationIdentifier = destinationIdentifier;
         this.values = new Array();
     }
     appendValue(key, value) {
-        this.values[this.values.length] = { "key": key, "value": value };
+        this.values[key] = value;
+    }
+
+    getValue(key) {
+        return this.values[key];
     }
 }
 

@@ -434,6 +434,12 @@ class KDScript extends KDComponent {
     constructor() {
         super();
         this.htmlName = "script";
+        this.parent = undefined;
+    }
+
+    publish(kdComponent) {
+        super.publish(kdComponent);
+        this.parent = kdComponent;
     }
 
     /**
@@ -446,6 +452,17 @@ class KDScript extends KDComponent {
             this.domObject.src = url;
             this.domObject.async = async;
         }
+        return this;
+    }
+
+    reset() {
+        var obj = document.body;
+        if (this.parent != undefined) obj = this.parent.domObject;
+        if (obj.getElementById(this.getId())) {
+            obj.removeChild(this.domObject);
+        }
+        obj.appendChild(this.domObject);
+        return this;
     }
 }
 

@@ -232,6 +232,23 @@ class KDTerminalClock extends KDApplication {
     run() {
         return new Date();
     }
-
 }
+
+class KDMessageSender extends KDApplication {
+    constructor(kdDesktop) {
+        super(kdDesktop, "message-sender");
+        this.mainWindow = undefined;
+    }
+    run(args) {
+        //Send a message to app with first param as identifier
+        var m = new KDMessage(this.identifier, args[0]);
+        for(var i = 1; i<args.length; i+=2) {
+            m.appendValue(args[i], args[i+1]);
+        }
+        this.desktop.sendMessage(m);
+
+        return "Message send to " + args[0];
+    }
+}
+
 

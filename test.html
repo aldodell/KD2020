@@ -9,10 +9,6 @@
 
 
 
-        var task1 = new KDAsyncTask();
-        task1.setScriptExecutor("test3.js");
-        task1.send("alert('hola');");
-
 
         var desktop = new KDDesktop();
 
@@ -38,6 +34,10 @@
                     .setParameters(7, 449, 16, 33, 12, 13, 7)
                     .showSprite(0, 2);
 
+                    this.processMessage = function(kdMessage) {
+                        alert(kdMessage.getValue("a"));
+                    }
+
             }
             run() {
                 this.mainWindow.show();
@@ -52,8 +52,11 @@
         desktop.addApplicationClass(KDTerminal);
         desktop.addApplicationClass(KDTerminalClock);
         desktop.addApplicationClass(KDTerminalAlert);
+        desktop.addApplicationClass(KDMessageSender);
         desktop.addApplicationClass(QQSM);
         desktop.addApplicationClass(QQSM_control);
+
+        
 
 
         desktop.run();

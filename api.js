@@ -16,6 +16,12 @@ class KDObject {
     getId() {
         return "kd" + this.index;
     }
+
+    getNameOfInstance() {
+        for (name in window) {
+            if (window[name] == this) return name;
+        }
+    }
 }
 
 
@@ -34,12 +40,17 @@ class KDKernel {
 */
 class KDMessage extends KDObject {
     constructor(sourceIdentifier, destinationIdentifier) {
+        super();
         this.sourceIdentifier = sourceIdentifier;
         this.destinationIdentifier = destinationIdentifier;
         this.values = new Array();
     }
     appendValue(key, value) {
-        this.values[this.values.length] = { "key": key, "value": value };
+        this.values[key] = value;
+    }
+
+    getValue(key) {
+        return this.values[key];
     }
 }
 
@@ -574,6 +585,12 @@ class KDScript extends KDComponent {
     constructor() {
         super();
         this.htmlName = "script";
+        this.parent = undefined;
+    }
+
+    publish(kdComponent) {
+        super.publish(kdComponent);
+        this.parent = kdComponent;
     }
 
     /**
@@ -586,6 +603,17 @@ class KDScript extends KDComponent {
             this.domObject.src = url;
             this.domObject.async = async;
         }
+        return this;
+    }
+
+    reset() {
+        var obj = document.body;
+        if (this.parent != undefined) obj = this.parent.domObject;
+        if (obj.getElementById(this.getId())) {
+            obj.removeChild(this.domObject);
+        }
+        obj.appendChild(this.domObject);
+        return this;
     }
 }
 
@@ -1180,8 +1208,25 @@ class KDTerminalClock extends KDApplication {
     run() {
         return new Date();
     }
-
 }
+
+class KDMessageSender extends KDApplication {
+    constructor(kdDesktop) {
+        super(kdDesktop, "message-sender");
+        this.mainWindow = undefined;
+    }
+    run(args) {
+        //Send a message to app with first param as identifier
+        var m = new KDMessage(this.identifier, args[0]);
+        for(var i = 1; i<args.length; i+=2) {
+            m.appendValue(args[i], args[i+1]);
+        }
+        this.desktop.sendMessage(m);
+
+        return "Message send to " + args[0];
+    }
+}
+
 
 
 /**
@@ -1193,9 +1238,11 @@ class KDDesktop extends KDVisualComponent {
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
         this.remoteMessagesProcessor = new KDScript().build().publish();
-        this.remoteMessagesProcessorURL = "KDMessages-queue.js"
+        this.remoteMessagesProcessorURL = "kd-messages-queue";
+        this.messageReplicatorURL = "messages-replicator.php";
         this.remoteMessagesTimer = 0;
         this.publish();
+
     }
 
     /* When the openFullscreen() function is executed, open the video in fullscreen.
@@ -1230,6 +1277,17 @@ class KDDesktop extends KDVisualComponent {
         return undefined;
     }
 
+    /** Use to send a message to a php script saving the message
+     * on a file. So, each desktop working can open this file
+     * */
+    sendRemoteMessage(kdMessage) {
+        var json = JSON.stringify(kdMessage);
+        var uri = encodeURI(this.messageReplicatorURL + "?m=" + json);
+
+        this.remoteMessagesProcessor
+            .reset()
+            .load(uri);
+    }
 
     remoteMessagesLoop(theDesktop) {
         var s = document.getElementById(theDesktop.remoteMessagesProcessor.getId());
@@ -1255,7 +1313,7 @@ class KDDesktop extends KDVisualComponent {
             var app = this.applicationsInstances[i];
             if (kdMessage.destinationIdentifier == app.identifier) {
                 app.processMessage(kdMessage);
-            } else if (kdMessage.destinationIdentifier == "") {
+            } else if (kdMessage.destinationIdentifier == "" || kdMessage.destinationIdentifier == "*") {
                 app.processMessage(kdMessage);
             }
         }

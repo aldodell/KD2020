@@ -8,9 +8,11 @@ class KDDesktop extends KDVisualComponent {
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
         this.remoteMessagesProcessor = new KDScript().build().publish();
-        this.remoteMessagesProcessorURL = "KDMessages-queue.js"
+        this.remoteMessagesProcessorURL = "kd-messages-queue";
+        this.messageReplicatorURL = "kd-messages-replicator.php";
         this.remoteMessagesTimer = 0;
         this.publish();
+
     }
 
     /* When the openFullscreen() function is executed, open the video in fullscreen.
@@ -45,6 +47,17 @@ class KDDesktop extends KDVisualComponent {
         return undefined;
     }
 
+    /** Use to send a message to a php script saving the message
+     * on a file. So, each desktop working can open this file
+     * */
+    sendRemoteMessage(kdMessage) {
+        var json = JSON.stringify(kdMessage);
+        var uri = encodeURI(this.messageReplicatorURL + "?m=" + json);
+
+        this.remoteMessagesProcessor
+            .reset()
+            .load(uri);
+    }
 
     remoteMessagesLoop(theDesktop) {
         var s = document.getElementById(theDesktop.remoteMessagesProcessor.getId());
@@ -70,7 +83,7 @@ class KDDesktop extends KDVisualComponent {
             var app = this.applicationsInstances[i];
             if (kdMessage.destinationIdentifier == app.identifier) {
                 app.processMessage(kdMessage);
-            } else if (kdMessage.destinationIdentifier == "") {
+            } else if (kdMessage.destinationIdentifier == "" || kdMessage.destinationIdentifier == "*") {
                 app.processMessage(kdMessage);
             }
         }
