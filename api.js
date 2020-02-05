@@ -408,7 +408,7 @@ class KDVisualComponent extends KDComponent {
     }
 
     setName(fieldName) {
-        this.domObject.setAttribute(name,fieldName);
+        this.domObject.setAttribute("name",fieldName);
         return this;
     }
 }
