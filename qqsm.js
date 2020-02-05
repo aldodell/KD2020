@@ -309,9 +309,12 @@ class QQSM_control extends KDApplication {
         this.mainWindow.show();
         this.mainWindow.setAvailableScreenSize();
 
+        this.nextButton.domObject.app = this;
         this.nextButton.domObject.addEventListener("click", function (e) {
-           // var asyncTask = new KDAsyncTask().setScriptExecutor("qqsm-task.js");
-           // asyncTask.send("desktop.getApplicationInstance('qqsm').nextQuestion();");
+            var m = new KDMessage(this.app.identifier,"qqsm");
+            m.appendValue("show", "next");
+            alert(this.app.desktop.remoteMessagesProcessor);
+            this.app.desktop.sendRemoteMessage(m);
         });
     }
 }

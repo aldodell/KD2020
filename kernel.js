@@ -1,3 +1,6 @@
+
+
+
 /**
  * Kernel of KicsyDell Api 2020 release
  * */
@@ -43,7 +46,7 @@ class KDMessage extends KDObject {
         super();
         this.sourceIdentifier = sourceIdentifier;
         this.destinationIdentifier = destinationIdentifier;
-        this.values = new Array();
+        this.values = new Object();
     }
     appendValue(key, value) {
         this.values[key] = value;
@@ -51,6 +54,10 @@ class KDMessage extends KDObject {
 
     getValue(key) {
         return this.values[key];
+    }
+
+    getId() {
+        return "kdm" + this.index;
     }
 }
 

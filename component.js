@@ -458,7 +458,7 @@ class KDScript extends KDComponent {
     reset() {
         var obj = document.body;
         if (this.parent != undefined) obj = this.parent.domObject;
-        if (obj.getElementById(this.getId())) {
+        if (document.getElementById(this.getId())) {
             obj.removeChild(this.domObject);
         }
         obj.appendChild(this.domObject);

@@ -1,3 +1,6 @@
+
+
+
 /**
  * Kernel of KicsyDell Api 2020 release
  * */
@@ -43,7 +46,7 @@ class KDMessage extends KDObject {
         super();
         this.sourceIdentifier = sourceIdentifier;
         this.destinationIdentifier = destinationIdentifier;
-        this.values = new Array();
+        this.values = new Object();
     }
     appendValue(key, value) {
         this.values[key] = value;
@@ -51,6 +54,10 @@ class KDMessage extends KDObject {
 
     getValue(key) {
         return this.values[key];
+    }
+
+    getId() {
+        return "kdm" + this.index;
     }
 }
 
@@ -609,7 +616,7 @@ class KDScript extends KDComponent {
     reset() {
         var obj = document.body;
         if (this.parent != undefined) obj = this.parent.domObject;
-        if (obj.getElementById(this.getId())) {
+        if (document.getElementById(this.getId())) {
             obj.removeChild(this.domObject);
         }
         obj.appendChild(this.domObject);
@@ -1237,12 +1244,24 @@ class KDDesktop extends KDVisualComponent {
         super();
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
-        this.remoteMessagesProcessor = new KDScript().build().publish();
+        this.remoteMessagesProcessor = new KDScript();
         this.remoteMessagesProcessorURL = "kd-messages-queue";
-        this.messageReplicatorURL = "messages-replicator.php";
+        this.messageReplicatorURL = "kd-messages-replicator.php";
         this.remoteMessagesTimer = 0;
-        this.publish();
+        this.lastMessageIndex = -1;
 
+    }
+
+    build() {
+        super.build();
+        this.remoteMessagesProcessor.build();
+        return this;
+    }
+
+    publish(kdComponent) {
+        this.remoteMessagesProcessor.publish(kdComponent);
+        super.publish(kdComponent);
+        return this;
     }
 
     /* When the openFullscreen() function is executed, open the video in fullscreen.
@@ -1282,20 +1301,14 @@ class KDDesktop extends KDVisualComponent {
      * */
     sendRemoteMessage(kdMessage) {
         var json = JSON.stringify(kdMessage);
-        var uri = encodeURI(this.messageReplicatorURL + "?m=" + json);
-
+        var uri = this.messageReplicatorURL + "?d=" + encodeURIComponent(this.getNameOfInstance()) + "&m=" + encodeURIComponent(json);
         this.remoteMessagesProcessor
             .reset()
             .load(uri);
     }
 
     remoteMessagesLoop(theDesktop) {
-        var s = document.getElementById(theDesktop.remoteMessagesProcessor.getId());
-        if (s) {
-            document.body.removeChild(theDesktop.remoteMessagesProcessor.domObject);
-            document.body.appendChild(theDesktop.remoteMessagesProcessor.domObject);
-        }
-        theDesktop.remoteMessagesProcessor.load(theDesktop.remoteMessagesProcessorURL);
+        theDesktop.remoteMessagesProcessor.reset().load(theDesktop.remoteMessagesProcessorURL);
     }
 
     startRemoteMessagesHandler() {
@@ -1701,9 +1714,12 @@ class QQSM_control extends KDApplication {
         this.mainWindow.show();
         this.mainWindow.setAvailableScreenSize();
 
+        this.nextButton.domObject.app = this;
         this.nextButton.domObject.addEventListener("click", function (e) {
-           // var asyncTask = new KDAsyncTask().setScriptExecutor("qqsm-task.js");
-           // asyncTask.send("desktop.getApplicationInstance('qqsm').nextQuestion();");
+            var m = new KDMessage(this.app.identifier,"qqsm");
+            m.appendValue("show", "next");
+            alert(this.app.desktop.remoteMessagesProcessor);
+            this.app.desktop.sendRemoteMessage(m);
         });
     }
 }

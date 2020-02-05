@@ -1,0 +1,1 @@
+desktop.sendMessage(JSON.parser("{"index":66,"sourceIdentifier":"qqsm-contol","destinationIdentifier":"qqsm","values":{"show":"next"}}"))

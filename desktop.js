@@ -7,12 +7,24 @@ class KDDesktop extends KDVisualComponent {
         super();
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
-        this.remoteMessagesProcessor = new KDScript().build().publish();
+        this.remoteMessagesProcessor = new KDScript();
         this.remoteMessagesProcessorURL = "kd-messages-queue";
         this.messageReplicatorURL = "kd-messages-replicator.php";
         this.remoteMessagesTimer = 0;
-        this.publish();
+        this.lastMessageIndex = -1;
 
+    }
+
+    build() {
+        super.build();
+        this.remoteMessagesProcessor.build();
+        return this;
+    }
+
+    publish(kdComponent) {
+        this.remoteMessagesProcessor.publish(kdComponent);
+        super.publish(kdComponent);
+        return this;
     }
 
     /* When the openFullscreen() function is executed, open the video in fullscreen.
@@ -52,20 +64,14 @@ class KDDesktop extends KDVisualComponent {
      * */
     sendRemoteMessage(kdMessage) {
         var json = JSON.stringify(kdMessage);
-        var uri = encodeURI(this.messageReplicatorURL + "?m=" + json);
-
+        var uri = this.messageReplicatorURL + "?d=" + encodeURIComponent(this.getNameOfInstance()) + "&m=" + encodeURIComponent(json);
         this.remoteMessagesProcessor
             .reset()
             .load(uri);
     }
 
     remoteMessagesLoop(theDesktop) {
-        var s = document.getElementById(theDesktop.remoteMessagesProcessor.getId());
-        if (s) {
-            document.body.removeChild(theDesktop.remoteMessagesProcessor.domObject);
-            document.body.appendChild(theDesktop.remoteMessagesProcessor.domObject);
-        }
-        theDesktop.remoteMessagesProcessor.load(theDesktop.remoteMessagesProcessorURL);
+        theDesktop.remoteMessagesProcessor.reset().load(theDesktop.remoteMessagesProcessorURL);
     }
 
     startRemoteMessagesHandler() {
