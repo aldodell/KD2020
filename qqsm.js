@@ -292,8 +292,7 @@ class QQSM extends KDApplication {
             }
 
         }
-        //  this.remoteControlHandler = window.setInterval(this.remoteControlCallback, 5000, this);
-
+      
         return msg;
     }
 
@@ -308,24 +307,21 @@ class QQSM_control extends KDApplication {
         this.identifier = "qqsm-contol";
         this.filename = "";
         this.indexQuestion = -1;
-        this.asyncTask = new KDAsyncTask();
+        this.asyncTask = new KDAsyncTask().setScriptExecutor("qqsm-exe.js");
 
         this.mainWindow = new KDWindow().build()
             .setSize(new KDSize(400, 400))
             .setPosition(new KDPosition(0, 0))
             .publish(kdDesktop)
             .hide();
-
-        //this.remoteControlThread = new KDScript().build().publish(this.mainWindow);
-
+       
         this.nextButton = new KDButton().build().publish(this.mainWindow.body)
             .setSize(new KDSize(200, 60))
             .setText("Next");
         this.nextButton.domObject.button = this;
         var app = this;
         this.nextButton.domObject.addEventListener("click", function () {
-            //this.button.remoteControlThread.load("qqsm-processor.php?q=next");
-            app.asyncTask.pushCode("desktop.getApplicationInstance('qqsm').nextQuestion();");
+            app.asyncTask.send("desktop.getApplicationInstance('qqsm').nextQuestion();");
         });
     }
 

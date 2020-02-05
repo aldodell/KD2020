@@ -12,6 +12,10 @@ class KDObject {
     constructor() {
         this.index = KD_OBJECTS_INDEX++;
     }
+
+    getId() {
+        return "kd" + this.index;
+    }
 }
 
 
@@ -566,8 +570,8 @@ class KDScript extends KDComponent {
     load(url, async) {
         if (this.domObject) {
             if (async == undefined) async = true;
-            this.domObject.async = async;
             this.domObject.src = url;
+            this.domObject.async = async;
         }
     }
 }
@@ -763,42 +767,60 @@ class KDAsyncTask extends KDObject {
         super();
 
         /** URL of script wich will be execute */
-        this.url = "defaultTask.js";
+        this.scriptExecutorURL = "defaultTask.js";
         this.timerHandler = undefined;
         this.timeBetweenCalls = 3000;
         this.script = new KDScript().build().publish();
         this.scriptGeneratorURL = "asyncTask.php";
 
         //Internal form to send data to server
-        this.sender = new KDSender(this.scriptGeneratorURL).build().publish();
+        this.toServer = new KDSender(this.scriptGeneratorURL).build().publish();
 
         /** Called when script is loaded */
         this.callback = function () { };
     }
 
+    setScriptExecutor(url) {
+        this.scriptExecutorURL = url;
+        return this;
+    }
 
-    loop(obj) {
-        obj.script.load(obj.url);
+    setScriptGenerator(url) {
+        this.scriptGeneratorURL = url;
+        return this;
     }
 
     /** Send code string to URL file wich will execute */
-    pushCode(command) {
-        this.sender
-            .set("command", "push")
-            .set("parameters", command)
-            .set("scriptURL", this.url)
+    send(code) {
+        this.toServer
+            .set("command", "send")
+            .set("parameters", code)
+            .set("scriptURL", this.scriptExecutorURL)
             .send();
+        return this;
+    }
+
+    loop(obj) {
+
+        var old = document.getElementById(obj.script.getId());
+
+        if (old) {
+            console.log(old);
+            document.body.removeChild(old);
+            document.body.appendChild(obj.script.domObject);
+            obj.script.domObject.addEventListener("load", obj.callback);
+        }
+        obj.script.load(obj.scriptExecutorURL);
+
     }
 
     start() {
         this.timerHandler = window.setInterval(this.loop, this.timeBetweenCalls, this);
-        obj.script.domObject.addEventListener("load", obj.callback);
 
     }
 
     stop() {
         window.clearInterval(this.timerHandler);
-        obj.script.domObject.removeEventListener("load", obj.callback);
 
     }
 }class KDWindowTheme {
@@ -1550,8 +1572,7 @@ class QQSM extends KDApplication {
             }
 
         }
-        //  this.remoteControlHandler = window.setInterval(this.remoteControlCallback, 5000, this);
-
+      
         return msg;
     }
 
@@ -1566,24 +1587,21 @@ class QQSM_control extends KDApplication {
         this.identifier = "qqsm-contol";
         this.filename = "";
         this.indexQuestion = -1;
-        this.asyncTask = new KDAsyncTask();
+        this.asyncTask = new KDAsyncTask().setScriptExecutor("qqsm-exe.js");
 
         this.mainWindow = new KDWindow().build()
             .setSize(new KDSize(400, 400))
             .setPosition(new KDPosition(0, 0))
             .publish(kdDesktop)
             .hide();
-
-        //this.remoteControlThread = new KDScript().build().publish(this.mainWindow);
-
+       
         this.nextButton = new KDButton().build().publish(this.mainWindow.body)
             .setSize(new KDSize(200, 60))
             .setText("Next");
         this.nextButton.domObject.button = this;
         var app = this;
         this.nextButton.domObject.addEventListener("click", function () {
-            //this.button.remoteControlThread.load("qqsm-processor.php?q=next");
-            app.asyncTask.pushCode("desktop.getApplicationInstance('qqsm').nextQuestion();");
+            app.asyncTask.send("desktop.getApplicationInstance('qqsm').nextQuestion();");
         });
     }
 

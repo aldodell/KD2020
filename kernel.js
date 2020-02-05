@@ -12,6 +12,10 @@ class KDObject {
     constructor() {
         this.index = KD_OBJECTS_INDEX++;
     }
+
+    getId() {
+        return "kd" + this.index;
+    }
 }
 
 

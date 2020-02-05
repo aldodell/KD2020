@@ -7,7 +7,7 @@ $parameters = $_POST["parameters"];
 $scriptURL = $_POST["scriptURL"];
 
 switch ($command) {
-    case 'push':
+    case 'send':
         file_put_contents($scriptURL, $parameters, FILE_APPEND);
         break;
 
@@ -18,3 +18,5 @@ switch ($command) {
         # code...
         break;
 }
+
+?>

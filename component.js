@@ -443,8 +443,8 @@ class KDScript extends KDComponent {
     load(url, async) {
         if (this.domObject) {
             if (async == undefined) async = true;
-            this.domObject.async = async;
             this.domObject.src = url;
+            this.domObject.async = async;
         }
     }
 }
