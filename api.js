@@ -1630,9 +1630,6 @@ class QQSM extends KDApplication {
         //Draw again all
         this.setSize(new KDSize(800, 600));
 
-        //var asyncTask = new KDAsyncTask().setScriptExecutor("qqsm-task.js");
-        //asyncTask.start();
-
     }
 
 
@@ -1687,6 +1684,14 @@ class QQSM extends KDApplication {
         return msg;
     }
 
+    processMessage(kdMessage) {
+        if (kdMessage.destinationIdentifier == this.identifier) {
+            if (kdMessage.getValue("show") == "next") {
+                this.nextQuestion();
+            }
+        }
+    }
+
 }
 
 
@@ -1710,15 +1715,14 @@ class QQSM_control extends KDApplication {
             .setText("Next");
     }
 
-    run() {
+    run(args) {
         this.mainWindow.show();
         this.mainWindow.setAvailableScreenSize();
 
         this.nextButton.domObject.app = this;
         this.nextButton.domObject.addEventListener("click", function (e) {
-            var m = new KDMessage(this.app.identifier,"qqsm");
+            var m = new KDMessage(this.app.identifier, "qqsm");
             m.appendValue("show", "next");
-            alert(this.app.desktop.remoteMessagesProcessor);
             this.app.desktop.sendRemoteMessage(m);
         });
     }

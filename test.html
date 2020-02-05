@@ -10,7 +10,8 @@
 
 
 
-        var desktop = new KDDesktop().build().publish();;
+        var desktop = new KDDesktop().build().publish();
+        
 
         class ExampleApp extends KDApplication {
             constructor(dkDesktop) {
@@ -60,6 +61,7 @@
 
 
         desktop.run();
+        desktop.startRemoteMessagesHandler();
 
 
 
