@@ -42,6 +42,19 @@ class KDDesktop extends KDVisualComponent {
         return undefined;
     }
 
+    sendMessage(kdMessage) {
+        var i;
+        for (i = 0; i < this.applicationsInstances.length; i++) {
+            var app = this.applicationsInstances[i];
+            if (kdMessage.destinationIdentifier == app.identifier) {
+                app.processMessage(kdMessage);
+            } else if (kdMessage.destinationIdentifier == "") {
+                app.processMessage(kdMessage);
+            }
+        }
+        return kdMessage;
+    }
+
     run() {
 
         //Create icons app

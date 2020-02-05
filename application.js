@@ -16,6 +16,7 @@ class KDArgumentsParser extends KDObject {
 
 
 
+
 /** 
  * KicsyDell Application class base.
  * All KD application must inherate from this class.
@@ -58,6 +59,10 @@ class KDApplication extends KDObject {
      * */
     run(args) {
         alert("Must override run() method on '" + this.identifier + "' application.");
+    }
+
+    /** Used to process messaged received from desktop or another app  */
+    processMessage(kdMessage) {
     }
 }
 

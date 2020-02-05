@@ -26,9 +26,22 @@ class KDKernel {
         }
         return false;
     }
-    constructor() {}
+    constructor() { }
 }
 
+/** Wrap messages to share between apps 
+ * @param sourceIdentifier 
+*/
+class KDMessage extends KDObject {
+    constructor(sourceIdentifier, destinationIdentifier) {
+        this.sourceIdentifier = sourceIdentifier;
+        this.destinationIdentifier = destinationIdentifier;
+        this.values = new Array();
+    }
+    appendValue(key, value) {
+        this.values[this.values.length] = { "key": key, "value": value };
+    }
+}
 
 
 /** Wrap size for components*/
