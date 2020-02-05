@@ -7,6 +7,9 @@ class KDDesktop extends KDVisualComponent {
         super();
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
+        this.remoteMessagesProcessor = new KDScript().build().publish();
+        this.remoteMessagesProcessorURL = "KDMessages-queue.js"
+        this.remoteMessagesTimer = 0;
         this.publish();
     }
 
@@ -40,6 +43,25 @@ class KDDesktop extends KDVisualComponent {
             }
         }
         return undefined;
+    }
+
+
+    remoteMessagesLoop(theDesktop) {
+        var s = document.getElementById(theDesktop.remoteMessagesProcessor.getId());
+        if (s) {
+            document.body.removeChild(theDesktop.remoteMessagesProcessor.domObject);
+            document.body.appendChild(theDesktop.remoteMessagesProcessor.domObject);
+        }
+        theDesktop.remoteMessagesProcessor.load(theDesktop.remoteMessagesProcessorURL);
+    }
+
+    startRemoteMessagesHandler() {
+        var theDesktop = this;
+        this.remoteMessagesTimer = window.setInterval(function () { theDesktop.remoteMessagesLoop(theDesktop); }, 5000);
+    }
+
+    stopRemoteMessagesHandler() {
+        window.clearInterval(this.remoteMessagesTimer);
     }
 
     sendMessage(kdMessage) {

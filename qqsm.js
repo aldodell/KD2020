@@ -188,7 +188,6 @@ class QQSM extends KDApplication {
             var row2 = row1 + answerHeight + verticalSeparator;
             var col0 = 0;
             var col1 = horizontalSeparator + answerWidth;
-
             var novaXY = this.mainWindow.size.height / 8;
 
 
@@ -226,8 +225,8 @@ class QQSM extends KDApplication {
         //Draw again all
         this.setSize(new KDSize(800, 600));
 
-        var asyncTask = new KDAsyncTask().setScriptExecutor("qqsm-task.js");
-        asyncTask.start();
+        //var asyncTask = new KDAsyncTask().setScriptExecutor("qqsm-task.js");
+        //asyncTask.start();
 
     }
 
@@ -311,8 +310,8 @@ class QQSM_control extends KDApplication {
         this.mainWindow.setAvailableScreenSize();
 
         this.nextButton.domObject.addEventListener("click", function (e) {
-            var asyncTask = new KDAsyncTask().setScriptExecutor("qqsm-task.js");
-            asyncTask.send("desktop.getApplicationInstance('qqsm').nextQuestion();");
+           // var asyncTask = new KDAsyncTask().setScriptExecutor("qqsm-task.js");
+           // asyncTask.send("desktop.getApplicationInstance('qqsm').nextQuestion();");
         });
     }
 }

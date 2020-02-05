@@ -26,9 +26,22 @@ class KDKernel {
         }
         return false;
     }
-    constructor() {}
+    constructor() { }
 }
 
+/** Wrap messages to share between apps 
+ * @param sourceIdentifier 
+*/
+class KDMessage extends KDObject {
+    constructor(sourceIdentifier, destinationIdentifier) {
+        this.sourceIdentifier = sourceIdentifier;
+        this.destinationIdentifier = destinationIdentifier;
+        this.values = new Array();
+    }
+    appendValue(key, value) {
+        this.values[this.values.length] = { "key": key, "value": value };
+    }
+}
 
 
 /** Wrap size for components*/
@@ -951,6 +964,7 @@ class KDArgumentsParser extends KDObject {
 
 
 
+
 /** 
  * KicsyDell Application class base.
  * All KD application must inherate from this class.
@@ -984,6 +998,9 @@ class KDApplication extends KDObject {
          * this app is a console command
          * */
         this.mainWindow = undefined;
+
+        /** Used to process messaged received from desktop or another app  */
+        this.processMessage = function (kdMessage) { }
     }
 
     /** 
@@ -994,6 +1011,8 @@ class KDApplication extends KDObject {
     run(args) {
         alert("Must override run() method on '" + this.identifier + "' application.");
     }
+
+
 }
 
 
@@ -1173,9 +1192,10 @@ class KDDesktop extends KDVisualComponent {
         super();
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
-
+        this.remoteMessagesProcessor = new KDScript().build().publish();
+        this.remoteMessagesProcessorURL = "KDMessages-queue.js"
+        this.remoteMessagesTimer = 0;
         this.publish();
-
     }
 
     /* When the openFullscreen() function is executed, open the video in fullscreen.
@@ -1210,6 +1230,38 @@ class KDDesktop extends KDVisualComponent {
         return undefined;
     }
 
+
+    remoteMessagesLoop(theDesktop) {
+        var s = document.getElementById(theDesktop.remoteMessagesProcessor.getId());
+        if (s) {
+            document.body.removeChild(theDesktop.remoteMessagesProcessor.domObject);
+            document.body.appendChild(theDesktop.remoteMessagesProcessor.domObject);
+        }
+        theDesktop.remoteMessagesProcessor.load(theDesktop.remoteMessagesProcessorURL);
+    }
+
+    startRemoteMessagesHandler() {
+        var theDesktop = this;
+        this.remoteMessagesTimer = window.setInterval(function () { theDesktop.remoteMessagesLoop(theDesktop); }, 5000);
+    }
+
+    stopRemoteMessagesHandler() {
+        window.clearInterval(this.remoteMessagesTimer);
+    }
+
+    sendMessage(kdMessage) {
+        var i;
+        for (i = 0; i < this.applicationsInstances.length; i++) {
+            var app = this.applicationsInstances[i];
+            if (kdMessage.destinationIdentifier == app.identifier) {
+                app.processMessage(kdMessage);
+            } else if (kdMessage.destinationIdentifier == "") {
+                app.processMessage(kdMessage);
+            }
+        }
+        return kdMessage;
+    }
+
     run() {
 
         //Create icons app
@@ -1233,7 +1285,7 @@ class KDDesktop extends KDVisualComponent {
             if (this.applicationsInstances[i].mainWindow != undefined) {
                 var appLayer = new KDLayer().build()
                     .setSize(appLayerSize)
-                    .setPosition(appLayerPosition.move(0, 2*appLayerHeight))
+                    .setPosition(appLayerPosition.move(0, 2 * appLayerHeight))
                     .setDraggable(true)
                     .publish(this);
                 j++;
@@ -1470,7 +1522,6 @@ class QQSM extends KDApplication {
             var row2 = row1 + answerHeight + verticalSeparator;
             var col0 = 0;
             var col1 = horizontalSeparator + answerWidth;
-
             var novaXY = this.mainWindow.size.height / 8;
 
 
@@ -1508,8 +1559,8 @@ class QQSM extends KDApplication {
         //Draw again all
         this.setSize(new KDSize(800, 600));
 
-        var asyncTask = new KDAsyncTask().setScriptExecutor("qqsm-task.js");
-        asyncTask.start();
+        //var asyncTask = new KDAsyncTask().setScriptExecutor("qqsm-task.js");
+        //asyncTask.start();
 
     }
 
@@ -1593,8 +1644,8 @@ class QQSM_control extends KDApplication {
         this.mainWindow.setAvailableScreenSize();
 
         this.nextButton.domObject.addEventListener("click", function (e) {
-            var asyncTask = new KDAsyncTask().setScriptExecutor("qqsm-task.js");
-            asyncTask.send("desktop.getApplicationInstance('qqsm').nextQuestion();");
+           // var asyncTask = new KDAsyncTask().setScriptExecutor("qqsm-task.js");
+           // asyncTask.send("desktop.getApplicationInstance('qqsm').nextQuestion();");
         });
     }
 }

@@ -50,6 +50,9 @@ class KDApplication extends KDObject {
          * this app is a console command
          * */
         this.mainWindow = undefined;
+
+        /** Used to process messaged received from desktop or another app  */
+        this.processMessage = function (kdMessage) { }
     }
 
     /** 
@@ -61,9 +64,7 @@ class KDApplication extends KDObject {
         alert("Must override run() method on '" + this.identifier + "' application.");
     }
 
-    /** Used to process messaged received from desktop or another app  */
-    processMessage(kdMessage) {
-    }
+
 }
 
 

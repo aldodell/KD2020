@@ -1,1 +1,0 @@
-desktop.getApplicationInstance('qqsm').nextQuestion();
