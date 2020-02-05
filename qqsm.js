@@ -128,6 +128,7 @@ class QQSM extends KDApplication {
         this.title = "Millonario";
         this.filename = "";
         this.indexQuestion = -1;
+        this.asyncTask = new KDAsyncTask();
 
         this.mainWindow = new KDWindow().build()
             .setSize(new KDSize(800, 800))
@@ -156,7 +157,7 @@ class QQSM extends KDApplication {
             .publish(this.mainWindow.foot)
             .setText(">>");
 
-        this.remoteControlThread = new KDScript().build().publish(this.mainWindow);
+        //  this.remoteControlThread = new KDScript().build().publish(this.mainWindow);
 
         //Clear queae
         //this.remoteControlThread.load("qqsm-processor.php?q=clear");
@@ -252,12 +253,13 @@ class QQSM extends KDApplication {
 
 
     remoteControlCallback(q) {
+        //qqsm-remote-control-script.js
 
         // q.remoteControlThread.load("qqsm-processor.php?q=next");
-        q.remoteControlThread.load("qqsm-remote-control-script.js");
+        //    q.remoteControlThread.load("qqsm-remote-control-script.js");
 
         //Clear queae
-        q.remoteControlThread.load("qqsm-processor.php?q=clear");
+        //     q.remoteControlThread.load("qqsm-processor.php?q=clear");
     }
 
     run(args) {
@@ -290,7 +292,8 @@ class QQSM extends KDApplication {
             }
 
         }
-        this.remoteControlHandler = window.setInterval(this.remoteControlCallback, 5000, this);
+        //  this.remoteControlHandler = window.setInterval(this.remoteControlCallback, 5000, this);
+
         return msg;
     }
 
@@ -305,6 +308,7 @@ class QQSM_control extends KDApplication {
         this.identifier = "qqsm-contol";
         this.filename = "";
         this.indexQuestion = -1;
+        this.asyncTask = new KDAsyncTask();
 
         this.mainWindow = new KDWindow().build()
             .setSize(new KDSize(400, 400))
@@ -312,14 +316,16 @@ class QQSM_control extends KDApplication {
             .publish(kdDesktop)
             .hide();
 
-        this.remoteControlThread = new KDScript().build().publish(this.mainWindow);
+        //this.remoteControlThread = new KDScript().build().publish(this.mainWindow);
 
         this.nextButton = new KDButton().build().publish(this.mainWindow.body)
             .setSize(new KDSize(200, 60))
             .setText("Next");
         this.nextButton.domObject.button = this;
+        var app = this;
         this.nextButton.domObject.addEventListener("click", function () {
-            this.button.remoteControlThread.load("qqsm-processor.php?q=next");
+            //this.button.remoteControlThread.load("qqsm-processor.php?q=next");
+            app.asyncTask.pushCode("desktop.getApplicationInstance('qqsm').nextQuestion();");
         });
     }
 

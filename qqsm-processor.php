@@ -14,3 +14,4 @@ if ($q == "next") {
 if ($q == "clear") {
     file_put_contents("qqsm-remote-control-script.js", "");
 }
+
