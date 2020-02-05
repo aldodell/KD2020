@@ -8,6 +8,12 @@
     <script>
 
 
+
+        var task1 = new KDAsyncTask();
+        task1.setScriptExecutor("test3.js");
+        task1.send("alert('hola');");
+
+
         var desktop = new KDDesktop();
 
         class ExampleApp extends KDApplication {

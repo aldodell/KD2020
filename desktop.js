@@ -7,9 +7,7 @@ class KDDesktop extends KDVisualComponent {
         super();
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
-        //this.requestFullScreen();
         this.publish();
-
     }
 
     /* When the openFullscreen() function is executed, open the video in fullscreen.
@@ -37,9 +35,9 @@ class KDDesktop extends KDVisualComponent {
         var i;
         for (i = 0; i < this.applicationsInstances.length; i++) {
             var app = this.applicationsInstances[i];
-           if (identifier == app.identifier) {
+            if (identifier == app.identifier) {
                 return app;
-            } 
+            }
         }
         return undefined;
     }
@@ -67,7 +65,7 @@ class KDDesktop extends KDVisualComponent {
             if (this.applicationsInstances[i].mainWindow != undefined) {
                 var appLayer = new KDLayer().build()
                     .setSize(appLayerSize)
-                    .setPosition(appLayerPosition.move(0, appLayerHeight + (j * appLayerHeight)))
+                    .setPosition(appLayerPosition.move(0, 2 * appLayerHeight))
                     .setDraggable(true)
                     .publish(this);
                 j++;

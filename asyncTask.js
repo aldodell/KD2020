@@ -10,11 +10,10 @@ class KDAsyncTask extends KDObject {
 
         /** URL of script wich will be execute */
         this.scriptExecutorURL = "defaultTask.js";
+        this.scriptGeneratorURL = "asyncTask.php";
         this.timerHandler = undefined;
         this.timeBetweenCalls = 3000;
         this.script = new KDScript().build().publish();
-        this.scriptGeneratorURL = "asyncTask.php";
-
         //Internal form to send data to server
         this.toServer = new KDSender(this.scriptGeneratorURL).build().publish();
 
@@ -43,26 +42,31 @@ class KDAsyncTask extends KDObject {
     }
 
     loop(obj) {
-
         var old = document.getElementById(obj.script.getId());
-
         if (old) {
-            console.log(old);
             document.body.removeChild(old);
             document.body.appendChild(obj.script.domObject);
             obj.script.domObject.addEventListener("load", obj.callback);
         }
+        console.log(obj.script);
         obj.script.load(obj.scriptExecutorURL);
 
     }
 
     start() {
         this.timerHandler = window.setInterval(this.loop, this.timeBetweenCalls, this);
-
     }
 
     stop() {
         window.clearInterval(this.timerHandler);
+    }
 
+    reset() {
+        this.toServer
+            .set("command", "reset")
+            .set("parameters", "")
+            .set("scriptURL", this.scriptExecutorURL)
+            .send();
+        return this;
     }
 }

@@ -507,35 +507,33 @@ class KDSender extends KDVisualComponent {
     build() {
         super.build();
         this.form.build();
-        this.domObject.setAttribute("name", "kd" + this.index);
+        this.domObject.setAttribute("name", this.getId());
+        this.form.domObject.setAttribute("name", this.getId() + "_form");
+
         return this;
     }
 
     publish(kdComponent) {
         super.publish(kdComponent);
+        if (this.form.domObject == undefined) this.form.build();
         var ifrdoc = this.domObject.contentDocument || this.domObject.contentWindow.document;
         ifrdoc.body.appendChild(this.form.domObject);
         return this;
     }
 
     set(name, value) {
-        if (this.domObject) {
-            var hidden = new KDHidden().build().publish(this.form);
-            hidden.setName(name).setValue(value);
+        if (this.domObject == undefined) {
+            this.build().publish();
         }
+        var hidden = new KDHidden().build().publish(this.form);
+        hidden.setName(name).setValue(value);
+
         return this;
     }
 
     send() {
         if (this.domObject) {
             this.form.submit();
-        }
-        return this;
-    }
-
-    reuse() {
-        if (this.domObject) {
-            this.form.build().publish(this.form);
         }
         return this;
     }

@@ -634,35 +634,33 @@ class KDSender extends KDVisualComponent {
     build() {
         super.build();
         this.form.build();
-        this.domObject.setAttribute("name", "kd" + this.index);
+        this.domObject.setAttribute("name", this.getId());
+        this.form.domObject.setAttribute("name", this.getId() + "_form");
+
         return this;
     }
 
     publish(kdComponent) {
         super.publish(kdComponent);
+        if (this.form.domObject == undefined) this.form.build();
         var ifrdoc = this.domObject.contentDocument || this.domObject.contentWindow.document;
         ifrdoc.body.appendChild(this.form.domObject);
         return this;
     }
 
     set(name, value) {
-        if (this.domObject) {
-            var hidden = new KDHidden().build().publish(this.form);
-            hidden.setName(name).setValue(value);
+        if (this.domObject == undefined) {
+            this.build().publish();
         }
+        var hidden = new KDHidden().build().publish(this.form);
+        hidden.setName(name).setValue(value);
+
         return this;
     }
 
     send() {
         if (this.domObject) {
             this.form.submit();
-        }
-        return this;
-    }
-
-    reuse() {
-        if (this.domObject) {
-            this.form.build().publish(this.form);
         }
         return this;
     }
@@ -768,11 +766,10 @@ class KDAsyncTask extends KDObject {
 
         /** URL of script wich will be execute */
         this.scriptExecutorURL = "defaultTask.js";
+        this.scriptGeneratorURL = "asyncTask.php";
         this.timerHandler = undefined;
         this.timeBetweenCalls = 3000;
         this.script = new KDScript().build().publish();
-        this.scriptGeneratorURL = "asyncTask.php";
-
         //Internal form to send data to server
         this.toServer = new KDSender(this.scriptGeneratorURL).build().publish();
 
@@ -801,27 +798,32 @@ class KDAsyncTask extends KDObject {
     }
 
     loop(obj) {
-
         var old = document.getElementById(obj.script.getId());
-
         if (old) {
-            console.log(old);
             document.body.removeChild(old);
             document.body.appendChild(obj.script.domObject);
             obj.script.domObject.addEventListener("load", obj.callback);
         }
+        console.log(obj.script);
         obj.script.load(obj.scriptExecutorURL);
 
     }
 
     start() {
         this.timerHandler = window.setInterval(this.loop, this.timeBetweenCalls, this);
-
     }
 
     stop() {
         window.clearInterval(this.timerHandler);
+    }
 
+    reset() {
+        this.toServer
+            .set("command", "reset")
+            .set("parameters", "")
+            .set("scriptURL", this.scriptExecutorURL)
+            .send();
+        return this;
     }
 }class KDWindowTheme {
     constructor() {
@@ -1171,7 +1173,7 @@ class KDDesktop extends KDVisualComponent {
         super();
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
-        //this.requestFullScreen();
+
         this.publish();
 
     }
@@ -1201,9 +1203,9 @@ class KDDesktop extends KDVisualComponent {
         var i;
         for (i = 0; i < this.applicationsInstances.length; i++) {
             var app = this.applicationsInstances[i];
-           if (identifier == app.identifier) {
+            if (identifier == app.identifier) {
                 return app;
-            } 
+            }
         }
         return undefined;
     }
@@ -1231,7 +1233,7 @@ class KDDesktop extends KDVisualComponent {
             if (this.applicationsInstances[i].mainWindow != undefined) {
                 var appLayer = new KDLayer().build()
                     .setSize(appLayerSize)
-                    .setPosition(appLayerPosition.move(0, appLayerHeight + (j * appLayerHeight)))
+                    .setPosition(appLayerPosition.move(0, 2*appLayerHeight))
                     .setDraggable(true)
                     .publish(this);
                 j++;
@@ -1408,7 +1410,7 @@ class QQSM extends KDApplication {
         this.title = "Millonario";
         this.filename = "";
         this.indexQuestion = -1;
-        this.asyncTask = new KDAsyncTask();
+
 
         this.mainWindow = new KDWindow().build()
             .setSize(new KDSize(800, 800))
@@ -1436,11 +1438,6 @@ class QQSM extends KDApplication {
         this.playButton = new KDButton().build()
             .publish(this.mainWindow.foot)
             .setText(">>");
-
-        //  this.remoteControlThread = new KDScript().build().publish(this.mainWindow);
-
-        //Clear queae
-        //this.remoteControlThread.load("qqsm-processor.php?q=clear");
 
 
 
@@ -1511,6 +1508,9 @@ class QQSM extends KDApplication {
         //Draw again all
         this.setSize(new KDSize(800, 600));
 
+        var asyncTask = new KDAsyncTask().setScriptExecutor("qqsm-task.js");
+        asyncTask.start();
+
     }
 
 
@@ -1529,17 +1529,6 @@ class QQSM extends KDApplication {
         this.optionB.setText(data[this.indexQuestion].b);
         this.optionC.setText(data[this.indexQuestion].c);
         this.optionD.setText(data[this.indexQuestion].d);
-    }
-
-
-    remoteControlCallback(q) {
-        //qqsm-remote-control-script.js
-
-        // q.remoteControlThread.load("qqsm-processor.php?q=next");
-        //    q.remoteControlThread.load("qqsm-remote-control-script.js");
-
-        //Clear queae
-        //     q.remoteControlThread.load("qqsm-processor.php?q=clear");
     }
 
     run(args) {
@@ -1572,7 +1561,7 @@ class QQSM extends KDApplication {
             }
 
         }
-      
+
         return msg;
     }
 
@@ -1587,27 +1576,26 @@ class QQSM_control extends KDApplication {
         this.identifier = "qqsm-contol";
         this.filename = "";
         this.indexQuestion = -1;
-        this.asyncTask = new KDAsyncTask().setScriptExecutor("qqsm-exe.js");
 
         this.mainWindow = new KDWindow().build()
             .setSize(new KDSize(400, 400))
             .setPosition(new KDPosition(0, 0))
             .publish(kdDesktop)
             .hide();
-       
+
         this.nextButton = new KDButton().build().publish(this.mainWindow.body)
             .setSize(new KDSize(200, 60))
             .setText("Next");
-        this.nextButton.domObject.button = this;
-        var app = this;
-        this.nextButton.domObject.addEventListener("click", function () {
-            app.asyncTask.send("desktop.getApplicationInstance('qqsm').nextQuestion();");
-        });
     }
 
     run() {
         this.mainWindow.show();
         this.mainWindow.setAvailableScreenSize();
+
+        this.nextButton.domObject.addEventListener("click", function (e) {
+            var asyncTask = new KDAsyncTask().setScriptExecutor("qqsm-task.js");
+            asyncTask.send("desktop.getApplicationInstance('qqsm').nextQuestion();");
+        });
     }
 }
 
