@@ -32,6 +32,7 @@
                 "api.js",
                 "kernel.js",
                 "component.js",
+                "asyncTask.js",
                 "window.js",
                 "application.js",
                 "desktop.js",

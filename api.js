@@ -221,7 +221,9 @@ class KDComponent extends KDObject {
         var obj = document.body;
         if (kdComponent != null) {
             if (!kdComponent.domObject) {
-                kdComponent.build();
+                if (kdComponent.build) {
+                    kdComponent.build();
+                }
             }
             obj = kdComponent.domObject;
         }
@@ -249,7 +251,6 @@ class KDVisualComponent extends KDComponent {
         this.initialPosition = null;
         this.position = new KDPosition(0, 0);
         this.size = new KDSize(100, 20);
-
         this.style.zIndex = "0";
     }
     /**
@@ -405,6 +406,11 @@ class KDVisualComponent extends KDComponent {
         }
         return this;
     }
+
+    setName(fieldName) {
+        this.domObject.setAttribute(name,fieldName);
+        return this;
+    }
 }
 
 
@@ -480,6 +486,10 @@ class KDButton extends KDVisualComponent {
     }
 }
 
+
+
+
+
 /** Simple image 
  * */
 class KDImage extends KDVisualComponent {
@@ -549,11 +559,109 @@ class KDScript extends KDComponent {
         this.htmlName = "script";
     }
 
-    load(url) {
+    /**
+     * @param url URL wich will be execute
+     * @param async Boolean means if script will be execute inmediatly
+     * */
+    load(url, async) {
         if (this.domObject) {
+            if (async == undefined) async = true;
+            this.domObject.async = async;
             this.domObject.src = url;
         }
     }
+}
+
+class KDForm extends KDVisualComponent {
+    constructor() {
+        super();
+        this.htmlName = "form";
+        this.method = "post";
+        this.style.backgroundColor = "";
+        this.url = "";
+
+    }
+
+    build() {
+        super.build();
+        this.domObject.method = this.method;
+        this.domObject.action = this.url;
+        this.setSize(new KDSize(0, 0));
+        return this;
+    }
+
+    submit() {
+        this.domObject.submit();
+    }
+
+}
+
+/** Simple hidden
+ * */
+class KDHidden extends KDVisualComponent {
+    constructor() {
+        super();
+        this.htmlName = "input";
+        this.htmlType = "hidden";
+
+    }
+
+    setValue(value) {
+        this.domObject.value = value;
+        return this;
+    }
+}
+
+/**
+ * Wrap a form and hidden fields to send values to a script
+ * @example var sender = new KDSender("myURL.php");
+ * */
+class KDSender extends KDVisualComponent {
+    constructor(url) {
+        super();
+        this.htmlName = "iframe";
+        this.url = url;
+        this.form = new KDForm();
+        this.form.url = url;
+        this.method = "post";
+        this.style.visibility = "hidden";
+    }
+
+    build() {
+        super.build();
+        this.form.build();
+        return this;
+    }
+
+    publish(kdComponent) {
+        super.publish(kdComponent);
+        var ifrdoc = this.domObject.contentDocument || this.domObject.contentWindow.document;
+        ifrdoc.body.appendChild(this.form.domObject);
+        return this;
+    }
+
+    set(name, value) {
+        if (this.domObject) {
+            var hidden = new KDHidden().build().publish(this.form);
+            hidden.setName(name).setValue(value);
+        }
+        return this;
+    }
+
+    send() {
+        if (this.domObject) {
+            this.form.submit();
+        }
+        return this;
+    }
+
+    reuse() {
+        if (this.domObject) {
+            this.form.build().publish(this.form);
+        }
+        return this;
+    }
+
 }
 
 
@@ -643,6 +751,46 @@ class KDSpriteViewer extends KDLayer {
     }
 
 
+}/**
+ * Manage async task
+ * */
+class KDAsyncTask extends KDObject {
+
+    constructor() {
+        super();
+
+        /** URL of script wich will be execute */
+        this.url = "defaultTask.js";
+        this.timerHandler = undefined;
+        this.timeBetweenCalls = 3000;
+        this.script = new KDScript().build().publish();
+
+        //Internal form to send data to server
+        this.sender = new KDSender().build.publish();
+
+        /** Called when script is loaded */
+        this.callback = function () { };
+    }
+
+
+    loop(obj) {
+        obj.script.domObject.addEventListener("load", obj.callback);
+        obj.script.load(obj.url);
+        obj.script.domObject.removeEventListener("load", obj.callback);
+    }
+
+    /** Send code string to URL file wich will execute */
+    pushCode(command) {
+        this.sender.send("command", command);
+    }
+
+    start() {
+        this.timerHandler = window.setInterval(this.loop, this.timeBetweenCalls, this);
+    }
+
+    stop() {
+        window.clearInterval(this.timerHandler);
+    }
 }class KDWindowTheme {
     constructor() {
 
@@ -1354,7 +1502,6 @@ class QQSM extends KDApplication {
     remoteControlCallback(q) {
 
         // q.remoteControlThread.load("qqsm-processor.php?q=next");
-
         q.remoteControlThread.load("qqsm-remote-control-script.js");
 
         //Clear queae
@@ -1412,8 +1559,6 @@ class QQSM_control extends KDApplication {
             .setPosition(new KDPosition(0, 0))
             .publish(kdDesktop)
             .hide();
-        //kdCenterSurfaceStyle.apply(this.mainWindow.body);
-
 
         this.remoteControlThread = new KDScript().build().publish(this.mainWindow);
 

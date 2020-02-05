@@ -254,7 +254,6 @@ class QQSM extends KDApplication {
     remoteControlCallback(q) {
 
         // q.remoteControlThread.load("qqsm-processor.php?q=next");
-
         q.remoteControlThread.load("qqsm-remote-control-script.js");
 
         //Clear queae
@@ -312,8 +311,6 @@ class QQSM_control extends KDApplication {
             .setPosition(new KDPosition(0, 0))
             .publish(kdDesktop)
             .hide();
-        //kdCenterSurfaceStyle.apply(this.mainWindow.body);
-
 
         this.remoteControlThread = new KDScript().build().publish(this.mainWindow);
 

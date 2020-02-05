@@ -1,1 +1,0 @@
-<script>alert('x');desktop.getApplicationInstance('qqsm').nextQuestion();</script>
