@@ -1,1 +1,0 @@
-var _m = JSON.parser("{"index":66,"sourceIdentifier":"qqsm-contol","destinationIdentifier":"qqsm","values":{"show":"next"}}");_m.index = 1;desktop.sendMessage(_m);

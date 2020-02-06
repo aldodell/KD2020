@@ -313,12 +313,13 @@ class QQSM_control extends KDApplication {
     run(args) {
         this.mainWindow.show();
         this.mainWindow.setAvailableScreenSize();
-
+        //zz1
         this.nextButton.domObject.app = this;
         this.nextButton.domObject.addEventListener("click", function (e) {
             var m = new KDMessage(this.app.identifier, "qqsm");
             m.appendValue("show", "next");
             this.app.desktop.sendRemoteMessage(m);
+
         });
     }
 }

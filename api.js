@@ -1301,6 +1301,7 @@ class KDDesktop extends KDVisualComponent {
      * */
     sendRemoteMessage(kdMessage) {
         var json = JSON.stringify(kdMessage);
+        //Send desktop instance name + message zz2
         var uri = this.messageReplicatorURL + "?d=" + encodeURIComponent(this.getNameOfInstance()) + "&m=" + encodeURIComponent(json);
         this.remoteMessagesProcessor
             .reset()
@@ -1308,7 +1309,12 @@ class KDDesktop extends KDVisualComponent {
     }
 
     remoteMessagesLoop(theDesktop) {
-        theDesktop.remoteMessagesProcessor.reset().load(theDesktop.remoteMessagesProcessorURL);
+        console.log("Entering to remoteMessagesLoop");
+        try {
+            theDesktop.remoteMessagesProcessor.reset().load(theDesktop.remoteMessagesProcessorURL);
+        } catch (ex) {
+            console.log("ERROR:" + ex);
+        }
     }
 
     startRemoteMessagesHandler() {
@@ -1718,12 +1724,13 @@ class QQSM_control extends KDApplication {
     run(args) {
         this.mainWindow.show();
         this.mainWindow.setAvailableScreenSize();
-
+        //zz1
         this.nextButton.domObject.app = this;
         this.nextButton.domObject.addEventListener("click", function (e) {
             var m = new KDMessage(this.app.identifier, "qqsm");
             m.appendValue("show", "next");
             this.app.desktop.sendRemoteMessage(m);
+
         });
     }
 }

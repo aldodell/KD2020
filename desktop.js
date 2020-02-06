@@ -64,6 +64,7 @@ class KDDesktop extends KDVisualComponent {
      * */
     sendRemoteMessage(kdMessage) {
         var json = JSON.stringify(kdMessage);
+        //Send desktop instance name + message zz2
         var uri = this.messageReplicatorURL + "?d=" + encodeURIComponent(this.getNameOfInstance()) + "&m=" + encodeURIComponent(json);
         this.remoteMessagesProcessor
             .reset()
@@ -71,7 +72,12 @@ class KDDesktop extends KDVisualComponent {
     }
 
     remoteMessagesLoop(theDesktop) {
-        theDesktop.remoteMessagesProcessor.reset().load(theDesktop.remoteMessagesProcessorURL);
+        console.log("Entering to remoteMessagesLoop");
+        try {
+            theDesktop.remoteMessagesProcessor.reset().load(theDesktop.remoteMessagesProcessorURL);
+        } catch (ex) {
+            console.log("ERROR:" + ex);
+        }
     }
 
     startRemoteMessagesHandler() {
