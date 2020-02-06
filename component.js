@@ -434,12 +434,18 @@ class KDScript extends KDComponent {
     constructor() {
         super();
         this.htmlName = "script";
-        this.parent = undefined;
+       
+    }
+
+    build() {
+        super.build();
+        this.domObject.setAttribute("type", "text/javascript");
+        return this;
     }
 
     publish(kdComponent) {
         super.publish(kdComponent);
-        this.parent = kdComponent;
+        return this;
     }
 
     /**
@@ -449,19 +455,21 @@ class KDScript extends KDComponent {
     load(url, async) {
         if (this.domObject) {
             if (async == undefined) async = true;
+            var p = this.domObject.parentNode;
+            p.removeChild(this.domObject);
+            p.appendChild(this.domObject);
+            this.domObject.setAttribute("type", "text/javascript");
             this.domObject.src = url;
             this.domObject.async = async;
         }
         return this;
     }
 
+    //To reuse script zz3
     reset() {
-        var obj = document.body;
-        if (this.parent != undefined) obj = this.parent.domObject;
-        if (document.getElementById(this.getId())) {
-            obj.removeChild(this.domObject);
-        }
-        obj.appendChild(this.domObject);
+        var pn = this.domObject.parentNode || document.body;
+        pn.removeChild(this.domObject);
+        pn.appendChild(this.domObject);
         return this;
     }
 }

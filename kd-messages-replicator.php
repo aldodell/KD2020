@@ -1,6 +1,7 @@
 <?php
+header('Content-type: text/javascript');
 
-$fileName = "messages-queue";
+$fileName = "kd-messages-queue.js";
 $fileName_index = "messages-index";
 
 //Get desktop instance name
@@ -21,7 +22,8 @@ $id = intval(file_get_contents($fileName_index)) + 1;
 file_put_contents($fileName_index, $id);
 
 //build javascript 
-$r = "var _m = JSON.parser(\"$m\");";
+$r = "\r\n\r\n console.log('live!');";
+$r .= "var _m = $m;";
 $r .= "_m.index = $id;";
 $r .= "$d.sendMessage(_m);\r\n";
 

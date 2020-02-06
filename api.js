@@ -595,9 +595,16 @@ class KDScript extends KDComponent {
         this.parent = undefined;
     }
 
+    build() {
+        super.build();
+        this.domObject.setAttribute("type", "text/javascript");
+        return this;
+    }
+
     publish(kdComponent) {
         super.publish(kdComponent);
         this.parent = kdComponent;
+        return this;
     }
 
     /**
@@ -607,19 +614,21 @@ class KDScript extends KDComponent {
     load(url, async) {
         if (this.domObject) {
             if (async == undefined) async = true;
+            var p = this.domObject.parentNode;
+            p.removeChild(this.domObject);
+            p.appendChild(this.domObject);
+            this.domObject.setAttribute("type", "text/javascript");
             this.domObject.src = url;
             this.domObject.async = async;
         }
         return this;
     }
 
+    //To reuse script zz3
     reset() {
-        var obj = document.body;
-        if (this.parent != undefined) obj = this.parent.domObject;
-        if (document.getElementById(this.getId())) {
-            obj.removeChild(this.domObject);
-        }
-        obj.appendChild(this.domObject);
+        var pn = this.domObject.parentNode || document.body;
+        pn.removeChild(this.domObject);
+        pn.appendChild(this.domObject);
         return this;
     }
 }
@@ -1245,10 +1254,12 @@ class KDDesktop extends KDVisualComponent {
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
         this.remoteMessagesProcessor = new KDScript();
-        this.remoteMessagesProcessorURL = "kd-messages-queue";
+        this.remoteMessagesProcessorURL = "kd-messages-queue.js";
+        this.remoteMessagesProcessorTime = 10000;
         this.messageReplicatorURL = "kd-messages-replicator.php";
         this.remoteMessagesTimer = 0;
         this.lastMessageIndex = -1;
+
 
     }
 
@@ -1304,14 +1315,14 @@ class KDDesktop extends KDVisualComponent {
         //Send desktop instance name + message zz2
         var uri = this.messageReplicatorURL + "?d=" + encodeURIComponent(this.getNameOfInstance()) + "&m=" + encodeURIComponent(json);
         this.remoteMessagesProcessor
-            .reset()
-            .load(uri);
+             .load(uri);
     }
 
     remoteMessagesLoop(theDesktop) {
         console.log("Entering to remoteMessagesLoop");
         try {
-            theDesktop.remoteMessagesProcessor.reset().load(theDesktop.remoteMessagesProcessorURL);
+            console.log(theDesktop.remoteMessagesProcessorURL);
+            theDesktop.remoteMessagesProcessor.load(theDesktop.remoteMessagesProcessorURL);
         } catch (ex) {
             console.log("ERROR:" + ex);
         }
@@ -1319,7 +1330,7 @@ class KDDesktop extends KDVisualComponent {
 
     startRemoteMessagesHandler() {
         var theDesktop = this;
-        this.remoteMessagesTimer = window.setInterval(function () { theDesktop.remoteMessagesLoop(theDesktop); }, 5000);
+        this.remoteMessagesTimer = window.setInterval(function () { theDesktop.remoteMessagesLoop(theDesktop); }, this.remoteMessagesProcessorTime);
     }
 
     stopRemoteMessagesHandler() {
@@ -1727,6 +1738,7 @@ class QQSM_control extends KDApplication {
         //zz1
         this.nextButton.domObject.app = this;
         this.nextButton.domObject.addEventListener("click", function (e) {
+            alert("mmmm");
             var m = new KDMessage(this.app.identifier, "qqsm");
             m.appendValue("show", "next");
             this.app.desktop.sendRemoteMessage(m);
