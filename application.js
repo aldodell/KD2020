@@ -51,9 +51,21 @@ class KDApplication extends KDObject {
          * */
         this.mainWindow = undefined;
 
-        /** Used to process messaged received from desktop or another app  */
-        this.processMessage = function (kdMessage) { }
+
     }
+
+    /** Used to process messaged received from desktop or another app  */
+    processMessage(kdMessage) {
+
+        //If recieve a message to change window size
+        //{"command" : "changeSize", "width":"100", "height":"100"}
+        if (this.mainWindow != undefined) {
+            if (kdMessage.values["command"] == "changeSize") {
+                this.mainWindow.setSize(new KDSize(kdMessage.values["width"], kdMessage.values["height"]));
+            }
+        }
+    }
+
 
     /** 
      * Desktop script call run(arguments) method in order to
@@ -242,8 +254,8 @@ class KDMessageSender extends KDApplication {
     run(args) {
         //Send a message to app with first param as identifier
         var m = new KDMessage(this.identifier, args[0]);
-        for(var i = 1; i<args.length; i+=2) {
-            m.appendValue(args[i], args[i+1]);
+        for (var i = 1; i < args.length; i += 2) {
+            m.appendValue(args[i], args[i + 1]);
         }
         this.desktop.sendMessage(m);
 

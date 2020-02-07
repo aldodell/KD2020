@@ -114,6 +114,10 @@ class KDComponent extends KDObject {
             kdComponent.publish(this);
         }
     }
+
+    remove() {
+        this.domObject.parentNode.removeChild(this.domObject);
+    }
 }
 
 
@@ -434,7 +438,7 @@ class KDScript extends KDComponent {
     constructor() {
         super();
         this.htmlName = "script";
-       
+
     }
 
     build() {
@@ -453,6 +457,7 @@ class KDScript extends KDComponent {
      * @param async Boolean means if script will be execute inmediatly
      * */
     load(url, async) {
+
         if (this.domObject) {
             if (async == undefined) async = true;
             var p = this.domObject.parentNode;
@@ -462,6 +467,7 @@ class KDScript extends KDComponent {
             this.domObject.src = url;
             this.domObject.async = async;
         }
+
         return this;
     }
 

@@ -592,7 +592,7 @@ class KDScript extends KDComponent {
     constructor() {
         super();
         this.htmlName = "script";
-        this.parent = undefined;
+       
     }
 
     build() {
@@ -603,7 +603,6 @@ class KDScript extends KDComponent {
 
     publish(kdComponent) {
         super.publish(kdComponent);
-        this.parent = kdComponent;
         return this;
     }
 
@@ -1043,9 +1042,21 @@ class KDApplication extends KDObject {
          * */
         this.mainWindow = undefined;
 
-        /** Used to process messaged received from desktop or another app  */
-        this.processMessage = function (kdMessage) { }
+
     }
+
+    /** Used to process messaged received from desktop or another app  */
+    processMessage(kdMessage) {
+
+        //If recieve a message to change window size
+        //{"command" : "changeSize", "width":"100", "height":"100"}
+        if (this.mainWindow != undefined) {
+            if (kdMessage.values["command"] == "changeSize") {
+                this.mainWindow.setSize(new KDSize(kdMessage.values["width"], kdMessage.values["height"]));
+            }
+        }
+    }
+
 
     /** 
      * Desktop script call run(arguments) method in order to
@@ -1234,8 +1245,8 @@ class KDMessageSender extends KDApplication {
     run(args) {
         //Send a message to app with first param as identifier
         var m = new KDMessage(this.identifier, args[0]);
-        for(var i = 1; i<args.length; i+=2) {
-            m.appendValue(args[i], args[i+1]);
+        for (var i = 1; i < args.length; i += 2) {
+            m.appendValue(args[i], args[i + 1]);
         }
         this.desktop.sendMessage(m);
 
@@ -1706,8 +1717,18 @@ class QQSM extends KDApplication {
             if (kdMessage.getValue("show") == "next") {
                 this.nextQuestion();
             }
+
+            //Change size overload zz55
+            if (kdMessage.getValue("command") == "changeSize") {
+                var w = parseInt(kdMessage.getValue("width"));
+                var h = parseInt(kdMessage.getValue("height"));
+                this.setSize(new KDSize(w, h));
+            }
         }
+
     }
+
+
 
 }
 
@@ -1738,7 +1759,7 @@ class QQSM_control extends KDApplication {
         //zz1
         this.nextButton.domObject.app = this;
         this.nextButton.domObject.addEventListener("click", function (e) {
-            alert("mmmm");
+
             var m = new KDMessage(this.app.identifier, "qqsm");
             m.appendValue("show", "next");
             this.app.desktop.sendRemoteMessage(m);
