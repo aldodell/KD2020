@@ -272,7 +272,24 @@ class KDComponent extends KDObject {
             kdComponent.publish(this);
         }
     }
+
+    remove() {
+        this.domObject.parentNode.removeChild(this.domObject);
+    }
 }
+
+class KDHeadTag extends KDComponent {
+    build() {
+        this.domObject = document.getElementsByTagName("head")[0];
+        return this;
+    }
+
+    publish() {
+    }
+
+}
+//Instance
+var kdHeadTag = new KDHeadTag();
 
 
 /** Visual components base classes
@@ -592,7 +609,8 @@ class KDScript extends KDComponent {
     constructor() {
         super();
         this.htmlName = "script";
-       
+        this.published = false;
+
     }
 
     build() {
@@ -601,25 +619,28 @@ class KDScript extends KDComponent {
         return this;
     }
 
-    publish(kdComponent) {
-        super.publish(kdComponent);
+    publish() {
+        this.published = true;
+        super.publish(kdHeadTag);
         return this;
     }
+
 
     /**
      * @param url URL wich will be execute
      * @param async Boolean means if script will be execute inmediatly
      * */
     load(url, async) {
-        if (this.domObject) {
-            if (async == undefined) async = true;
-            var p = this.domObject.parentNode;
-            p.removeChild(this.domObject);
-            p.appendChild(this.domObject);
-            this.domObject.setAttribute("type", "text/javascript");
-            this.domObject.src = url;
-            this.domObject.async = async;
+        // var headTag = document.getElementsByTagName("head")[0];
+        if (this.published) {
+            kdHeadTag.domObject
+                .removeChild(this.domObject);
         }
+       
+        if (async == undefined) async = true;
+        this.domObject.setAttribute("src", url);
+        this.domObject.setAttribute("async", async);
+        this.publish();
         return this;
     }
 
@@ -1265,9 +1286,12 @@ class KDDesktop extends KDVisualComponent {
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
         this.remoteMessagesProcessor = new KDScript();
-        this.remoteMessagesProcessorURL = "kd-messages-queue.js";
         this.remoteMessagesProcessorTime = 10000;
+
         this.messageReplicatorURL = "kd-messages-replicator.php";
+        this.messageResetURL = "kd-messages-reset.php";
+        this.remoteMessagesProcessorURL = "kd-messages-queue.js";
+
         this.remoteMessagesTimer = 0;
         this.lastMessageIndex = -1;
 
@@ -1324,9 +1348,15 @@ class KDDesktop extends KDVisualComponent {
     sendRemoteMessage(kdMessage) {
         var json = JSON.stringify(kdMessage);
         //Send desktop instance name + message zz2
-        var uri = this.messageReplicatorURL + "?d=" + encodeURIComponent(this.getNameOfInstance()) + "&m=" + encodeURIComponent(json);
+        var uri = this.messageReplicatorURL +
+            "?d=" +
+            encodeURIComponent(this.getNameOfInstance()) +
+            "&m=" +
+            encodeURIComponent(json);
+
+        console.log(uri);
         this.remoteMessagesProcessor
-             .load(uri);
+            .load(uri);
     }
 
     remoteMessagesLoop(theDesktop) {
@@ -1341,6 +1371,9 @@ class KDDesktop extends KDVisualComponent {
 
     startRemoteMessagesHandler() {
         var theDesktop = this;
+        //Initial message
+        console.log(this.messageResetURL);
+        this.remoteMessagesProcessor.load(this.messageResetURL);
         this.remoteMessagesTimer = window.setInterval(function () { theDesktop.remoteMessagesLoop(theDesktop); }, this.remoteMessagesProcessorTime);
     }
 
@@ -1348,6 +1381,10 @@ class KDDesktop extends KDVisualComponent {
         window.clearInterval(this.remoteMessagesTimer);
     }
 
+    /**
+     *  Broadcast a message to all availables apps 
+     * associates with this desktop
+     * */
     sendMessage(kdMessage) {
         var i;
         for (i = 0; i < this.applicationsInstances.length; i++) {

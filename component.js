@@ -120,6 +120,19 @@ class KDComponent extends KDObject {
     }
 }
 
+class KDHeadTag extends KDComponent {
+    build() {
+        this.domObject = document.getElementsByTagName("head")[0];
+        return this;
+    }
+
+    publish() {
+    }
+
+}
+//Instance
+var kdHeadTag = new KDHeadTag();
+
 
 /** Visual components base classes
  * */
@@ -438,6 +451,7 @@ class KDScript extends KDComponent {
     constructor() {
         super();
         this.htmlName = "script";
+        this.published = false;
 
     }
 
@@ -447,27 +461,28 @@ class KDScript extends KDComponent {
         return this;
     }
 
-    publish(kdComponent) {
-        super.publish(kdComponent);
+    publish() {
+        this.published = true;
+        super.publish(kdHeadTag);
         return this;
     }
+
 
     /**
      * @param url URL wich will be execute
      * @param async Boolean means if script will be execute inmediatly
      * */
     load(url, async) {
-
-        if (this.domObject) {
-            if (async == undefined) async = true;
-            var p = this.domObject.parentNode;
-            p.removeChild(this.domObject);
-            p.appendChild(this.domObject);
-            this.domObject.setAttribute("type", "text/javascript");
-            this.domObject.src = url;
-            this.domObject.async = async;
+        // var headTag = document.getElementsByTagName("head")[0];
+        if (this.published) {
+            kdHeadTag.domObject
+                .removeChild(this.domObject);
         }
-
+       
+        if (async == undefined) async = true;
+        this.domObject.setAttribute("src", url);
+        this.domObject.setAttribute("async", async);
+        this.publish();
         return this;
     }
 

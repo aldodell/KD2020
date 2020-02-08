@@ -8,9 +8,12 @@ class KDDesktop extends KDVisualComponent {
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
         this.remoteMessagesProcessor = new KDScript();
-        this.remoteMessagesProcessorURL = "kd-messages-queue.js";
         this.remoteMessagesProcessorTime = 10000;
+
         this.messageReplicatorURL = "kd-messages-replicator.php";
+        this.messageResetURL = "kd-messages-reset.php";
+        this.remoteMessagesProcessorURL = "kd-messages-queue.js";
+
         this.remoteMessagesTimer = 0;
         this.lastMessageIndex = -1;
 
@@ -67,9 +70,15 @@ class KDDesktop extends KDVisualComponent {
     sendRemoteMessage(kdMessage) {
         var json = JSON.stringify(kdMessage);
         //Send desktop instance name + message zz2
-        var uri = this.messageReplicatorURL + "?d=" + encodeURIComponent(this.getNameOfInstance()) + "&m=" + encodeURIComponent(json);
+        var uri = this.messageReplicatorURL +
+            "?d=" +
+            encodeURIComponent(this.getNameOfInstance()) +
+            "&m=" +
+            encodeURIComponent(json);
+
+        console.log(uri);
         this.remoteMessagesProcessor
-             .load(uri);
+            .load(uri);
     }
 
     remoteMessagesLoop(theDesktop) {
@@ -84,6 +93,9 @@ class KDDesktop extends KDVisualComponent {
 
     startRemoteMessagesHandler() {
         var theDesktop = this;
+        //Initial message
+        console.log(this.messageResetURL);
+        this.remoteMessagesProcessor.load(this.messageResetURL);
         this.remoteMessagesTimer = window.setInterval(function () { theDesktop.remoteMessagesLoop(theDesktop); }, this.remoteMessagesProcessorTime);
     }
 
@@ -91,6 +103,10 @@ class KDDesktop extends KDVisualComponent {
         window.clearInterval(this.remoteMessagesTimer);
     }
 
+    /**
+     *  Broadcast a message to all availables apps 
+     * associates with this desktop
+     * */
     sendMessage(kdMessage) {
         var i;
         for (i = 0; i < this.applicationsInstances.length; i++) {
