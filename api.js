@@ -59,6 +59,12 @@ class KDMessage extends KDObject {
     getId() {
         return "kdm" + this.index;
     }
+
+    importJSON(json) {
+        this.values = json.values;
+        this.destinationIdentifier = json.destinationIdentifier;
+        this.sourceIdentifier = json.sourceIdentifier;
+    }
 }
 
 
@@ -638,9 +644,11 @@ class KDScript extends KDComponent {
         }
        
         if (async == undefined) async = true;
+        this.build();
+        this.publish();
         this.domObject.setAttribute("src", url);
         this.domObject.setAttribute("async", async);
-        this.publish();
+    
         return this;
     }
 
@@ -1290,7 +1298,7 @@ class KDDesktop extends KDVisualComponent {
 
         this.messageReplicatorURL = "kd-messages-replicator.php";
         this.messageResetURL = "kd-messages-reset.php";
-        this.remoteMessagesProcessorURL = "kd-messages-queue.js";
+        this.remoteMessageQueueURL = "kd-messages-queue.js";
 
         this.remoteMessagesTimer = 0;
         this.lastMessageIndex = -1;
@@ -1363,7 +1371,7 @@ class KDDesktop extends KDVisualComponent {
         console.log("Entering to remoteMessagesLoop");
         try {
             console.log(theDesktop.remoteMessagesProcessorURL);
-            theDesktop.remoteMessagesProcessor.load(theDesktop.remoteMessagesProcessorURL);
+            theDesktop.remoteMessagesProcessor.load(theDesktop.remoteMessageQueueURL);
         } catch (ex) {
             console.log("ERROR:" + ex);
         }

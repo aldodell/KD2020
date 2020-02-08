@@ -59,6 +59,12 @@ class KDMessage extends KDObject {
     getId() {
         return "kdm" + this.index;
     }
+
+    importJSON(json) {
+        this.values = json.values;
+        this.destinationIdentifier = json.destinationIdentifier;
+        this.sourceIdentifier = json.sourceIdentifier;
+    }
 }
 
 

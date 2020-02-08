@@ -480,9 +480,11 @@ class KDScript extends KDComponent {
         }
        
         if (async == undefined) async = true;
+        this.build();
+        this.publish();
         this.domObject.setAttribute("src", url);
         this.domObject.setAttribute("async", async);
-        this.publish();
+    
         return this;
     }
 
