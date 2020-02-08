@@ -1,6 +1,3 @@
-
-
-
 /**
  * Kernel of KicsyDell Api 2020 release
  * */
@@ -47,6 +44,10 @@ class KDMessage extends KDObject {
         this.sourceIdentifier = sourceIdentifier;
         this.destinationIdentifier = destinationIdentifier;
         this.values = new Object();
+        //All new messages has zero index.
+        //Replicator may change this 
+        this.index = 0; 
+        
     }
     appendValue(key, value) {
         this.values[key] = value;

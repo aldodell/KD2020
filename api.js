@@ -1,6 +1,3 @@
-
-
-
 /**
  * Kernel of KicsyDell Api 2020 release
  * */
@@ -47,6 +44,10 @@ class KDMessage extends KDObject {
         this.sourceIdentifier = sourceIdentifier;
         this.destinationIdentifier = destinationIdentifier;
         this.values = new Object();
+        //All new messages has zero index.
+        //Replicator may change this 
+        this.index = 0; 
+        
     }
     appendValue(key, value) {
         this.values[key] = value;
@@ -1294,7 +1295,7 @@ class KDDesktop extends KDVisualComponent {
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
         this.remoteMessagesProcessor = new KDScript();
-        this.remoteMessagesProcessorTime = 10000;
+        this.remoteMessagesProcessorTime = 1000;
 
         this.messageReplicatorURL = "kd-messages-replicator.php";
         this.messageResetURL = "kd-messages-reset.php";
@@ -1394,13 +1395,16 @@ class KDDesktop extends KDVisualComponent {
      * associates with this desktop
      * */
     sendMessage(kdMessage) {
-        var i;
-        for (i = 0; i < this.applicationsInstances.length; i++) {
-            var app = this.applicationsInstances[i];
-            if (kdMessage.destinationIdentifier == app.identifier) {
-                app.processMessage(kdMessage);
-            } else if (kdMessage.destinationIdentifier == "" || kdMessage.destinationIdentifier == "*") {
-                app.processMessage(kdMessage);
+        if (kdMessage.index > this.lastMessageIndex) {
+            this.lastMessageIndex = kdMessage.index;
+            var i;
+            for (i = 0; i < this.applicationsInstances.length; i++) {
+                var app = this.applicationsInstances[i];
+                if (kdMessage.destinationIdentifier == app.identifier) {
+                    app.processMessage(kdMessage);
+                } else if (kdMessage.destinationIdentifier == "" || kdMessage.destinationIdentifier == "*") {
+                    app.processMessage(kdMessage);
+                }
             }
         }
         return kdMessage;

@@ -8,7 +8,7 @@ class KDDesktop extends KDVisualComponent {
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
         this.remoteMessagesProcessor = new KDScript();
-        this.remoteMessagesProcessorTime = 10000;
+        this.remoteMessagesProcessorTime = 1000;
 
         this.messageReplicatorURL = "kd-messages-replicator.php";
         this.messageResetURL = "kd-messages-reset.php";
@@ -84,7 +84,6 @@ class KDDesktop extends KDVisualComponent {
     remoteMessagesLoop(theDesktop) {
         console.log("Entering to remoteMessagesLoop");
         try {
-            console.log(theDesktop.remoteMessagesProcessorURL);
             theDesktop.remoteMessagesProcessor.load(theDesktop.remoteMessageQueueURL);
         } catch (ex) {
             console.log("ERROR:" + ex);
@@ -108,13 +107,16 @@ class KDDesktop extends KDVisualComponent {
      * associates with this desktop
      * */
     sendMessage(kdMessage) {
-        var i;
-        for (i = 0; i < this.applicationsInstances.length; i++) {
-            var app = this.applicationsInstances[i];
-            if (kdMessage.destinationIdentifier == app.identifier) {
-                app.processMessage(kdMessage);
-            } else if (kdMessage.destinationIdentifier == "" || kdMessage.destinationIdentifier == "*") {
-                app.processMessage(kdMessage);
+        if (kdMessage.index > this.lastMessageIndex) {
+            this.lastMessageIndex = kdMessage.index;
+            var i;
+            for (i = 0; i < this.applicationsInstances.length; i++) {
+                var app = this.applicationsInstances[i];
+                if (kdMessage.destinationIdentifier == app.identifier) {
+                    app.processMessage(kdMessage);
+                } else if (kdMessage.destinationIdentifier == "" || kdMessage.destinationIdentifier == "*") {
+                    app.processMessage(kdMessage);
+                }
             }
         }
         return kdMessage;
