@@ -24,10 +24,9 @@ $u = count($y);
 $p = "";
 
 if ($u > $MAX_MESSAGES) {
-    $o = $MAX_MESSAGES - $u;
-  
-    for ($i = $o; $i < $MAX_MESSAGES; $i++) {
-        $p .= $y[$i-1] . "\r\n";
+   
+    for ($i = 0; $i < $MAX_MESSAGES; $i++) {
+        $p .= $y[$u - $MAX_MESSAGES + $i - 1] . "\r\n";
     }
 
     file_put_contents($fileName_messages, "");

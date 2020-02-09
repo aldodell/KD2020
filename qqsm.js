@@ -236,13 +236,27 @@ class QQSM extends KDApplication {
         }
     }
 
-    nextQuestion() {
-        this.indexQuestion++;
+
+    showQuestion() {
         this.question.setText(data[this.indexQuestion].q);
         this.optionA.setText(data[this.indexQuestion].a);
         this.optionB.setText(data[this.indexQuestion].b);
         this.optionC.setText(data[this.indexQuestion].c);
         this.optionD.setText(data[this.indexQuestion].d);
+
+    }
+
+    nextQuestion() {
+        this.indexQuestion++;
+        this.showQuestion();
+
+    }
+
+
+    backQuestion() {
+        this.indexQuestion--;
+        this.showQuestion();
+
     }
 
     run(args) {
@@ -285,6 +299,10 @@ class QQSM extends KDApplication {
                 this.nextQuestion();
             }
 
+            if (kdMessage.getValue("show") == "back") {
+                this.backQuestion();
+            }
+
             //Change size overload zz55
             if (kdMessage.getValue("command") == "changeSize") {
                 var w = parseInt(kdMessage.getValue("width"));
@@ -317,8 +335,13 @@ class QQSM_control extends KDApplication {
 
         this.nextButton = new KDButton().build().publish(this.mainWindow.body)
             .setSize(new KDSize(200, 60))
-            .setPosition(new KDPosition(10,10))
+            .setPosition(new KDPosition(10, 10))
             .setText("Next");
+
+        this.backButton = new KDButton().build().publish(this.mainWindow.body)
+            .setSize(new KDSize(200, 60))
+            .setPosition(new KDPosition(10, 80))
+            .setText("Back");
     }
 
     run(args) {
@@ -330,6 +353,15 @@ class QQSM_control extends KDApplication {
 
             var m = new KDMessage(this.app.identifier, "qqsm");
             m.appendValue("show", "next");
+            this.app.desktop.sendRemoteMessage(m);
+
+        });
+
+        this.backButton.domObject.app = this;
+        this.backButton.domObject.addEventListener("click", function (e) {
+
+            var m = new KDMessage(this.app.identifier, "qqsm");
+            m.appendValue("show", "back");
             this.app.desktop.sendRemoteMessage(m);
 
         });
