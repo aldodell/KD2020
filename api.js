@@ -1371,7 +1371,6 @@ class KDDesktop extends KDVisualComponent {
     remoteMessagesLoop(theDesktop) {
         console.log("Entering to remoteMessagesLoop");
         try {
-            console.log(theDesktop.remoteMessagesProcessorURL);
             theDesktop.remoteMessagesProcessor.load(theDesktop.remoteMessageQueueURL);
         } catch (ex) {
             console.log("ERROR:" + ex);
@@ -1799,6 +1798,7 @@ class QQSM_control extends KDApplication {
 
         this.nextButton = new KDButton().build().publish(this.mainWindow.body)
             .setSize(new KDSize(200, 60))
+            .setPosition(new KDPosition(10,10))
             .setText("Next");
     }
 

@@ -317,6 +317,7 @@ class QQSM_control extends KDApplication {
 
         this.nextButton = new KDButton().build().publish(this.mainWindow.body)
             .setSize(new KDSize(200, 60))
+            .setPosition(new KDPosition(10,10))
             .setText("Next");
     }
 
