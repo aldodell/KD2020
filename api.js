@@ -537,6 +537,9 @@ class KDButton extends KDVisualComponent {
         this.htmlName = "input";
         this.htmlType = "button";
         this.style.backgroundColor = "";
+        this.style.backgroundColor = "";
+        this.style.borderStyle = "";
+        this.style.borderWidth = "";
     }
 
     setText(value) {
@@ -643,13 +646,13 @@ class KDScript extends KDComponent {
             kdHeadTag.domObject
                 .removeChild(this.domObject);
         }
-       
+
         if (async == undefined) async = true;
         this.build();
         this.publish();
         this.domObject.setAttribute("src", url);
         this.domObject.setAttribute("async", async);
-    
+
         return this;
     }
 
@@ -1478,6 +1481,8 @@ class KDDesktop extends KDVisualComponent {
 }
 
 
+
+var data = new Object();
 
 class QQSMBox extends KDLayer {
 

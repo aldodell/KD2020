@@ -1,3 +1,5 @@
+var data = new Object();
+
 class QQSMBox extends KDLayer {
 
     constructor() {
@@ -257,6 +259,19 @@ class QQSM extends KDApplication {
         this.indexQuestion--;
         this.showQuestion();
 
+    }
+
+
+    answerA() {
+    }
+
+    answerB() {
+    }
+
+    answerC() {
+    }
+
+    answerD() {
     }
 
     run(args) {
