@@ -287,10 +287,40 @@ class KDCreateUser extends KDApplication {
         if (user == "") {
             user = prompt("Type new user name:");
         }
-        var k = new KDKernel();
-        k.createUser(user);
+
+        this.desktop.kernel.createUser(user);
         return "Done!";
     }
 }
+
+class KDLoadUser extends KDApplication {
+    constructor(kdDesktop) {
+        super(kdDesktop, "load-user");
+        this.mainWindow = undefined;
+    }
+    run(args) {
+        var user = args[0];
+        if (user == "") {
+            user = prompt("Type user name:");
+        }
+
+        this.desktop.kernel.loadUser(user);
+
+        return "Done!";
+    }
+}
+
+class KDShowUser extends KDApplication {
+    constructor(kdDesktop) {
+        super(kdDesktop, "show-user");
+        this.mainWindow = undefined;
+       
+    }
+    run(args) {
+        return this.desktop.kernel.currentUser.name;
+    }
+}
+
+
 
 

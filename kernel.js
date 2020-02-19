@@ -32,13 +32,13 @@ class KDUser extends KDObject {
         this.name = undefined ? "guest" : userName;
         this.securityLevel = 0;
         this.passwordHash = 0;
-        this.kernel = kdKernel;
+      
     }
 }
 
 
 /** Enviroment KERNEL class */
-class KDKernel {
+class KDKernel extends KDObject {
 
     static isTouchAvailable() {
         if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
@@ -59,12 +59,12 @@ class KDKernel {
         return user;
     }
 
-    loadUser(userName) {
+    loadUser(userName, desktop) {
         var user = new KDUser();
         user.name = userName;
         user.securityLevel = 0;
 
-        var sender = new KDSender(this.kernel.LOAD_USER_URL);
+        var sender = new KDSender(this.LOAD_USER_URL);
         sender
             .build()
             .publish()
@@ -80,6 +80,7 @@ class KDKernel {
     }
 
     constructor() {
+        super();
         this.CREATE_USER_URL = 'kd-kernel-create-user.php';
         this.LOAD_USER_URL = 'kd-kernel-load-user.php';
         this.currentUser = new KDUser("guest");

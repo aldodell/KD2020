@@ -27,17 +27,18 @@ class KDObject {
 
 /** Wrap info about current user */
 class KDUser extends KDObject {
-    constructor() {
+    constructor(userName) {
         super();
-        this.name = "newUser";
+        this.name = undefined ? "guest" : userName;
         this.securityLevel = 0;
         this.passwordHash = 0;
+      
     }
 }
 
 
 /** Enviroment KERNEL class */
-class KDKernel {
+class KDKernel extends KDObject {
 
     static isTouchAvailable() {
         if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
@@ -46,16 +47,31 @@ class KDKernel {
         return false;
     }
 
+
     createUser(userName) {
-        var user = new KDUser();
-        user.name = userName;
-        user.securityLevel = 0;
+        var user = new KDUser(userName);
         var sender = new KDSender(this.CREATE_USER_URL)
             .build()
             .publish();
-        sender.set("name", user.name);
+        sender.set("name", userName);
         sender.set("securityLevel", user.securityLevel);
         sender.send();
+        return user;
+    }
+
+    loadUser(userName, desktop) {
+        var user = new KDUser();
+        user.name = userName;
+        user.securityLevel = 0;
+
+        var sender = new KDSender(this.LOAD_USER_URL);
+        sender
+            .build()
+            .publish()
+            .set("object", this.getNameOfInstance())
+            .set("userName", userName)
+            .send();
+
         return user;
     }
 
@@ -64,8 +80,11 @@ class KDKernel {
     }
 
     constructor() {
+        super();
         this.CREATE_USER_URL = 'kd-kernel-create-user.php';
-        this.createUser("guest");
+        this.LOAD_USER_URL = 'kd-kernel-load-user.php';
+        this.currentUser = new KDUser("guest");
+        this.createUser(this.currentUser);
     }
 }
 
@@ -1366,11 +1385,41 @@ class KDCreateUser extends KDApplication {
         if (user == "") {
             user = prompt("Type new user name:");
         }
-        var k = new KDKernel();
-        k.createUser(user);
+
+        this.desktop.kernel.createUser(user);
         return "Done!";
     }
 }
+
+class KDLoadUser extends KDApplication {
+    constructor(kdDesktop) {
+        super(kdDesktop, "load-user");
+        this.mainWindow = undefined;
+    }
+    run(args) {
+        var user = args[0];
+        if (user == "") {
+            user = prompt("Type user name:");
+        }
+
+        this.desktop.kernel.loadUser(user);
+
+        return "Done!";
+    }
+}
+
+class KDShowUser extends KDApplication {
+    constructor(kdDesktop) {
+        super(kdDesktop, "show-user");
+        this.mainWindow = undefined;
+       
+    }
+    run(args) {
+        return this.desktop.kernel.currentUser.name;
+    }
+}
+
+
 
 
 
@@ -1378,8 +1427,9 @@ class KDCreateUser extends KDApplication {
  * Desktop manager classes
  * */
 class KDDesktop extends KDVisualComponent {
-    constructor() {
+    constructor(kdKernel) {
         super();
+        this.kernel = kdKernel
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
         this.remoteMessagesProcessor = new KDScript();
