@@ -8,12 +8,10 @@
     <script>
 
 
-        var k = new KDKernel();
-        k.createUser("aldodell");
 
 
-
-        var desktop = new KDDesktop().build().publish();
+        var kernel = new KDKernel();
+        var desktop = new KDDesktop(kernel).build().publish();
 
         class ExampleApp extends KDApplication {
             constructor(dkDesktop) {

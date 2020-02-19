@@ -4,7 +4,6 @@ include "kd-kernel-include.php";
 $name = $_POST["name"];
 $securityLevel = $_POST["securityLevel"];
 $userpath = USER_PATH . "/" . $name;
-
 $user["name"] = $name;
 $user["securityLevel"] = $securityLevel;
 

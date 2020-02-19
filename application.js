@@ -81,31 +81,6 @@ class KDApplication extends KDObject {
 
 
 class KDTerminal extends KDApplication {
-    constructor(kdDesktop) {
-        super(kdDesktop, "KDTerminal");
-        this.iconURL = "apps/KDTerminal/media/bash.png";
-        this.title = "KDTerminal";
-        var mainWindowSize = new KDSize(600, 400);
-        this.mainWindow = new KDWindow()
-            .publish(kdDesktop)
-            .setSize(mainWindowSize)
-            .setPosition(KDPosition.centerScreen(mainWindowSize))
-            .setTitle(this.title)
-            .hide();
-        this.mainWindow.body.domObject.style.overflow = "scroll";
-        this.lineStyle = new KDStyle()
-            .add("position", "relative")
-            .add("width", this.mainWindow.body.size.offset(-10, 0).widthpx())
-            .add("backgroundColor", "transparent")
-            .add("borderStyle", "none")
-            .add("padding", "4px")
-            .add("boxShadow", "")
-            .add("fontFamily", "'Lucida Console', Monaco, monospace")
-            .add("fontSize", "14");
-        this.currentCommandLine = undefined;
-        this.newCommandLine(this);
-        this._indexCommandLine = 0;
-    }
 
     proccessCommand(kdTerminal, text) {
 
@@ -113,7 +88,6 @@ class KDTerminal extends KDApplication {
             kdTerminal.newOuputLayer(kdTerminal, "Help:");
             return true;
         }
-
 
         if (text == "!") {
             var r = "";
@@ -124,7 +98,6 @@ class KDTerminal extends KDApplication {
             kdTerminal.newOuputLayer(kdTerminal, "Programs availables:\r\n" + r);
             return true;
         }
-
 
         /* This part splits text by '|'. So get first argument(command) and rests arguments
         First argument or command is evalute to determine wich application will run
@@ -159,6 +132,14 @@ class KDTerminal extends KDApplication {
         kdTerminal.newCommandLine(kdTerminal);
     }
 
+    saveLine(kdTerminal, text) {
+        kdTerminal.sender
+            .set("line", text)
+            .set("userName", kdTerminal.userName)
+            .setUrl(kdTerminal.SAVE_LINE_URL)
+            .send();
+    }
+
     newCommandLine(kdTerminal) {
 
         var commandLine = new KDTextBox()
@@ -170,6 +151,7 @@ class KDTerminal extends KDApplication {
                     kdTerminal.newCommandLine(kdTerminal);
                 } else {
                     kdTerminal.proccessCommand(kdTerminal, commandLine.getText());
+                    kdTerminal.saveLine(kdTerminal, commandLine.getText());
                 }
             }
         });
@@ -221,6 +203,35 @@ class KDTerminal extends KDApplication {
         this.mainWindow.show();
         this.currentCommandLine.domObject.focus();
     }
+
+    constructor(kdDesktop) {
+        super(kdDesktop, "KDTerminal");
+        this.iconURL = "apps/KDTerminal/media/bash.png";
+        this.title = "KDTerminal";
+        var mainWindowSize = new KDSize(600, 400);
+        this.mainWindow = new KDWindow()
+            .publish(kdDesktop)
+            .setSize(mainWindowSize)
+            .setPosition(KDPosition.centerScreen(mainWindowSize))
+            .setTitle(this.title)
+            .hide();
+        this.mainWindow.body.domObject.style.overflow = "scroll";
+        this.lineStyle = new KDStyle()
+            .add("position", "relative")
+            .add("width", this.mainWindow.body.size.offset(-10, 0).widthpx())
+            .add("backgroundColor", "transparent")
+            .add("borderStyle", "none")
+            .add("padding", "4px")
+            .add("boxShadow", "")
+            .add("fontFamily", "'Lucida Console', Monaco, monospace")
+            .add("fontSize", "14");
+        this.currentCommandLine = undefined;
+        this.newCommandLine(this);
+        this._indexCommandLine = 0;
+        this.SAVE_LINE_URL = "kd-terminal-save-line.php";
+        this.sender = new KDSender(this.SAVE_LINE_URL);
+        this.userName = "guest";
+    }
 }
 
 
@@ -246,6 +257,8 @@ class KDTerminalClock extends KDApplication {
     }
 }
 
+
+/** Send a KDMessage to apps */
 class KDMessageSender extends KDApplication {
     constructor(kdDesktop) {
         super(kdDesktop, "message-sender");

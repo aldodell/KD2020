@@ -3,8 +3,9 @@
  * Desktop manager classes
  * */
 class KDDesktop extends KDVisualComponent {
-    constructor() {
+    constructor(kdKernel) {
         super();
+        this.kernel = kdKernel
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
         this.remoteMessagesProcessor = new KDScript();

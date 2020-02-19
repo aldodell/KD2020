@@ -27,11 +27,12 @@ class KDObject {
 
 /** Wrap info about current user */
 class KDUser extends KDObject {
-    constructor() {
+    constructor(userName) {
         super();
-        this.name = "newUser";
+        this.name = undefined ? "guest" : userName;
         this.securityLevel = 0;
         this.passwordHash = 0;
+        this.kernel = kdKernel;
     }
 }
 
@@ -46,22 +47,43 @@ class KDKernel {
         return false;
     }
 
+
     createUser(userName) {
-        var user = new KDUser();
-        user.name = userName;
-        user.securityLevel = 0;
+        var user = new KDUser(userName);
         var sender = new KDSender(this.CREATE_USER_URL)
             .build()
             .publish();
-        sender.set("name", user.name);
+        sender.set("name", userName);
         sender.set("securityLevel", user.securityLevel);
         sender.send();
         return user;
     }
 
+    loadUser(userName) {
+        var user = new KDUser();
+        user.name = userName;
+        user.securityLevel = 0;
+
+        var sender = new KDSender(this.kernel.LOAD_USER_URL);
+        sender
+            .build()
+            .publish()
+            .set("object", this.getNameOfInstance())
+            .set("userName", userName)
+            .send();
+
+        return user;
+    }
+
+    getUserPath(userName) {
+        return "users/" + userName;
+    }
+
     constructor() {
         this.CREATE_USER_URL = 'kd-kernel-create-user.php';
-        this.createUser("guest");
+        this.LOAD_USER_URL = 'kd-kernel-load-user.php';
+        this.currentUser = new KDUser("guest");
+        this.createUser(this.currentUser);
     }
 }
 

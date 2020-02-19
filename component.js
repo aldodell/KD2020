@@ -555,6 +555,15 @@ class KDSender extends KDVisualComponent {
         this.style.visibility = "hidden";
     }
 
+    setUrl(url) {
+        this.url = url;
+        this.form.url = url;
+        if (this.form.domObject) {
+            this.form.domObject.setAttribute("action", url);
+        }
+        return this;
+    }
+
     build() {
         super.build();
         this.form.url = this.url;
@@ -565,7 +574,6 @@ class KDSender extends KDVisualComponent {
     }
 
     publish(kdComponent) {
-
         if (this.domObject == undefined) this.build();
         if (this.form.domObject == undefined) this.form.build();
 
