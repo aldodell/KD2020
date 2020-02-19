@@ -7,6 +7,12 @@
     <script src="api.js"></script>
     <script>
 
+
+        var k = new KDKernel();
+        k.createUser("aldodell");
+
+
+
         var desktop = new KDDesktop().build().publish();
 
         class ExampleApp extends KDApplication {
@@ -31,7 +37,7 @@
                     .setParameters(7, 449, 16, 33, 12, 13, 7)
                     .showSprite(0, 2);
 
-                   
+
             }
             run() {
                 this.mainWindow.show();
@@ -49,8 +55,9 @@
         desktop.addApplicationClass(KDMessageSender);
         desktop.addApplicationClass(QQSM);
         desktop.addApplicationClass(QQSM_control);
+        desktop.addApplicationClass(KDCreateUser);
 
-        
+
 
 
         desktop.run();

@@ -264,3 +264,20 @@ class KDMessageSender extends KDApplication {
 }
 
 
+class KDCreateUser extends KDApplication {
+    constructor(kdDesktop) {
+        super(kdDesktop, "create-user");
+        this.mainWindow = undefined;
+    }
+    run(args) {
+        var user = args[0];
+        if (user == "") {
+            user = prompt("Type new user name:");
+        }
+        var k = new KDKernel();
+        k.createUser(user);
+        return "Done!";
+    }
+}
+
+

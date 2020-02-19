@@ -25,15 +25,47 @@ class KDObject {
 }
 
 
+/** Wrap info about current user */
+class KDUser extends KDObject {
+    constructor() {
+        super();
+        this.name = "newUser";
+        this.securityLevel = 0;
+        this.passwordHash = 0;
+    }
+}
+
+
+/** Enviroment KERNEL class */
 class KDKernel {
+
     static isTouchAvailable() {
         if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
             return true;
         }
         return false;
     }
-    constructor() { }
+
+    createUser(userName) {
+        var user = new KDUser();
+        user.name = userName;
+        user.securityLevel = 0;
+        var sender = new KDSender(this.CREATE_USER_URL)
+            .build()
+            .publish();
+        sender.set("name", user.name);
+        sender.set("securityLevel", user.securityLevel);
+        sender.send();
+        return user;
+    }
+
+    constructor() {
+        this.CREATE_USER_URL = 'kd-kernel-create-user.php';
+        this.createUser("guest");
+    }
 }
+
+
 
 /** Wrap messages to share between apps 
  * @param sourceIdentifier 
@@ -46,8 +78,8 @@ class KDMessage extends KDObject {
         this.values = new Object();
         //All new messages has zero index.
         //Replicator may change this 
-        this.index = 0; 
-        
+        this.index = 0;
+
     }
     appendValue(key, value) {
         this.values[key] = value;

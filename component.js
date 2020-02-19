@@ -557,18 +557,29 @@ class KDSender extends KDVisualComponent {
 
     build() {
         super.build();
+        this.form.url = this.url;
         this.form.build();
         this.domObject.setAttribute("name", this.getId());
         this.form.domObject.setAttribute("name", this.getId() + "_form");
-
         return this;
     }
 
     publish(kdComponent) {
-        super.publish(kdComponent);
+
+        if (this.domObject == undefined) this.build();
         if (this.form.domObject == undefined) this.form.build();
+
+        if (kdComponent == undefined) {
+            var head = document.getElementsByTagName("head")[0];
+            head.appendChild(this.domObject);
+        } else {
+            super.publish(kdComponent);
+        }
+
         var ifrdoc = this.domObject.contentDocument || this.domObject.contentWindow.document;
-        ifrdoc.body.appendChild(this.form.domObject);
+        var z = ifrdoc.getElementsByTagName("body")[0];
+        z.appendChild(this.form.domObject);
+        //ifrdoc.appendChild(this.form.domObject);
         return this;
     }
 

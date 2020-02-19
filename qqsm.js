@@ -7,6 +7,21 @@ class QQSMBox extends KDLayer {
         this.questionFrame = new KDCanvas();
         this.questionLabel = new KDLayer();
 
+        this.normalBoxStyle = new KDStyle()
+            .add("backgroundColor", "transparent")
+            .add("fontSize", 22)
+            .add("textShadow", "2px 1px gray")
+            .add("color", "white")
+            .add("border", "");
+
+        this.selectedBoxStyle = new KDStyle()
+            .add("backgroundColor", "orange")
+            .add("fontSize", 22)
+            .add("textShadow", "2px 1px gray")
+            .add("color", "white")
+            .add("border", "");
+
+
     }
 
     build() {
@@ -17,19 +32,20 @@ class QQSMBox extends KDLayer {
         return this;
     }
 
+
+    applyStyle(kdStyle) {
+        kdStyle.apply(this)
+            .apply(this.questionFrame)
+            .apply(this.questionLabel);
+    }
+
+
     publish(kdVisualComponent) {
         super.publish(kdVisualComponent);
         this.questionFrame.publish(this);
         this.questionLabel.publish(this);
 
-
-        var boxStyle = new KDStyle()
-            .add("backgroundColor", "transparent")
-            .add("fontSize", 22)
-            .add("textShadow", "2px 1px gray")
-            .add("color", "white")
-            .add("border", "")
-            .apply(this)
+        this.normalBoxStyle.apply(this)
             .apply(this.questionFrame)
             .apply(this.questionLabel);
 
@@ -161,6 +177,7 @@ class QQSM extends KDApplication {
 
 
 
+
         //Set up background style
         var backgroundStyle = new KDStyle();
         backgroundStyle.add("backgroundImage", "linear-gradient(to top right, black, darkblue, indigo, navy)")
@@ -263,6 +280,7 @@ class QQSM extends KDApplication {
 
 
     answerA() {
+        this.optionA.applyStyle(this.optionA.selectedBoxStyle);
     }
 
     answerB() {
@@ -342,6 +360,8 @@ class QQSM_control extends KDApplication {
         this.filename = "";
         this.indexQuestion = -1;
 
+
+
         this.mainWindow = new KDWindow().build()
             .setSize(new KDSize(400, 400))
             .setPosition(new KDPosition(0, 0))
@@ -362,6 +382,16 @@ class QQSM_control extends KDApplication {
     run(args) {
         this.mainWindow.show();
         this.mainWindow.setAvailableScreenSize();
+
+        this.nextButton
+            .setSize(new KDSize(this.getSize().width - 20, 100))
+            .setPosition(new KDPosition(10, 10));
+
+        this.backButton
+            .setSize(new KDSize(this.getSize().width - 20, 100))
+            .setPosition(new KDPosition(10, 120));
+
+
         //zz1
         this.nextButton.domObject.app = this;
         this.nextButton.domObject.addEventListener("click", function (e) {

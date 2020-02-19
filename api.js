@@ -25,15 +25,47 @@ class KDObject {
 }
 
 
+/** Wrap info about current user */
+class KDUser extends KDObject {
+    constructor() {
+        super();
+        this.name = "newUser";
+        this.securityLevel = 0;
+        this.passwordHash = 0;
+    }
+}
+
+
+/** Enviroment KERNEL class */
 class KDKernel {
+
     static isTouchAvailable() {
         if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
             return true;
         }
         return false;
     }
-    constructor() { }
+
+    createUser(userName) {
+        var user = new KDUser();
+        user.name = userName;
+        user.securityLevel = 0;
+        var sender = new KDSender(this.CREATE_USER_URL)
+            .build()
+            .publish();
+        sender.set("name", user.name);
+        sender.set("securityLevel", user.securityLevel);
+        sender.send();
+        return user;
+    }
+
+    constructor() {
+        this.CREATE_USER_URL = 'kd-kernel-create-user.php';
+        this.createUser("guest");
+    }
 }
+
+
 
 /** Wrap messages to share between apps 
  * @param sourceIdentifier 
@@ -46,8 +78,8 @@ class KDMessage extends KDObject {
         this.values = new Object();
         //All new messages has zero index.
         //Replicator may change this 
-        this.index = 0; 
-        
+        this.index = 0;
+
     }
     appendValue(key, value) {
         this.values[key] = value;
@@ -722,18 +754,29 @@ class KDSender extends KDVisualComponent {
 
     build() {
         super.build();
+        this.form.url = this.url;
         this.form.build();
         this.domObject.setAttribute("name", this.getId());
         this.form.domObject.setAttribute("name", this.getId() + "_form");
-
         return this;
     }
 
     publish(kdComponent) {
-        super.publish(kdComponent);
+
+        if (this.domObject == undefined) this.build();
         if (this.form.domObject == undefined) this.form.build();
+
+        if (kdComponent == undefined) {
+            var head = document.getElementsByTagName("head")[0];
+            head.appendChild(this.domObject);
+        } else {
+            super.publish(kdComponent);
+        }
+
         var ifrdoc = this.domObject.contentDocument || this.domObject.contentWindow.document;
-        ifrdoc.body.appendChild(this.form.domObject);
+        var z = ifrdoc.getElementsByTagName("body")[0];
+        z.appendChild(this.form.domObject);
+        //ifrdoc.appendChild(this.form.domObject);
         return this;
     }
 
@@ -1288,6 +1331,24 @@ class KDMessageSender extends KDApplication {
 }
 
 
+class KDCreateUser extends KDApplication {
+    constructor(kdDesktop) {
+        super(kdDesktop, "create-user");
+        this.mainWindow = undefined;
+    }
+    run(args) {
+        var user = args[0];
+        if (user == "") {
+            user = prompt("Type new user name:");
+
+        }
+        var k = new KDKernel();
+        k.createUser(user);
+        return "Done!";
+    }
+}
+
+
 
 /**
  * Desktop manager classes
@@ -1491,6 +1552,21 @@ class QQSMBox extends KDLayer {
         this.questionFrame = new KDCanvas();
         this.questionLabel = new KDLayer();
 
+        this.normalBoxStyle = new KDStyle()
+            .add("backgroundColor", "transparent")
+            .add("fontSize", 22)
+            .add("textShadow", "2px 1px gray")
+            .add("color", "white")
+            .add("border", "");
+
+        this.selectedBoxStyle = new KDStyle()
+            .add("backgroundColor", "orange")
+            .add("fontSize", 22)
+            .add("textShadow", "2px 1px gray")
+            .add("color", "white")
+            .add("border", "");
+
+
     }
 
     build() {
@@ -1501,19 +1577,20 @@ class QQSMBox extends KDLayer {
         return this;
     }
 
+
+    applyStyle(kdStyle) {
+        kdStyle.apply(this)
+            .apply(this.questionFrame)
+            .apply(this.questionLabel);
+    }
+
+
     publish(kdVisualComponent) {
         super.publish(kdVisualComponent);
         this.questionFrame.publish(this);
         this.questionLabel.publish(this);
 
-
-        var boxStyle = new KDStyle()
-            .add("backgroundColor", "transparent")
-            .add("fontSize", 22)
-            .add("textShadow", "2px 1px gray")
-            .add("color", "white")
-            .add("border", "")
-            .apply(this)
+        this.normalBoxStyle.apply(this)
             .apply(this.questionFrame)
             .apply(this.questionLabel);
 
@@ -1645,6 +1722,7 @@ class QQSM extends KDApplication {
 
 
 
+
         //Set up background style
         var backgroundStyle = new KDStyle();
         backgroundStyle.add("backgroundImage", "linear-gradient(to top right, black, darkblue, indigo, navy)")
@@ -1745,6 +1823,20 @@ class QQSM extends KDApplication {
 
     }
 
+
+    answerA() {
+        this.optionA.applyStyle(this.optionA.selectedBoxStyle);
+    }
+
+    answerB() {
+    }
+
+    answerC() {
+    }
+
+    answerD() {
+    }
+
     run(args) {
 
         this.mainWindow.show();
@@ -1813,6 +1905,8 @@ class QQSM_control extends KDApplication {
         this.filename = "";
         this.indexQuestion = -1;
 
+
+
         this.mainWindow = new KDWindow().build()
             .setSize(new KDSize(400, 400))
             .setPosition(new KDPosition(0, 0))
@@ -1833,6 +1927,16 @@ class QQSM_control extends KDApplication {
     run(args) {
         this.mainWindow.show();
         this.mainWindow.setAvailableScreenSize();
+
+        this.nextButton
+            .setSize(new KDSize(this.getSize().width - 20, 100))
+            .setPosition(new KDPosition(10, 10));
+
+        this.backButton
+            .setSize(new KDSize(this.getSize().width - 20, 100))
+            .setPosition(new KDPosition(10, 120));
+
+
         //zz1
         this.nextButton.domObject.app = this;
         this.nextButton.domObject.addEventListener("click", function (e) {

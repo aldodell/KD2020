@@ -4,98 +4,112 @@ var data = [
         "a": "La grasa",
         "b": "Los carbohidratos o azúcares",
         "c": "Las proteínas",
-        "d": "Los aminoácidos"
+        "d": "Los aminoácidos",
+        "r": "a"
     },
     {
         "q": "¿María está muy preocupada porque se está engordando. Entre estas opciones, cuál le recomendarías como la mejor para bajar de peso?",
         "a": "Comer solo productos 'light' (ligeros)",
         "b": "Hacer una hora de ejercicios todos los días.",
         "c": "Reducir su ingesta de calorías en un 20%",
-        "d": "Eliminar las harinas de su dieta"
+        "d": "Eliminar las harinas de su dieta",
+        "r": "a"
     },
     {
         "q": "Graciela tiene mucho sobrepeso a nivel de obesidad, azúcar y triglicéridos altos. El médico le indicó:",
         "a": "Comer muy bajo en sal.",
         "b": "Comer muy bajo en grasas.",
         "c": "Comer muy bajo en azúcares y ayunar",
-        "d": "Comer 5 o 6 comidas al día"
+        "d": "Comer 5 o 6 comidas al día",
+        "r": "a"
     },
     {
         "q": "Diego tiene 32 años, es Gerente General de su propia empresa, se ha descuidado con su peso y ya está en 120 kilos y mide 175 cm de altura. El se siente “bien” y a pesar de que su esposa le insiste que debe acudir al médico para tratar su sobrepeso, él se considera un “gordo feliz”. No obstante, para complacer a su esposa, acudió a la cita con el médico y éste le diagnosticó obesidad, pre-diabétes e hipertensión arterial, representando un riesgo cardiovascular “alto”, lo cual lo asustó mucho. Cuál de las siguientes opciones crees que le podría recomendar el doctor a Diego",
         "a": "Hacer caminatas vigorosas de una hora todos los días por la mañana",
         "b": "Seguir una dieta baja en carbohidratos, moderada en proteínas y alta en grasas saludables",
         "c": "Practicar ayunos con restricción de ciertas horas en las que puede comer en forma diaria",
-        "d": "Todas las anteriores "
+        "d": "Todas las anteriores.",
+        "r": "a"
     },
     {
         "q": "¿Cuál es la causa principal por la cual algunas personas comen abundantemente varias veces en el día y no necesariamente  llegan a estar completamente sin hambre?",
         "a": "Porque no tienen fuerza de voluntad para dejar de comer",
         "b": "Porque es una situación hormonal en su organismo",
         "c": "Porque es una situación hormonal en su organismo",
-        "d": "Porque no aprendieron a comer moderadamente cuando niños"
+        "d": "Porque no aprendieron a comer moderadamente cuando niños",
+        "r": "a"
     },
     {
         "q": "Mi médico me dijo que no comiera más de 3 huevos y 2 aguacates a la semana, para poder bajar de peso y controlar también mi colesterol, que está en 220. Me dijo que si no lo bajaba tendría que tomar un medicamento. Esto se debe, posiblemente, a que:",
         "a": "No hago suficiente ejercicio",
         "b": "Me está pegando la edad",
         "c": "Es de familia. En mi casa todos estamos gorditos",
-        "d": "Suelo mezclar grasas buenas (aguacate, aceite de oliva, huevo) con mis comidas cotidianas (arroz, pasta, plátano) "
+        "d": "Suelo mezclar grasas buenas (aguacate, aceite de oliva, huevo) con mis comidas cotidianas (arroz, pasta, plátano).",
+        "r": "a"
     },
     {
         "q": "María Alejandra lleva 3 meses a dieta con su nutricionista con una dieta baja en calorías y ha rebajado muy poco. La razón principal de esto es",
         "a": "Tiene cerebro de gorda",
         "b": "No está desayunando",
         "c": "Que combina grasa y carbohidratos",
-        "d": "Faltó a su última cita con el nutricionista"
+        "d": "Faltó a su última cita con el nutricionista",
+        "r": "a"
     },
     {
         "q": "Josefina está muy preocupada porque está a dieta y dejó de rebajar a partir del segundo mes de dieta. El primer mes bajó 4 kg. y no bajó nada en el segundo mes. ¿Cuál podría ser la causa de esto? ",
         "a": "Porque puede estar recuperando músculo mientras pierde grasa",
         "b": "Porque dejó de hacer ejercicios aeróbicos 3 veces por semana",
         "c": "Porque se le terminaron sus vacaciones y está comiendo en la calle",
-        "d": "Porque su cuerpo llegó hasta donde podía llegar"
+        "d": "Porque su cuerpo llegó hasta donde podía llegar",
+        "r": "a"
     },
     {
         "q": "A María su nutricionista, le recomendó, entre otras cosas, que minimizara la ingesta de carbohidratos o azúcares en su dieta. Por más que ella lo ha intentado, continúa excediéndose en su ingesta de  carbohidratos diarios. Llamó a su nutricionista para plantearle su problema y éste le indicó lo siguiente:",
         "a": "Más fuerza de voluntad para seguir la dieta que él le colocó. ",
         "b": "Que cada vez que le dé hambre se tome un vaso de agua",
         "c": "Que consuma un producto con una fórmula de proteína natural.    ",
-        "d": "Le recetó un tratamiento para su adicción a los carbohidratos"
+        "d": "Le recetó un tratamiento para su adicción a los carbohidratos.",
+        "r": "a"
     },
     {
         "q": "David tiene sobrepeso y la nutricionista le indicó que debe comer cada 3 horas para acelerar su metabolismo y rebajar. No obstante, David está engordando. ¿Cuál podría ser la razón por la cual David está subiendo de peso? ",
         "a": "Porque esta recomendación por sí sola no ayuda a rebajar",
         "b": "Porque David no está siguiendo las indicaciones de la nutricionista",
         "c": "Porque excede la cantidad de calorías requeridas en cada comida",
-        "d": "Porque David come comida de la calle."
+        "d": "Porque David come comida de la calle.",
+        "r": "a"
     },
     {
         "q": "El desayuno es la comida más importante del día:",
         "a": "Te permite quedar con suficiente energía para enfrentar las actividades de tu día",
         "b": "Te ayuda a tener menos hambre. Así puedes comer menos en las próximas comidas y mantener tu talla",
         "c": "No lo es. Puedes saltártelo sin problemas ",
-        "d": "Es lo que recomiendan los especialistas en la materia"
+        "d": "Es lo que recomiendan los especialistas en la materia.",
+        "r": "a"
     },
     {
         "q": "Javier se la pasa en el gimnasio tratando de bajar de peso y después de un año no ve resultados. Esto se debe a que:",
         "a": "No entrena el tiempo suficiente",
         "b": "Tiene una rutina de ejercicios inadecuada",
         "c": "Tiene que cambiar de entrenador o de gimnasio",
-        "d": "Le falta la parte de la dieta"
+        "d": "Le falta la parte de la dieta.",
+        "r": "a"
     },
     {
         "q": "El nutricionista te mandó a rebajar: “comiendo de todo, pero con moderación”. Esto no está resultando porque",
         "a": "No estás comiendo de todo como te lo recetó el nutricionista",
         "b": "No estás comiendo con moderación",
         "c": "Ésta no es una buena recomendación para rebajar. ",
-        "d": "Deberías comenzar a ir al gimnasio para ayudarte a rebajar"
+        "d": "Deberías comenzar a ir al gimnasio para ayudarte a rebajar.",
+        "r": "a"
     },
     {
         "q": "Tu nutricionista te recomendó una dieta “baja en carbohidratos” para rebajar, la cual estás aplicando desde hace dos meses y no ves resultados. Esto es porque",
         "a": "Estás comiendo por debajo del mínimo de calorías requeridas por ti",
         "b": "No estás haciendo ejercicios adecuadamente.",
         "c": "Debes aumentar las visitas de control con tu nutricionista",
-        "d": "Debes tener paciencia, bajar de peso es un asunto largo y complejo"
+        "d": "Debes tener paciencia, bajar de peso es un asunto largo y complejo.",
+        "r": "a"
     },
     {
         "q": "",
