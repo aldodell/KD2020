@@ -70,8 +70,9 @@ class KDKernel extends KDObject {
             .publish()
             .set("obj", this.getNameOfInstance())
             .set("name", userName)
-            .send()
-            .remove();
+            .set("senderID", sender.getId())
+            .send();
+
 
         return this;
     }
@@ -343,6 +344,7 @@ class KDComponent extends KDObject {
 
 class KDHeadTag extends KDComponent {
     build() {
+
         this.domObject = document.getElementsByTagName("head")[0];
         return this;
     }
@@ -769,25 +771,6 @@ class KDHidden extends KDVisualComponent {
  * @example var sender = new KDSender("myURL.php");
  * */
 class KDSender extends KDVisualComponent {
-    constructor(url) {
-        super();
-        this.htmlName = "iframe";
-        this.url = url;
-        this.form = new KDForm();
-        this.form.url = url;
-        this.method = "post";
-        this.style.visibility = "hidden";
-        this.iframeDomObject = null;
-    }
-
-    setUrl(url) {
-        this.url = url;
-        this.form.url = url;
-        if (this.form.domObject) {
-            this.form.domObject.setAttribute("action", url);
-        }
-        return this;
-    }
 
     build() {
         super.build();
@@ -809,14 +792,24 @@ class KDSender extends KDVisualComponent {
             super.publish(kdComponent);
         }
 
-        this.iframeDomObject = this.domObject.contentDocument || this.domObject.contentWindow.document;
-        var z = this.iframeDomObject.getElementsByTagName("body")[0];
-        z.appendChild(this.form.domObject);
+        // this.iframeDomObject
+        var iframeDoc = this.domObject.contentDocument || this.domObject.contentWindow.document;
+        var iFrameBody = iframeDoc.getElementsByTagName("body")[0];
+        iFrameBody.appendChild(this.form.domObject);
+        return this;
+    }
+
+    setUrl(url) {
+        this.url = url;
+        this.form.url = url;
+        if (this.form.domObject) {
+            this.form.domObject.setAttribute("action", url);
+        }
         return this;
     }
 
     set(name, value) {
-        if (this.domObject == undefined) {
+        if (!this.domObject) {
             this.build().publish();
         }
         var hidden = new KDHidden().build().publish(this.form);
@@ -825,12 +818,34 @@ class KDSender extends KDVisualComponent {
         return this;
     }
 
+    removeSender(kdSender) {
+        kdSender.domObject.parentNode.removeChild(kdSender.domObject);
+    }
+
     send() {
         if (this.domObject) {
             this.form.submit();
         }
+        if (this.destroyTimer > 0) {
+            var sender = this;
+            var destroyTimer = window.setTimeout(sender.removeSender, sender.destroyTime, sender);
+        }
         return this;
     }
+
+    constructor(url) {
+        super();
+        this.htmlName = "iframe";
+        this.url = url;
+        this.form = new KDForm();
+        this.form.url = url;
+        this.method = "post";
+        this.style.visibility = "hidden";
+        /** Time to dettach iFrame from DOM Hierarchy. Zero for do not dettach it */
+        this.destroyTime = 5000;
+
+    }
+
 
 }
 
@@ -1232,15 +1247,18 @@ class KDTerminal extends KDApplication {
     }
 
     saveLine(kdTerminal, text) {
-        var sender = new KDSender()
-            .build()
+        var sender = new KDSender();
+
+        sender.build()
             .publish()
             .set("senderID", sender.getId())
             .set("line", text)
             .set("userName", kdTerminal.desktop.kernel.currentUser.name)
             .setUrl(kdTerminal.SAVE_LINE_URL)
             .send();
-           
+       
+
+
     }
 
     newCommandLine(kdTerminal) {
@@ -1332,8 +1350,8 @@ class KDTerminal extends KDApplication {
         this.newCommandLine(this);
         this._indexCommandLine = 0;
         this.SAVE_LINE_URL = "kd-terminal-save-line.php";
-        this.sender = new KDSender(this.SAVE_LINE_URL);
-        this.sender.build().publish();
+        //this.sender = new KDSender(this.SAVE_LINE_URL);
+        //this.sender.build().publish();
 
     }
 }

@@ -70,8 +70,9 @@ class KDKernel extends KDObject {
             .publish()
             .set("obj", this.getNameOfInstance())
             .set("name", userName)
-            .send()
-            .remove();
+            .set("senderID", sender.getId())
+            .send();
+
 
         return this;
     }

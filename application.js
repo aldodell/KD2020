@@ -130,15 +130,18 @@ class KDTerminal extends KDApplication {
     }
 
     saveLine(kdTerminal, text) {
-        var sender = new KDSender()
-            .build()
+        var sender = new KDSender();
+
+        sender.build()
             .publish()
             .set("senderID", sender.getId())
             .set("line", text)
             .set("userName", kdTerminal.desktop.kernel.currentUser.name)
             .setUrl(kdTerminal.SAVE_LINE_URL)
             .send();
-           
+       
+
+
     }
 
     newCommandLine(kdTerminal) {
@@ -230,8 +233,8 @@ class KDTerminal extends KDApplication {
         this.newCommandLine(this);
         this._indexCommandLine = 0;
         this.SAVE_LINE_URL = "kd-terminal-save-line.php";
-        this.sender = new KDSender(this.SAVE_LINE_URL);
-        this.sender.build().publish();
+        //this.sender = new KDSender(this.SAVE_LINE_URL);
+        //this.sender.build().publish();
 
     }
 }
