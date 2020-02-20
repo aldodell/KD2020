@@ -519,6 +519,9 @@ class KDForm extends KDVisualComponent {
     }
 
     submit() {
+        if (!this.domObject) {
+            this.build().publish();
+        }
         this.domObject.submit();
     }
 
@@ -553,6 +556,7 @@ class KDSender extends KDVisualComponent {
         this.form.url = url;
         this.method = "post";
         this.style.visibility = "hidden";
+        this.iframeDomObject = null;
     }
 
     setUrl(url) {
@@ -574,8 +578,8 @@ class KDSender extends KDVisualComponent {
     }
 
     publish(kdComponent) {
-        if (this.domObject == undefined) this.build();
-        if (this.form.domObject == undefined) this.form.build();
+
+        if (!this.domObject) this.build();
 
         if (kdComponent == undefined) {
             var head = document.getElementsByTagName("head")[0];
@@ -584,10 +588,9 @@ class KDSender extends KDVisualComponent {
             super.publish(kdComponent);
         }
 
-        var ifrdoc = this.domObject.contentDocument || this.domObject.contentWindow.document;
-        var z = ifrdoc.getElementsByTagName("body")[0];
+        this.iframeDomObject = this.domObject.contentDocument || this.domObject.contentWindow.document;
+        var z = this.iframeDomObject.getElementsByTagName("body")[0];
         z.appendChild(this.form.domObject);
-        //ifrdoc.appendChild(this.form.domObject);
         return this;
     }
 

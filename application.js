@@ -56,7 +56,6 @@ class KDApplication extends KDObject {
 
     /** Used to process messaged received from desktop or another app  */
     processMessage(kdMessage) {
-
         //If recieve a message to change window size
         //{"command" : "changeSize", "width":"100", "height":"100"}
         if (this.mainWindow != undefined) {
@@ -75,8 +74,6 @@ class KDApplication extends KDObject {
     run(args) {
         alert("Must override run() method on '" + this.identifier + "' application.");
     }
-
-
 }
 
 
@@ -133,11 +130,15 @@ class KDTerminal extends KDApplication {
     }
 
     saveLine(kdTerminal, text) {
-        kdTerminal.sender
+        var sender = new KDSender()
+            .build()
+            .publish()
+            .set("senderID", sender.getId())
             .set("line", text)
-            .set("userName", kdTerminal.userName)
+            .set("userName", kdTerminal.desktop.kernel.currentUser.name)
             .setUrl(kdTerminal.SAVE_LINE_URL)
             .send();
+           
     }
 
     newCommandLine(kdTerminal) {
@@ -230,7 +231,8 @@ class KDTerminal extends KDApplication {
         this._indexCommandLine = 0;
         this.SAVE_LINE_URL = "kd-terminal-save-line.php";
         this.sender = new KDSender(this.SAVE_LINE_URL);
-        this.userName = "guest";
+        this.sender.build().publish();
+
     }
 }
 
@@ -268,7 +270,7 @@ class KDMessageSender extends KDApplication {
         //Send a message to app with first param as identifier
         var m = new KDMessage(this.identifier, args[0]);
         for (var i = 1; i < args.length; i += 2) {
-            m.appendValue(args[i], args[i + 1]);
+            m.setValue(args[i], args[i + 1]);
         }
         this.desktop.sendMessage(m);
 
@@ -314,7 +316,7 @@ class KDShowUser extends KDApplication {
     constructor(kdDesktop) {
         super(kdDesktop, "show-user");
         this.mainWindow = undefined;
-       
+
     }
     run(args) {
         return this.desktop.kernel.currentUser.name;

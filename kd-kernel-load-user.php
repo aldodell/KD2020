@@ -1,13 +1,13 @@
 <?php
 include "kd-kernel-include.php";
+if (!isset($_POST["name"])) {die();}
 
-$object = $_POST["object"];
-$userName = $_POST["userName"];
+$obj = $_POST["obj"];
+$name = $_POST["name"];
+$senderID = $_POST["senderID"];
 
-$userpath = USER_PATH . "/$userName/user.json";
+$userpath = USER_PATH . "/$name/user.json";
 
 $f = file_get_contents($userpath);
-$r = "<script>window.parent.$object.currentUser=$f;alert($object);</script>";
+$r = "<script>window.parent.$obj.currentUser=$f;window.parent.document.getElementById('$senderID').remove();</script>";
 echo $r;
-
-?>

@@ -190,6 +190,3 @@ class KDDesktop extends KDVisualComponent {
     }
 
 }
-
-
-

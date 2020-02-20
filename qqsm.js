@@ -397,7 +397,7 @@ class QQSM_control extends KDApplication {
         this.nextButton.domObject.addEventListener("click", function (e) {
 
             var m = new KDMessage(this.app.identifier, "qqsm");
-            m.appendValue("show", "next");
+            m.setValue("show", "next");
             this.app.desktop.sendRemoteMessage(m);
 
         });
@@ -406,7 +406,7 @@ class QQSM_control extends KDApplication {
         this.backButton.domObject.addEventListener("click", function (e) {
 
             var m = new KDMessage(this.app.identifier, "qqsm");
-            m.appendValue("show", "back");
+            m.setValue("show", "back");
             this.app.desktop.sendRemoteMessage(m);
 
         });

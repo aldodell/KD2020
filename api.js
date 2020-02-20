@@ -32,7 +32,7 @@ class KDUser extends KDObject {
         this.name = undefined ? "guest" : userName;
         this.securityLevel = 0;
         this.passwordHash = 0;
-      
+
     }
 }
 
@@ -52,11 +52,11 @@ class KDKernel extends KDObject {
         var user = new KDUser(userName);
         var sender = new KDSender(this.CREATE_USER_URL)
             .build()
-            .publish();
-        sender.set("name", userName);
-        sender.set("securityLevel", user.securityLevel);
-        sender.send();
-        return user;
+            .publish()
+            .set("name", userName)
+            .set("securityLevel", user.securityLevel)
+            .send();
+        return this;
     }
 
     loadUser(userName, desktop) {
@@ -68,11 +68,12 @@ class KDKernel extends KDObject {
         sender
             .build()
             .publish()
-            .set("object", this.getNameOfInstance())
-            .set("userName", userName)
-            .send();
+            .set("obj", this.getNameOfInstance())
+            .set("name", userName)
+            .send()
+            .remove();
 
-        return user;
+        return this;
     }
 
     getUserPath(userName) {
@@ -84,7 +85,7 @@ class KDKernel extends KDObject {
         this.CREATE_USER_URL = 'kd-kernel-create-user.php';
         this.LOAD_USER_URL = 'kd-kernel-load-user.php';
         this.currentUser = new KDUser("guest");
-        this.createUser(this.currentUser);
+        this.createUser(this.currentUser.name);
     }
 }
 
@@ -104,7 +105,7 @@ class KDMessage extends KDObject {
         this.index = 0;
 
     }
-    appendValue(key, value) {
+    setValue(key, value) {
         this.values[key] = value;
     }
 
@@ -739,6 +740,9 @@ class KDForm extends KDVisualComponent {
     }
 
     submit() {
+        if (!this.domObject) {
+            this.build().publish();
+        }
         this.domObject.submit();
     }
 
@@ -773,6 +777,7 @@ class KDSender extends KDVisualComponent {
         this.form.url = url;
         this.method = "post";
         this.style.visibility = "hidden";
+        this.iframeDomObject = null;
     }
 
     setUrl(url) {
@@ -794,8 +799,8 @@ class KDSender extends KDVisualComponent {
     }
 
     publish(kdComponent) {
-        if (this.domObject == undefined) this.build();
-        if (this.form.domObject == undefined) this.form.build();
+
+        if (!this.domObject) this.build();
 
         if (kdComponent == undefined) {
             var head = document.getElementsByTagName("head")[0];
@@ -804,10 +809,9 @@ class KDSender extends KDVisualComponent {
             super.publish(kdComponent);
         }
 
-        var ifrdoc = this.domObject.contentDocument || this.domObject.contentWindow.document;
-        var z = ifrdoc.getElementsByTagName("body")[0];
+        this.iframeDomObject = this.domObject.contentDocument || this.domObject.contentWindow.document;
+        var z = this.iframeDomObject.getElementsByTagName("body")[0];
         z.appendChild(this.form.domObject);
-        //ifrdoc.appendChild(this.form.domObject);
         return this;
     }
 
@@ -1154,7 +1158,6 @@ class KDApplication extends KDObject {
 
     /** Used to process messaged received from desktop or another app  */
     processMessage(kdMessage) {
-
         //If recieve a message to change window size
         //{"command" : "changeSize", "width":"100", "height":"100"}
         if (this.mainWindow != undefined) {
@@ -1173,8 +1176,6 @@ class KDApplication extends KDObject {
     run(args) {
         alert("Must override run() method on '" + this.identifier + "' application.");
     }
-
-
 }
 
 
@@ -1231,11 +1232,15 @@ class KDTerminal extends KDApplication {
     }
 
     saveLine(kdTerminal, text) {
-        kdTerminal.sender
+        var sender = new KDSender()
+            .build()
+            .publish()
+            .set("senderID", sender.getId())
             .set("line", text)
-            .set("userName", kdTerminal.userName)
+            .set("userName", kdTerminal.desktop.kernel.currentUser.name)
             .setUrl(kdTerminal.SAVE_LINE_URL)
             .send();
+           
     }
 
     newCommandLine(kdTerminal) {
@@ -1328,7 +1333,8 @@ class KDTerminal extends KDApplication {
         this._indexCommandLine = 0;
         this.SAVE_LINE_URL = "kd-terminal-save-line.php";
         this.sender = new KDSender(this.SAVE_LINE_URL);
-        this.userName = "guest";
+        this.sender.build().publish();
+
     }
 }
 
@@ -1366,7 +1372,7 @@ class KDMessageSender extends KDApplication {
         //Send a message to app with first param as identifier
         var m = new KDMessage(this.identifier, args[0]);
         for (var i = 1; i < args.length; i += 2) {
-            m.appendValue(args[i], args[i + 1]);
+            m.setValue(args[i], args[i + 1]);
         }
         this.desktop.sendMessage(m);
 
@@ -1412,7 +1418,7 @@ class KDShowUser extends KDApplication {
     constructor(kdDesktop) {
         super(kdDesktop, "show-user");
         this.mainWindow = undefined;
-       
+
     }
     run(args) {
         return this.desktop.kernel.currentUser.name;
@@ -1613,11 +1619,7 @@ class KDDesktop extends KDVisualComponent {
         }
     }
 
-}
-
-
-
-var data = new Object();
+}var data = new Object();
 
 class QQSMBox extends KDLayer {
 
@@ -2016,7 +2018,7 @@ class QQSM_control extends KDApplication {
         this.nextButton.domObject.addEventListener("click", function (e) {
 
             var m = new KDMessage(this.app.identifier, "qqsm");
-            m.appendValue("show", "next");
+            m.setValue("show", "next");
             this.app.desktop.sendRemoteMessage(m);
 
         });
@@ -2025,7 +2027,7 @@ class QQSM_control extends KDApplication {
         this.backButton.domObject.addEventListener("click", function (e) {
 
             var m = new KDMessage(this.app.identifier, "qqsm");
-            m.appendValue("show", "back");
+            m.setValue("show", "back");
             this.app.desktop.sendRemoteMessage(m);
 
         });

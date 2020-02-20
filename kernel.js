@@ -32,7 +32,7 @@ class KDUser extends KDObject {
         this.name = undefined ? "guest" : userName;
         this.securityLevel = 0;
         this.passwordHash = 0;
-      
+
     }
 }
 
@@ -52,11 +52,11 @@ class KDKernel extends KDObject {
         var user = new KDUser(userName);
         var sender = new KDSender(this.CREATE_USER_URL)
             .build()
-            .publish();
-        sender.set("name", userName);
-        sender.set("securityLevel", user.securityLevel);
-        sender.send();
-        return user;
+            .publish()
+            .set("name", userName)
+            .set("securityLevel", user.securityLevel)
+            .send();
+        return this;
     }
 
     loadUser(userName, desktop) {
@@ -68,11 +68,12 @@ class KDKernel extends KDObject {
         sender
             .build()
             .publish()
-            .set("object", this.getNameOfInstance())
-            .set("userName", userName)
-            .send();
+            .set("obj", this.getNameOfInstance())
+            .set("name", userName)
+            .send()
+            .remove();
 
-        return user;
+        return this;
     }
 
     getUserPath(userName) {
@@ -84,7 +85,7 @@ class KDKernel extends KDObject {
         this.CREATE_USER_URL = 'kd-kernel-create-user.php';
         this.LOAD_USER_URL = 'kd-kernel-load-user.php';
         this.currentUser = new KDUser("guest");
-        this.createUser(this.currentUser);
+        this.createUser(this.currentUser.name);
     }
 }
 
@@ -104,7 +105,7 @@ class KDMessage extends KDObject {
         this.index = 0;
 
     }
-    appendValue(key, value) {
+    setValue(key, value) {
         this.values[key] = value;
     }
 
