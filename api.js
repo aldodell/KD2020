@@ -25,6 +25,8 @@ class KDObject {
 }
 
 
+
+
 /** Wrap info about current user */
 class KDUser extends KDObject {
     constructor(userName) {
@@ -59,7 +61,7 @@ class KDKernel extends KDObject {
         return this;
     }
 
-    loadUser(userName, desktop) {
+    loadUser(userName) {
         var user = new KDUser();
         user.name = userName;
         user.securityLevel = 0;
@@ -73,6 +75,10 @@ class KDKernel extends KDObject {
             .set("senderID", sender.getId())
             .send();
 
+        /** send messages to all apps about user change */
+        var msg = new KDMessage("kernel", "*");
+        msg.setValue("kernel_user_changed", userName);
+        this.desktop.sendMessage(msg);
 
         return this;
     }
@@ -87,43 +93,12 @@ class KDKernel extends KDObject {
         this.LOAD_USER_URL = 'kd-kernel-load-user.php';
         this.currentUser = new KDUser("guest");
         this.createUser(this.currentUser.name);
+        this.desktop = false;
     }
 }
 
 
 
-/** Wrap messages to share between apps 
- * @param sourceIdentifier 
-*/
-class KDMessage extends KDObject {
-    constructor(sourceIdentifier, destinationIdentifier) {
-        super();
-        this.sourceIdentifier = sourceIdentifier;
-        this.destinationIdentifier = destinationIdentifier;
-        this.values = new Object();
-        //All new messages has zero index.
-        //Replicator may change this 
-        this.index = 0;
-
-    }
-    setValue(key, value) {
-        this.values[key] = value;
-    }
-
-    getValue(key) {
-        return this.values[key];
-    }
-
-    getId() {
-        return "kdm" + this.index;
-    }
-
-    importJSON(json) {
-        this.values = json.values;
-        this.destinationIdentifier = json.destinationIdentifier;
-        this.sourceIdentifier = json.sourceIdentifier;
-    }
-}
 
 
 /** Wrap size for components*/
@@ -819,16 +794,17 @@ class KDSender extends KDVisualComponent {
     }
 
     removeSender(kdSender) {
-        kdSender.domObject.parentNode.removeChild(kdSender.domObject);
+        var iframe = window.parent.document.getElementById(kdSender.getId());
+        iframe.parentNode.removeChild(iframe);
     }
 
     send() {
         if (this.domObject) {
             this.form.submit();
         }
-        if (this.destroyTimer > 0) {
+        if (this.destroyTime > 0) {
             var sender = this;
-            var destroyTimer = window.setTimeout(sender.removeSender, sender.destroyTime, sender);
+            window.setTimeout(sender.removeSender, sender.destroyTime, sender);
         }
         return this;
     }
@@ -1256,8 +1232,27 @@ class KDTerminal extends KDApplication {
             .set("userName", kdTerminal.desktop.kernel.currentUser.name)
             .setUrl(kdTerminal.SAVE_LINE_URL)
             .send();
-       
+    }
 
+    /** Append array line on terminal */
+    appendLines(lines) {
+        for (line in lines) {
+            var h = new KDHidden();
+            h.setValue(line);
+            h.build().publish(this.mainWindow.body);
+        }
+    }
+
+    /** Send statement to server to return lines array */
+    loadLines() {
+        var sender = new KDSender();
+        console.debug('loading lines');
+        sender.build()
+            .publish()
+            .set("terminal", this.getNameOfInstance())
+            .set("userName", this.desktop.kernel.currentUser.name)
+            .setUrl(this.LOAD_LINES_URL)
+            .send();
 
     }
 
@@ -1325,6 +1320,15 @@ class KDTerminal extends KDApplication {
         this.currentCommandLine.domObject.focus();
     }
 
+
+    processMessage(kdMessage) {
+        if (kdMessage.sourceIdentifier == "kernel") {
+            if (kdMessage.getValue("kernel_user_changed") != undefined) {
+                this.loadLines();
+            }
+        }
+    }
+
     constructor(kdDesktop) {
         super(kdDesktop, "KDTerminal");
         this.iconURL = "apps/KDTerminal/media/bash.png";
@@ -1350,8 +1354,8 @@ class KDTerminal extends KDApplication {
         this.newCommandLine(this);
         this._indexCommandLine = 0;
         this.SAVE_LINE_URL = "kd-terminal-save-line.php";
-        //this.sender = new KDSender(this.SAVE_LINE_URL);
-        //this.sender.build().publish();
+        this.LOAD_LINES_URL = "kd-terminal-load-lines.php";
+
 
     }
 }
@@ -1379,6 +1383,39 @@ class KDTerminalClock extends KDApplication {
     }
 }
 
+
+/** Wrap messages to share between apps 
+ * @param sourceIdentifier 
+*/
+class KDMessage extends KDObject {
+    constructor(sourceIdentifier, destinationIdentifier) {
+        super();
+        this.sourceIdentifier = sourceIdentifier;
+        this.destinationIdentifier = destinationIdentifier;
+        this.values = new Object();
+        //All new messages has zero index.
+        //Replicator may change this 
+        this.index = 0;
+
+    }
+    setValue(key, value) {
+        this.values[key] = value;
+    }
+
+    getValue(key) {
+        return this.values[key];
+    }
+
+    getId() {
+        return "kdm" + this.index;
+    }
+
+    importJSON(json) {
+        this.values = json.values;
+        this.destinationIdentifier = json.destinationIdentifier;
+        this.sourceIdentifier = json.sourceIdentifier;
+    }
+}
 
 /** Send a KDMessage to apps */
 class KDMessageSender extends KDApplication {
@@ -1425,7 +1462,6 @@ class KDLoadUser extends KDApplication {
         if (user == "") {
             user = prompt("Type user name:");
         }
-
         this.desktop.kernel.loadUser(user);
 
         return "Done!";
@@ -1453,7 +1489,11 @@ class KDShowUser extends KDApplication {
 class KDDesktop extends KDVisualComponent {
     constructor(kdKernel) {
         super();
+
+        //Circular reference between desktop and kernel
+        kdKernel.desktop = this;
         this.kernel = kdKernel
+        
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
         this.remoteMessagesProcessor = new KDScript();
@@ -1465,7 +1505,6 @@ class KDDesktop extends KDVisualComponent {
 
         this.remoteMessagesTimer = 0;
         this.lastMessageIndex = -1;
-
 
     }
 

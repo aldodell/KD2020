@@ -139,8 +139,27 @@ class KDTerminal extends KDApplication {
             .set("userName", kdTerminal.desktop.kernel.currentUser.name)
             .setUrl(kdTerminal.SAVE_LINE_URL)
             .send();
-       
+    }
 
+    /** Append array line on terminal */
+    appendLines(lines) {
+        for (line in lines) {
+            var h = new KDHidden();
+            h.setValue(line);
+            h.build().publish(this.mainWindow.body);
+        }
+    }
+
+    /** Send statement to server to return lines array */
+    loadLines() {
+        var sender = new KDSender();
+        
+        sender.build()
+            .publish()
+            .set("terminal", this.getNameOfInstance())
+            .set("userName", this.desktop.kernel.currentUser.name)
+            .setUrl(this.LOAD_LINES_URL)
+            .send();
 
     }
 
@@ -208,6 +227,15 @@ class KDTerminal extends KDApplication {
         this.currentCommandLine.domObject.focus();
     }
 
+
+    processMessage(kdMessage) {
+        if (kdMessage.sourceIdentifier == "kernel") {
+            if (kdMessage.getValue("kernel_user_changed") != undefined) {
+                this.loadLines();
+            }
+        }
+    }
+
     constructor(kdDesktop) {
         super(kdDesktop, "KDTerminal");
         this.iconURL = "apps/KDTerminal/media/bash.png";
@@ -233,8 +261,8 @@ class KDTerminal extends KDApplication {
         this.newCommandLine(this);
         this._indexCommandLine = 0;
         this.SAVE_LINE_URL = "kd-terminal-save-line.php";
-        //this.sender = new KDSender(this.SAVE_LINE_URL);
-        //this.sender.build().publish();
+        this.LOAD_LINES_URL = "kd-terminal-load-lines.php";
+
 
     }
 }
@@ -262,6 +290,39 @@ class KDTerminalClock extends KDApplication {
     }
 }
 
+
+/** Wrap messages to share between apps 
+ * @param sourceIdentifier 
+*/
+class KDMessage extends KDObject {
+    constructor(sourceIdentifier, destinationIdentifier) {
+        super();
+        this.sourceIdentifier = sourceIdentifier;
+        this.destinationIdentifier = destinationIdentifier;
+        this.values = new Object();
+        //All new messages has zero index.
+        //Replicator may change this 
+        this.index = 0;
+
+    }
+    setValue(key, value) {
+        this.values[key] = value;
+    }
+
+    getValue(key) {
+        return this.values[key];
+    }
+
+    getId() {
+        return "kdm" + this.index;
+    }
+
+    importJSON(json) {
+        this.values = json.values;
+        this.destinationIdentifier = json.destinationIdentifier;
+        this.sourceIdentifier = json.sourceIdentifier;
+    }
+}
 
 /** Send a KDMessage to apps */
 class KDMessageSender extends KDApplication {
@@ -308,7 +369,6 @@ class KDLoadUser extends KDApplication {
         if (user == "") {
             user = prompt("Type user name:");
         }
-
         this.desktop.kernel.loadUser(user);
 
         return "Done!";

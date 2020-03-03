@@ -5,7 +5,11 @@
 class KDDesktop extends KDVisualComponent {
     constructor(kdKernel) {
         super();
+
+        //Circular reference between desktop and kernel
+        kdKernel.desktop = this;
         this.kernel = kdKernel
+        
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
         this.remoteMessagesProcessor = new KDScript();
@@ -17,7 +21,6 @@ class KDDesktop extends KDVisualComponent {
 
         this.remoteMessagesTimer = 0;
         this.lastMessageIndex = -1;
-
 
     }
 

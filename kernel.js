@@ -25,6 +25,8 @@ class KDObject {
 }
 
 
+
+
 /** Wrap info about current user */
 class KDUser extends KDObject {
     constructor(userName) {
@@ -59,7 +61,7 @@ class KDKernel extends KDObject {
         return this;
     }
 
-    loadUser(userName, desktop) {
+    loadUser(userName) {
         var user = new KDUser();
         user.name = userName;
         user.securityLevel = 0;
@@ -73,6 +75,10 @@ class KDKernel extends KDObject {
             .set("senderID", sender.getId())
             .send();
 
+        /** send messages to all apps about user change */
+        var msg = new KDMessage("kernel", "*");
+        msg.setValue("kernel_user_changed", userName);
+        this.desktop.sendMessage(msg);
 
         return this;
     }
@@ -87,43 +93,12 @@ class KDKernel extends KDObject {
         this.LOAD_USER_URL = 'kd-kernel-load-user.php';
         this.currentUser = new KDUser("guest");
         this.createUser(this.currentUser.name);
+        this.desktop = false;
     }
 }
 
 
 
-/** Wrap messages to share between apps 
- * @param sourceIdentifier 
-*/
-class KDMessage extends KDObject {
-    constructor(sourceIdentifier, destinationIdentifier) {
-        super();
-        this.sourceIdentifier = sourceIdentifier;
-        this.destinationIdentifier = destinationIdentifier;
-        this.values = new Object();
-        //All new messages has zero index.
-        //Replicator may change this 
-        this.index = 0;
-
-    }
-    setValue(key, value) {
-        this.values[key] = value;
-    }
-
-    getValue(key) {
-        return this.values[key];
-    }
-
-    getId() {
-        return "kdm" + this.index;
-    }
-
-    importJSON(json) {
-        this.values = json.values;
-        this.destinationIdentifier = json.destinationIdentifier;
-        this.sourceIdentifier = json.sourceIdentifier;
-    }
-}
 
 
 /** Wrap size for components*/

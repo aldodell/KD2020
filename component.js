@@ -597,16 +597,17 @@ class KDSender extends KDVisualComponent {
     }
 
     removeSender(kdSender) {
-        kdSender.domObject.parentNode.removeChild(kdSender.domObject);
+        var iframe = window.parent.document.getElementById(kdSender.getId());
+        iframe.parentNode.removeChild(iframe);
     }
 
     send() {
         if (this.domObject) {
             this.form.submit();
         }
-        if (this.destroyTimer > 0) {
+        if (this.destroyTime > 0) {
             var sender = this;
-            var destroyTimer = window.setTimeout(sender.removeSender, sender.destroyTime, sender);
+            window.setTimeout(sender.removeSender, sender.destroyTime, sender);
         }
         return this;
     }

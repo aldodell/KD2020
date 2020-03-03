@@ -1,1 +1,23 @@
 show-user
+create-user aldodell
+show-user
+load-user aldodell
+show-user
+load-user aldodell
+show-user
+load-user aldodell
+load-user aldodell
+load-user aldodell
+show-user
+load-user aldodell
+show-user
+load-user aldodell
+load-user aldodell
+load-user aldodell
+load-user aldodell
+load-user aldodell
+load-user aldodell
+load-user aldodell
+load-user aldodell
+load-user aldodell
+load-user aldodell
