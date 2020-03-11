@@ -1246,7 +1246,7 @@ class KDTerminal extends KDApplication {
     /** Send statement to server to return lines array */
     loadLines() {
         var sender = new KDSender();
-        console.debug('loading lines');
+        
         sender.build()
             .publish()
             .set("terminal", this.getNameOfInstance())
@@ -2038,37 +2038,28 @@ class QQSM_control extends KDApplication {
         this.filename = "";
         this.indexQuestion = -1;
 
+        /** GUI */
 
-
+        //main window
         this.mainWindow = new KDWindow().build()
             .setSize(new KDSize(400, 400))
             .setPosition(new KDPosition(0, 0))
             .publish(kdDesktop)
             .hide();
 
-        this.nextButton = new KDButton().build().publish(this.mainWindow.body)
+        //next button
+        this.nextButton = new KDButton().build()
+            .publish(this.mainWindow.body)
             .setSize(new KDSize(200, 60))
             .setPosition(new KDPosition(10, 10))
             .setText("Next");
 
-        this.backButton = new KDButton().build().publish(this.mainWindow.body)
+        //back button
+        this.backButton = new KDButton().build()
+            .publish(this.mainWindow.body)
             .setSize(new KDSize(200, 60))
             .setPosition(new KDPosition(10, 80))
             .setText("Back");
-    }
-
-    run(args) {
-        this.mainWindow.show();
-        this.mainWindow.setAvailableScreenSize();
-
-        this.nextButton
-            .setSize(new KDSize(this.getSize().width - 20, 100))
-            .setPosition(new KDPosition(10, 10));
-
-        this.backButton
-            .setSize(new KDSize(this.getSize().width - 20, 100))
-            .setPosition(new KDPosition(10, 120));
-
 
         //zz1
         this.nextButton.domObject.app = this;
@@ -2088,6 +2079,22 @@ class QQSM_control extends KDApplication {
             this.app.desktop.sendRemoteMessage(m);
 
         });
+
     }
+
+    run(args) {
+        this.mainWindow.show();
+        this.mainWindow.setAvailableScreenSize();
+
+        this.nextButton
+            .setSize(new KDSize(this.getSize().width - 20, 100))
+            .setPosition(new KDPosition(10, 10));
+
+        this.backButton
+            .setSize(new KDSize(this.getSize().width - 20, 100))
+            .setPosition(new KDPosition(10, 120));
+
+    }
+
 }
 

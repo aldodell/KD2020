@@ -21,3 +21,9 @@ load-user aldodell
 load-user aldodell
 load-user aldodell
 load-user aldodell
+qqsm -f dieta.json
+qqsm -f dieta.json
+qqsm -f dieta.json
+qqsm -f dieta.json
+qqsm -f dieta.json
+qqsm -f dieta.json
