@@ -48,6 +48,7 @@ class KDWindow extends KDLayer {
         this.foodHeight = 30;
         this.commandWidth = 30;
         this.theme = KDWindowThemeByDefault;
+        this.desktop = false;
         /** This method can be used for make window layout */
         this.onSetSizeEvent = function (kdSize) { return kdSize; }
     }
@@ -64,11 +65,14 @@ class KDWindow extends KDLayer {
         this.commandArea.domObject.addEventListener("click", function () { theWindow.hide() });
         this.commandArea.domObject.addEventListener("mouseover", function () { commandArea.domObject.style.backgroundColor = "blue"; });
         this.commandArea.domObject.addEventListener("mouseout", function () { commandArea.domObject.style.backgroundColor = theWindow.head.style.backgroundColor; });
+        this.head.domObject.addEventListener("click", function () { theWindow.setOnTop(); });
         return this;
     }
 
-    publish(domObject) {
-        super.publish(domObject);
+    publish(kdDesktop) {
+        super.publish(kdDesktop);
+        this.desktop = kdDesktop;
+        kdDesktop.windows.push(this);
         this.head.publish(this);
         this.body.publish(this);
         this.foot.publish(this);
@@ -105,5 +109,11 @@ class KDWindow extends KDLayer {
             this.head.showCenterText(title);
         }
         return this;
+    }
+
+    setOnTop() {
+        
+        this.style.add("zIndex", this.desktop.windowZIndex++);
+        this.style.apply(this);
     }
 }

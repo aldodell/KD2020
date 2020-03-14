@@ -22,6 +22,9 @@ class KDDesktop extends KDVisualComponent {
         this.remoteMessagesTimer = 0;
         this.lastMessageIndex = -1;
 
+        this.windowZIndex = 0;
+        this.windows = new Array();
+
     }
 
     build() {

@@ -25,6 +25,7 @@ class KDArgumentsParser extends KDObject {
  * the application from line command */
 class KDApplication extends KDObject {
     constructor(kdDesktop, identifier) {
+        
         super();
         /**
          * Reference to KDDesktop
