@@ -50,7 +50,6 @@ class KDApplication extends KDObject {
          * */
         this.mainWindow = undefined;
 
-
     }
 
     /** Used to process messaged received from desktop or another app  */
@@ -304,7 +303,7 @@ class KDMessageSender extends KDApplication {
         for (var i = 1; i < args.length; i += 2) {
             m.setValue(args[i], args[i + 1]);
         }
-        this.desktop.sendMessage(m);
+        this.desktop.broadcastLocalMessage(m);
 
         return "Message send to " + args[0];
     }

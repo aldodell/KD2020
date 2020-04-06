@@ -113,7 +113,7 @@ class KDKernel extends KDObject {
         /** send messages to all apps about user change */
         var msg = new KDMessage("kernel", "*");
         msg.setValue("kernel_user_changed", userName);
-        this.desktop.sendMessage(msg);
+        this.desktop.broadcastLocalMessage(msg);
 
         return this;
     }

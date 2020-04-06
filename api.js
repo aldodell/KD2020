@@ -24,6 +24,41 @@ class KDObject {
     }
 }
 
+/** Wrap messages to share between apps 
+ * @param sourceIdentifier 
+*/
+class KDMessage extends KDObject {
+    constructor(sourceIdentifier, destinationIdentifier) {
+        super();
+        this.sourceIdentifier = sourceIdentifier;
+        this.destinationIdentifier = destinationIdentifier;
+        this.values = new Object();
+        /* 
+        All new messages has zero index.
+        Replicator may change this.
+        */
+        this.index = 0;
+
+    }
+    setValue(key, value) {
+        this.values[key] = value;
+    }
+
+    getValue(key) {
+        return this.values[key];
+    }
+
+    getId() {
+        return "kdm" + this.index;
+    }
+
+    importJSON(json) {
+        this.values = json.values;
+        this.destinationIdentifier = json.destinationIdentifier;
+        this.sourceIdentifier = json.sourceIdentifier;
+    }
+}
+
 
 
 
@@ -78,7 +113,7 @@ class KDKernel extends KDObject {
         /** send messages to all apps about user change */
         var msg = new KDMessage("kernel", "*");
         msg.setValue("kernel_user_changed", userName);
-        this.desktop.sendMessage(msg);
+        this.desktop.broadcastLocalMessage(msg);
 
         return this;
     }
@@ -648,6 +683,15 @@ class KDCanvas extends KDVisualComponent {
 
 }
 
+
+/** 
+ * KDScript encapsulate a javascript (or wherever text) wich could be
+ * get from a server request.
+ * Usage:
+ * var s = new KDScript()
+ * s.load(url, true); -> first argument is URL to be loaded.
+ * 
+ * */
 class KDScript extends KDComponent {
     constructor() {
         super();
@@ -674,12 +718,13 @@ class KDScript extends KDComponent {
      * @param async Boolean means if script will be execute inmediatly
      * */
     load(url, async) {
-        // var headTag = document.getElementsByTagName("head")[0];
+        //Remove script if exits in DOM
         if (this.published) {
             kdHeadTag.domObject
                 .removeChild(this.domObject);
         }
 
+        //Build, publish (or republish)
         if (async == undefined) async = true;
         this.build();
         this.publish();
@@ -689,7 +734,7 @@ class KDScript extends KDComponent {
         return this;
     }
 
-    //To reuse script zz3
+    /* Intended to reuse script */
     reset() {
         var pn = this.domObject.parentNode || document.body;
         pn.removeChild(this.domObject);
@@ -698,6 +743,8 @@ class KDScript extends KDComponent {
     }
 }
 
+/** 
+ * This class wrap a HTML FORM*/
 class KDForm extends KDVisualComponent {
     constructor() {
         super();
@@ -819,13 +866,11 @@ class KDSender extends KDVisualComponent {
         this.style.visibility = "hidden";
         /** Time to dettach iFrame from DOM Hierarchy. Zero for do not dettach it */
         this.destroyTime = 5000;
-
     }
-
-
 }
 
 
+/** INCOMPLETE */
 class KDSpriteViewer extends KDLayer {
     constructor() {
         super();
@@ -842,7 +887,6 @@ class KDSpriteViewer extends KDLayer {
             .add("border", "0px")
             .add("padding", "0px")
             .add("margin", "0px");
-
         this.image.style = this.style;
     }
 
@@ -868,8 +912,6 @@ class KDSpriteViewer extends KDLayer {
         return this;
 
     }
-
-
 
     loadImage(url, width, height) {
         if (this.image.domObject) {
@@ -928,6 +970,7 @@ class KDAsyncTask extends KDObject {
         this.timerHandler = undefined;
         this.timeBetweenCalls = 3000;
         this.script = new KDScript().build().publish();
+       
         //Internal form to send data to server
         this.toServer = new KDSender(this.scriptGeneratorURL).build().publish();
 
@@ -1097,6 +1140,7 @@ class KDWindow extends KDLayer {
     }
 
     setOnTop() {
+        
         this.style.add("zIndex", this.desktop.windowZIndex++);
         this.style.apply(this);
     }
@@ -1115,8 +1159,6 @@ class KDArgumentsParser extends KDObject {
         }
     }
 }
-
-
 
 
 /** 
@@ -1153,7 +1195,6 @@ class KDApplication extends KDObject {
          * this app is a console command
          * */
         this.mainWindow = undefined;
-
 
     }
 
@@ -1325,12 +1366,14 @@ class KDTerminal extends KDApplication {
         kdTerminal._indexCommandLine = kdTerminal.mainWindow.body.domObject.getElementsByTagName("input").length;
 
     }
+
+    //overloading run()
     run() {
         this.mainWindow.show();
         this.currentCommandLine.domObject.focus();
     }
 
-
+//overloading processMessage
     processMessage(kdMessage) {
         if (kdMessage.sourceIdentifier == "kernel") {
             if (kdMessage.getValue("kernel_user_changed") != undefined) {
@@ -1394,39 +1437,6 @@ class KDTerminalClock extends KDApplication {
 }
 
 
-/** Wrap messages to share between apps 
- * @param sourceIdentifier 
-*/
-class KDMessage extends KDObject {
-    constructor(sourceIdentifier, destinationIdentifier) {
-        super();
-        this.sourceIdentifier = sourceIdentifier;
-        this.destinationIdentifier = destinationIdentifier;
-        this.values = new Object();
-        //All new messages has zero index.
-        //Replicator may change this 
-        this.index = 0;
-
-    }
-    setValue(key, value) {
-        this.values[key] = value;
-    }
-
-    getValue(key) {
-        return this.values[key];
-    }
-
-    getId() {
-        return "kdm" + this.index;
-    }
-
-    importJSON(json) {
-        this.values = json.values;
-        this.destinationIdentifier = json.destinationIdentifier;
-        this.sourceIdentifier = json.sourceIdentifier;
-    }
-}
-
 /** Send a KDMessage to apps */
 class KDMessageSender extends KDApplication {
     constructor(kdDesktop) {
@@ -1439,7 +1449,7 @@ class KDMessageSender extends KDApplication {
         for (var i = 1; i < args.length; i += 2) {
             m.setValue(args[i], args[i + 1]);
         }
-        this.desktop.sendMessage(m);
+        this.desktop.broadcastLocalMessage(m);
 
         return "Message send to " + args[0];
     }
@@ -1503,19 +1513,9 @@ class KDDesktop extends KDVisualComponent {
         //Circular reference between desktop and kernel
         kdKernel.desktop = this;
         this.kernel = kdKernel
-        
+
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
-        this.remoteMessagesProcessor = new KDScript();
-        this.remoteMessagesProcessorTime = 1000;
-
-        this.messageReplicatorURL = "kd-messages-replicator.php";
-        this.messageResetURL = "kd-messages-reset.php";
-        this.remoteMessageQueueURL = "kd-messages-queue.js";
-
-        this.remoteMessagesTimer = 0;
-        this.lastMessageIndex = -1;
-
         this.windowZIndex = 0;
         this.windows = new Array();
 
@@ -1523,30 +1523,14 @@ class KDDesktop extends KDVisualComponent {
 
     build() {
         super.build();
-        this.remoteMessagesProcessor.build();
         return this;
     }
 
     publish(kdComponent) {
-        this.remoteMessagesProcessor.publish(kdComponent);
         super.publish(kdComponent);
         return this;
     }
 
-    /* When the openFullscreen() function is executed, open the video in fullscreen.
-    Note that we must include prefixes for different browsers, as they don't support the requestFullscreen method yet */
-    requestFullScreen() {
-        var elem = document.documentElement;
-        if (elem.requestFullscreen) {
-            elem.requestFullscreen();
-        } else if (elem.mozRequestFullScreen) { /* Firefox */
-            elem.mozRequestFullScreen();
-        } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-            elem.webkitRequestFullscreen();
-        } else if (elem.msRequestFullscreen) { /* IE/Edge */
-            elem.msRequestFullscreen();
-        }
-    }
 
     /** Pass class type, not a instance of class*/
     addApplicationClass(kdApplicationClass) {
@@ -1555,72 +1539,9 @@ class KDDesktop extends KDVisualComponent {
     }
 
     getApplicationInstance(identifier) {
-        var i;
-        for (i = 0; i < this.applicationsInstances.length; i++) {
-            var app = this.applicationsInstances[i];
-            if (identifier == app.identifier) {
-                return app;
-            }
-        }
+
+
         return undefined;
-    }
-
-    /** Use to send a message to a php script saving the message
-     * on a file. So, each desktop working can open this file
-     * */
-    sendRemoteMessage(kdMessage) {
-        var json = JSON.stringify(kdMessage);
-        //Send desktop instance name + message zz2
-        var uri = this.messageReplicatorURL +
-            "?d=" +
-            encodeURIComponent(this.getNameOfInstance()) +
-            "&m=" +
-            encodeURIComponent(json);
-
-        console.log(uri);
-        this.remoteMessagesProcessor
-            .load(uri);
-    }
-
-    remoteMessagesLoop(theDesktop) {
-        console.log("Entering to remoteMessagesLoop");
-        try {
-            theDesktop.remoteMessagesProcessor.load(theDesktop.remoteMessageQueueURL);
-        } catch (ex) {
-            console.log("ERROR:" + ex);
-        }
-    }
-
-    startRemoteMessagesHandler() {
-        var theDesktop = this;
-        //Initial message
-        console.log(this.messageResetURL);
-        this.remoteMessagesProcessor.load(this.messageResetURL);
-        this.remoteMessagesTimer = window.setInterval(function () { theDesktop.remoteMessagesLoop(theDesktop); }, this.remoteMessagesProcessorTime);
-    }
-
-    stopRemoteMessagesHandler() {
-        window.clearInterval(this.remoteMessagesTimer);
-    }
-
-    /**
-     *  Broadcast a message to all availables apps 
-     * associates with this desktop
-     * */
-    sendMessage(kdMessage) {
-        if (kdMessage.index > this.lastMessageIndex) {
-            this.lastMessageIndex = kdMessage.index;
-            var i;
-            for (i = 0; i < this.applicationsInstances.length; i++) {
-                var app = this.applicationsInstances[i];
-                if (kdMessage.destinationIdentifier == app.identifier) {
-                    app.processMessage(kdMessage);
-                } else if (kdMessage.destinationIdentifier == "" || kdMessage.destinationIdentifier == "*") {
-                    app.processMessage(kdMessage);
-                }
-            }
-        }
-        return kdMessage;
     }
 
     run() {
@@ -1687,6 +1608,26 @@ class KDDesktop extends KDVisualComponent {
             }
 
         }
+    }
+
+    /** 
+     * Broadcast a local message for all or a particular application.
+     * Do not use this method to send messages for other networks nodes.
+     * Each message has a detinationIdentifier property. If this property
+     * is set to "*" all applications will receive the message. In other
+     * case only the application with proper identifier will receive it.
+     * Each application must override processMessage method in order to 
+     * handle the message
+     * */
+    broadcastLocalMessage(kdMessage) {
+        var i;
+        for (i = 0; i < this.applicationsInstances.length; i++) {
+            var app = this.applicationsInstances[i];
+            if (kdMessage.destinationIdentifier = "*" || kdMessage.destinationIdentifier == app.identifier) {
+                app.processMesage(kdMessage)
+            }
+        }
+
     }
 
 }var data = new Object();
@@ -1837,7 +1778,6 @@ class QQSM extends KDApplication {
         this.title = "Millonario";
         this.filename = "";
         this.indexQuestion = -1;
-
 
         this.mainWindow = new KDWindow().build()
             .setSize(new KDSize(800, 800))
