@@ -7,10 +7,10 @@
 include "kd-messages-ini.php";
 
 //Get desktop instance name
-$d = $_GET["d"];
+//$d = $_GET["d"];
 
 //Get message
-$m = $_GET["m"];
+$m = $_POST["message"];
 
 //Check ID MESSAGE file. Create it if don't exits.
 if (!file_exists($fileName_index)) {
@@ -25,8 +25,10 @@ file_put_contents($fileName_index, $id);
 
 //Read messages file.
 $t = file_get_contents($fileName_messages);
+
 //Split messages by return characters
 $y = preg_split("/\\r\\n/", $t);
+
 //Count messages
 $u = count($y);
 $p = "";
@@ -42,10 +44,13 @@ if ($u > $MAX_MESSAGES) {
 
 //build javascript with new message
 $r = $p;
+$r .= "$m\r\n";
+/*
 $r .= "var _m = new KDMessage();";
 $r .= "_m.importJSON($m);";
 $r .= "_m.index = $id;";
 $r .= "$d.sendMessage(_m);\r\n";
+*/
 
 //put the last message at end of file:
 file_put_contents($fileName_messages, $r, FILE_APPEND);

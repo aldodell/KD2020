@@ -54,17 +54,20 @@
         desktop.addApplicationClass(KDCreateUser);
         desktop.addApplicationClass(KDLoadUser);
         desktop.addApplicationClass(KDShowUser);
-        
+
         desktop.run();
         //desktop.startRemoteMessagesHandler();
 
 
 
-var m1 = new KDMessage("a", "b");
-m1.setValue("v1", 1);
-m1.setValue("v2", 2);
+        var m1 = new KDMessage("a", "b");
+        m1.setValue("saludo", "Hola mundo");
+        m1.setValue("agradecimiento", "¡Gracias a Dios!");
 
-alert(m1.exportJSON());
+        alert(m1.exportJSON());
+
+        desktop.broadcastRemoteMessage(m1);
+
 
 
 

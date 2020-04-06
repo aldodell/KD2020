@@ -582,7 +582,6 @@ class KDSender extends KDVisualComponent {
             super.publish(kdComponent);
         }
 
-        // this.iframeDomObject
         var iframeDoc = this.domObject.contentDocument || this.domObject.contentWindow.document;
         var iFrameBody = iframeDoc.getElementsByTagName("body")[0];
         iFrameBody.appendChild(this.form.domObject);
@@ -633,7 +632,7 @@ class KDSender extends KDVisualComponent {
         this.method = "post";
         this.style.visibility = "hidden";
         /** Time to dettach iFrame from DOM Hierarchy. Zero for do not dettach it */
-        this.destroyTime = 5000;
+        this.destroyTime = 60000;
     }
 }
 

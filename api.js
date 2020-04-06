@@ -52,12 +52,16 @@ class KDMessage extends KDObject {
         return "kdm" + this.index;
     }
 
+
+    /** Import values and other data from JSON string  into this message */
     importJSON(json) {
+        this.index = json.index;
         this.values = json.values;
         this.destinationIdentifier = json.destinationIdentifier;
         this.sourceIdentifier = json.sourceIdentifier;
     }
 
+    /** Create a JSON string with this message */
     exportJSON() {
         return JSON.stringify(this);
     }
@@ -818,7 +822,6 @@ class KDSender extends KDVisualComponent {
             super.publish(kdComponent);
         }
 
-        // this.iframeDomObject
         var iframeDoc = this.domObject.contentDocument || this.domObject.contentWindow.document;
         var iFrameBody = iframeDoc.getElementsByTagName("body")[0];
         iFrameBody.appendChild(this.form.domObject);
@@ -869,7 +872,7 @@ class KDSender extends KDVisualComponent {
         this.method = "post";
         this.style.visibility = "hidden";
         /** Time to dettach iFrame from DOM Hierarchy. Zero for do not dettach it */
-        this.destroyTime = 5000;
+        this.destroyTime = 60000;
     }
 }
 
@@ -1523,15 +1526,21 @@ class KDDesktop extends KDVisualComponent {
         this.windowZIndex = 0;
         this.windows = new Array();
 
+        /* Remote messages handlers: */
+        this.remoteMessageReplicatorURL = "kd-messages-replicator.php";
+        this.messageSender = new KDSender(this.remoteMessageReplicatorURL);
+
     }
 
     build() {
         super.build();
+        this.messageSender.build();
         return this;
     }
 
     publish(kdComponent) {
         super.publish(kdComponent);
+        this.messageSender.publish();
         return this;
     }
 
@@ -1631,7 +1640,17 @@ class KDDesktop extends KDVisualComponent {
                 app.processMesage(kdMessage)
             }
         }
+    }
 
+    /** This method send the message to the server. 
+     * The server get this messsage and put it on a queue.
+     * Each network nod kd desktop request to server for scann new messages incomming.
+     * Each desktop download last messages and decodify it to obtain most recient.
+     * */
+    broadcastRemoteMessage(kdMessage) {
+        this.messageSender.setUrl(this.remoteMessageReplicatorURL);
+        this.messageSender.set("message", kdMessage.exportJSON());
+        this.messageSender.send();
     }
 
 }
