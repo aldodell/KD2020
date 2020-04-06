@@ -51,49 +51,20 @@
         desktop.addApplicationClass(KDTerminalClock);
         desktop.addApplicationClass(KDTerminalAlert);
         desktop.addApplicationClass(KDMessageSender);
-        desktop.addApplicationClass(QQSM);
-        desktop.addApplicationClass(QQSM_control);
         desktop.addApplicationClass(KDCreateUser);
         desktop.addApplicationClass(KDLoadUser);
         desktop.addApplicationClass(KDShowUser);
-
         
-
-
         desktop.run();
-        desktop.startRemoteMessagesHandler();
+        //desktop.startRemoteMessagesHandler();
 
 
 
+var m1 = new KDMessage("a", "b");
+m1.setValue("v1", 1);
+m1.setValue("v2", 2);
 
-        /*
-                var kdwin = new KDWindow();
-                kdwin.publish()
-                    .setSize(new KDSize(400, 200))
-                    .setPosition(new KDPosition(100, 100))
-                    .setTitle("Hello world!");
-
-
-                var l1 = new KDLayer();
-                kdwin.add(l1);
-                l1.setPosition(new KDPosition(10, 10)).setSize(new KDSize(100, 20));
-
-                var b1 = new KDButton();
-                kdwin.add(b1);
-                b1.setPosition(new KDPosition(10, 50)).setSize(new KDSize(100, 20));
-
-
-                var im = new KDImage().build();
-                im.setSource("media/mario.jpg")
-                    .setSize(new KDSize(100, 100));
-
-
-                kdwin.add(im);
-
-        */
-
-
-
+alert(m1.exportJSON());
 
 
 

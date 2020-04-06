@@ -27,3 +27,6 @@ qqsm -f dieta.json
 qqsm -f dieta.json
 qqsm -f dieta.json
 qqsm -f dieta.json
+help
+?
+mario
