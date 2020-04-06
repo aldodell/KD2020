@@ -147,7 +147,6 @@ class QQSM extends KDApplication {
         this.filename = "";
         this.indexQuestion = -1;
 
-
         this.mainWindow = new KDWindow().build()
             .setSize(new KDSize(800, 800))
             .publish(kdDesktop)

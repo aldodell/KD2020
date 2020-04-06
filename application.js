@@ -15,8 +15,6 @@ class KDArgumentsParser extends KDObject {
 }
 
 
-
-
 /** 
  * KicsyDell Application class base.
  * All KD application must inherate from this class.
@@ -223,12 +221,14 @@ class KDTerminal extends KDApplication {
         kdTerminal._indexCommandLine = kdTerminal.mainWindow.body.domObject.getElementsByTagName("input").length;
 
     }
+
+    //overloading run()
     run() {
         this.mainWindow.show();
         this.currentCommandLine.domObject.focus();
     }
 
-
+//overloading processMessage
     processMessage(kdMessage) {
         if (kdMessage.sourceIdentifier == "kernel") {
             if (kdMessage.getValue("kernel_user_changed") != undefined) {
@@ -291,39 +291,6 @@ class KDTerminalClock extends KDApplication {
     }
 }
 
-
-/** Wrap messages to share between apps 
- * @param sourceIdentifier 
-*/
-class KDMessage extends KDObject {
-    constructor(sourceIdentifier, destinationIdentifier) {
-        super();
-        this.sourceIdentifier = sourceIdentifier;
-        this.destinationIdentifier = destinationIdentifier;
-        this.values = new Object();
-        //All new messages has zero index.
-        //Replicator may change this 
-        this.index = 0;
-
-    }
-    setValue(key, value) {
-        this.values[key] = value;
-    }
-
-    getValue(key) {
-        return this.values[key];
-    }
-
-    getId() {
-        return "kdm" + this.index;
-    }
-
-    importJSON(json) {
-        this.values = json.values;
-        this.destinationIdentifier = json.destinationIdentifier;
-        this.sourceIdentifier = json.sourceIdentifier;
-    }
-}
 
 /** Send a KDMessage to apps */
 class KDMessageSender extends KDApplication {

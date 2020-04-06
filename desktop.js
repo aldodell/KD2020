@@ -9,7 +9,7 @@ class KDDesktop extends KDVisualComponent {
         //Circular reference between desktop and kernel
         kdKernel.desktop = this;
         this.kernel = kdKernel
-        
+
         this.applicationsClasses = new Array();
         this.applicationsInstances = new Array();
         this.remoteMessagesProcessor = new KDScript();
@@ -72,11 +72,16 @@ class KDDesktop extends KDVisualComponent {
     }
 
     /** Use to send a message to a php script saving the message
-     * on a file. So, each desktop working can open this file
+     * on a file. So, each desktop working can open this file.
+     * This method make a GET request on a server by it URL.
+     * The GET request has this structure:
+     *      url?d=nameOfInstance&m=kdMessage
+     * On this case, kdMessage is serialize using JSON.
+     * 
      * */
     sendRemoteMessage(kdMessage) {
         var json = JSON.stringify(kdMessage);
-        //Send desktop instance name + message zz2
+        //Send desktop instance name + message
         var uri = this.messageReplicatorURL +
             "?d=" +
             encodeURIComponent(this.getNameOfInstance()) +
@@ -88,6 +93,10 @@ class KDDesktop extends KDVisualComponent {
             .load(uri);
     }
 
+    /**
+     * This method is called by desktop on a inner loop. 
+     * It will load a script with all messages that has been sended by applications and desktop
+     * */
     remoteMessagesLoop(theDesktop) {
         console.log("Entering to remoteMessagesLoop");
         try {
@@ -97,6 +106,7 @@ class KDDesktop extends KDVisualComponent {
         }
     }
 
+    /** Start a loop wich load a script having a message queue */
     startRemoteMessagesHandler() {
         var theDesktop = this;
         //Initial message
@@ -110,8 +120,11 @@ class KDDesktop extends KDVisualComponent {
     }
 
     /**
-     *  Broadcast a message to all availables apps 
-     * associates with this desktop
+     * Broadcast a message to all availables apps 
+     * associates with this desktop.
+     * This implementation send messages locally. This means that other users
+     * sharing the application on other network node can't receive this messages.
+     * 
      * */
     sendMessage(kdMessage) {
         if (kdMessage.index > this.lastMessageIndex) {

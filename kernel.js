@@ -24,6 +24,41 @@ class KDObject {
     }
 }
 
+/** Wrap messages to share between apps 
+ * @param sourceIdentifier 
+*/
+class KDMessage extends KDObject {
+    constructor(sourceIdentifier, destinationIdentifier) {
+        super();
+        this.sourceIdentifier = sourceIdentifier;
+        this.destinationIdentifier = destinationIdentifier;
+        this.values = new Object();
+        /* 
+        All new messages has zero index.
+        Replicator may change this.
+        */
+        this.index = 0;
+
+    }
+    setValue(key, value) {
+        this.values[key] = value;
+    }
+
+    getValue(key) {
+        return this.values[key];
+    }
+
+    getId() {
+        return "kdm" + this.index;
+    }
+
+    importJSON(json) {
+        this.values = json.values;
+        this.destinationIdentifier = json.destinationIdentifier;
+        this.sourceIdentifier = json.sourceIdentifier;
+    }
+}
+
 
 
 

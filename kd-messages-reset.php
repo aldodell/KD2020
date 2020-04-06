@@ -1,4 +1,6 @@
 <?php
+
+/** This script reset the messages file */
 include("kd-messages-ini.php");
 //blank messages file
 file_put_contents($fileName_messages, "");

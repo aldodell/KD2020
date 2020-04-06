@@ -451,6 +451,15 @@ class KDCanvas extends KDVisualComponent {
 
 }
 
+
+/** 
+ * KDScript encapsulate a javascript (or wherever text) wich could be
+ * get from a server request.
+ * Usage:
+ * var s = new KDScript()
+ * s.load(url, true); -> first argument is URL to be loaded.
+ * 
+ * */
 class KDScript extends KDComponent {
     constructor() {
         super();
@@ -477,12 +486,13 @@ class KDScript extends KDComponent {
      * @param async Boolean means if script will be execute inmediatly
      * */
     load(url, async) {
-        // var headTag = document.getElementsByTagName("head")[0];
+        //Remove script if exits in DOM
         if (this.published) {
             kdHeadTag.domObject
                 .removeChild(this.domObject);
         }
 
+        //Build, publish (or republish)
         if (async == undefined) async = true;
         this.build();
         this.publish();
@@ -492,7 +502,7 @@ class KDScript extends KDComponent {
         return this;
     }
 
-    //To reuse script zz3
+    /* Intended to reuse script */
     reset() {
         var pn = this.domObject.parentNode || document.body;
         pn.removeChild(this.domObject);
@@ -501,6 +511,8 @@ class KDScript extends KDComponent {
     }
 }
 
+/** 
+ * This class wrap a HTML FORM*/
 class KDForm extends KDVisualComponent {
     constructor() {
         super();
@@ -622,13 +634,11 @@ class KDSender extends KDVisualComponent {
         this.style.visibility = "hidden";
         /** Time to dettach iFrame from DOM Hierarchy. Zero for do not dettach it */
         this.destroyTime = 5000;
-
     }
-
-
 }
 
 
+/** INCOMPLETE */
 class KDSpriteViewer extends KDLayer {
     constructor() {
         super();
@@ -645,7 +655,6 @@ class KDSpriteViewer extends KDLayer {
             .add("border", "0px")
             .add("padding", "0px")
             .add("margin", "0px");
-
         this.image.style = this.style;
     }
 
@@ -671,8 +680,6 @@ class KDSpriteViewer extends KDLayer {
         return this;
 
     }
-
-
 
     loadImage(url, width, height) {
         if (this.image.domObject) {

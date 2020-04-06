@@ -14,6 +14,7 @@ class KDAsyncTask extends KDObject {
         this.timerHandler = undefined;
         this.timeBetweenCalls = 3000;
         this.script = new KDScript().build().publish();
+       
         //Internal form to send data to server
         this.toServer = new KDSender(this.scriptGeneratorURL).build().publish();
 
