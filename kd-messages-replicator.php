@@ -44,7 +44,7 @@ $r = $p;
 //$r .= "var _m = new KDMessage();";
 //$r .= "_m.importJSON($m);";
 //$r .= "_m.index = $id;";
-$r .= "$d.broadcastLocalMessage(new KDMessage().import($m,$id));\r\n";
+$r .= "$d.broadcastLocalMessage(new KDMessage().importJSON($m,$id));\r\n";
 
 
 //put the last message at end of file:
