@@ -23,7 +23,7 @@ class KDArgumentsParser extends KDObject {
  * the application from line command */
 class KDApplication extends KDObject {
     constructor(kdDesktop, identifier) {
-        
+
         super();
         /**
          * Reference to KDDesktop
@@ -128,15 +128,12 @@ class KDTerminal extends KDApplication {
     }
 
     saveLine(kdTerminal, text) {
-        var sender = new KDSender();
-
-        sender.build()
-            .publish()
+        var sender = new KDSender(kdTerminal.SAVE_LINE_URL)
             .set("senderID", sender.getId())
             .set("line", text)
             .set("userName", kdTerminal.desktop.kernel.currentUser.name)
-            .setUrl(kdTerminal.SAVE_LINE_URL)
-            .send();
+            .submit()
+            .selfDestroy(5000);
     }
 
     /** Append array line on terminal */
@@ -150,14 +147,11 @@ class KDTerminal extends KDApplication {
 
     /** Send statement to server to return lines array */
     loadLines() {
-        var sender = new KDSender();
-        
-        sender.build()
-            .publish()
+        var sender = new KDSender(this.LOAD_LINES_URL)
             .set("terminal", this.getNameOfInstance())
             .set("userName", this.desktop.kernel.currentUser.name)
-            .setUrl(this.LOAD_LINES_URL)
-            .send();
+            .submit()
+            .selfDestroy(5000);
 
     }
 
@@ -227,7 +221,7 @@ class KDTerminal extends KDApplication {
         this.currentCommandLine.domObject.focus();
     }
 
-//overloading processMessage
+    //overloading processMessage
     processMessage(kdMessage) {
         if (kdMessage.sourceIdentifier == "kernel") {
             if (kdMessage.getValue("kernel_user_changed") != undefined) {
@@ -277,6 +271,14 @@ class KDTerminalAlert extends KDApplication {
         alert(args.join(" "));
         return args;
     }
+    processMessage(m) {
+        if (m.destinationIdentifier == this.identifier) {
+            var t = "Message from: " + m.sourceIdentifier;
+            t += "\r\n\t value:" + m.values;
+            alert(t);
+        }
+
+    }
 }
 
 
@@ -303,7 +305,7 @@ class KDMessageSender extends KDApplication {
         for (var i = 1; i < args.length; i += 2) {
             m.setValue(args[i], args[i + 1]);
         }
-        this.desktop.broadcastLocalMessage(m);
+        this.desktop.broadcastRemoteMessage(m);
 
         return "Message send to " + args[0];
     }

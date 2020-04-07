@@ -116,14 +116,15 @@ class KDComponent extends KDObject {
     }
 
     /** Remove this element from DOM */
-    remove() {
-        this.domObject.parentNode.removeChild(this.domObject);
+    remove(kdComponent) {
+        if (kdComponent.domObject) {
+            kdComponent.domObject.parentNode.removeChild(kdComponent.domObject);
+        }
     }
 
     /** Remove this element from DOM until a time */
     selfDestroy(time) {
-        var c = this;
-        window.setTimeout(c.remove, time);
+        window.setTimeout(this.remove, time, this);
     }
 }
 
@@ -477,7 +478,7 @@ class KDScript extends KDComponent {
     }
 
     addParameter(key, value) {
-        var o = {"key": key, "value": value};
+        var o = { "key": key, "value": value };
         this.params.push(o);
         return this;
     }
@@ -510,7 +511,7 @@ class KDScript extends KDComponent {
         var suffix = "?";
         for (let p of this.params) {
             suffix += p.key + "=" + encodeURI(p.value) + "&";
-            alert(suffix);
+
         }
 
         if (this.params.length == 0) suffix = "";
