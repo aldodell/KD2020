@@ -874,6 +874,7 @@ class KDSender extends KDObject {
     }
 
     submit() {
+        
         this.form.submit();
 
         //Self clear form:
@@ -893,7 +894,7 @@ class KDSender extends KDObject {
 
 
     constructor(url, kdIframe, timeToClear) {
-        super()
+        super();
         this.url = url;
         this.iframe = kdIframe == undefined ? new KDIFrame() : kdIframe;
         this.timeToClear = timeToClear == undefined ? 10000 : timeToClear;
@@ -1319,12 +1320,13 @@ class KDTerminal extends KDApplication {
     }
 
     saveLine(kdTerminal, text) {
-        var sender = new KDSender().setUrl(kdTerminal.SAVE_LINE_URL)
-            .set("senderID", sender.getId())
+        var sender = new KDSender().setUrl(kdTerminal.SAVE_LINE_URL);
+        var i = sender.getId();
+        sender.set("senderID", i)
             .set("line", text)
             .set("userName", kdTerminal.desktop.kernel.currentUser.name)
-            .submit()
-            .selfDestroy(5000);
+            .submit();
+        
     }
 
     /** Append array line on terminal */

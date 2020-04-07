@@ -632,6 +632,7 @@ class KDSender extends KDObject {
     }
 
     submit() {
+        
         this.form.submit();
 
         //Self clear form:
@@ -651,7 +652,7 @@ class KDSender extends KDObject {
 
 
     constructor(url, kdIframe, timeToClear) {
-        super()
+        super();
         this.url = url;
         this.iframe = kdIframe == undefined ? new KDIFrame() : kdIframe;
         this.timeToClear = timeToClear == undefined ? 10000 : timeToClear;

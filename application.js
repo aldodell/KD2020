@@ -128,12 +128,13 @@ class KDTerminal extends KDApplication {
     }
 
     saveLine(kdTerminal, text) {
-        var sender = new KDSender().setUrl(kdTerminal.SAVE_LINE_URL)
-            .set("senderID", sender.getId())
+        var sender = new KDSender().setUrl(kdTerminal.SAVE_LINE_URL);
+        var i = sender.getId();
+        sender.set("senderID", i)
             .set("line", text)
             .set("userName", kdTerminal.desktop.kernel.currentUser.name)
-            .submit()
-            .selfDestroy(5000);
+            .submit();
+        
     }
 
     /** Append array line on terminal */
@@ -271,6 +272,7 @@ class KDTerminalAlert extends KDApplication {
         alert(args.join(" "));
         return args;
     }
+    
     processMessage(m) {
         if (m.destinationIdentifier == this.identifier) {
             var t = "Message from: " + m.sourceIdentifier;
