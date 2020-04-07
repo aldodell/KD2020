@@ -132,14 +132,14 @@ class KDDesktop extends KDVisualComponent {
      * */
     broadcastLocalMessage(kdMessage) {
         var i;
-        if (kdMessage.index > k) {
-            for (i = 0; i < this.applicationsInstances.length; i++) {
-                var app = this.applicationsInstances[i];
-                if (kdMessage.destinationIdentifier = "*" || kdMessage.destinationIdentifier == app.identifier) {
-                    app.processMesage(kdMessage)
-                }
+
+        for (i = 0; i < this.applicationsInstances.length; i++) {
+            var app = this.applicationsInstances[i];
+            if (kdMessage.destinationIdentifier = "*" || kdMessage.destinationIdentifier == app.identifier) {
+                app.processMessage(kdMessage)
             }
         }
+
     }
 
 
@@ -180,7 +180,7 @@ class KDDesktop extends KDVisualComponent {
             .addParameter("d", this.getNameOfInstance())
             .load(this.getLastIndexURL)
             .selfDestroy(20000);
-        this.requestMessagesHanlder = window.setInterval(this.requestMessagesLoop, this.timeBetweenMessagesRequest,this);
+        this.requestMessagesHanlder = window.setInterval(this.requestMessagesLoop, this.timeBetweenMessagesRequest, this);
     }
 
     /** Start request messages to server */

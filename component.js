@@ -646,6 +646,7 @@ class KDSender extends KDObject {
         this.url = url;
         this.form.url = url;
         if (this.form.domObject) { this.form.domObject.action = url; }
+        return this;
     }
 
 
