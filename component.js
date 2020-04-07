@@ -642,7 +642,11 @@ class KDSender extends KDObject {
         return this;
     }
 
-
+    setUrl(url) {
+        this.url = url;
+        this.form.url = url;
+        if (this.form.domObject) { this.form.domObject.action = url; }
+    }
 
 
     constructor(url, kdIframe, timeToClear) {
@@ -661,7 +665,7 @@ class KDSender extends KDObject {
         this.form.build().publish();
         this.form.domObject.target = this.iframe.getId();
 
-
+        return this;
 
     }
 

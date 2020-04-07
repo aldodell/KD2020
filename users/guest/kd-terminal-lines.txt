@@ -30,3 +30,4 @@ qqsm -f dieta.json
 help
 ?
 mario
+message-sender alert "Hola mundo"

@@ -128,9 +128,8 @@ class KDTerminal extends KDApplication {
     }
 
     saveLine(kdTerminal, text) {
-        var sender = new KDSender(kdTerminal.SAVE_LINE_URL);
-
-        sender.set("senderID", sender.getId())
+        var sender = new KDSender(kdTerminal.SAVE_LINE_URL)
+            .set("senderID", sender.getId())
             .set("line", text)
             .set("userName", kdTerminal.desktop.kernel.currentUser.name)
             .submit()

@@ -884,7 +884,11 @@ class KDSender extends KDObject {
         return this;
     }
 
-
+    setUrl(url) {
+        this.url = url;
+        this.form.url = url;
+        if (this.form.domObject) { this.form.domObject.action = url; }
+    }
 
 
     constructor(url, kdIframe, timeToClear) {
@@ -903,7 +907,7 @@ class KDSender extends KDObject {
         this.form.build().publish();
         this.form.domObject.target = this.iframe.getId();
 
-
+        return this;
 
     }
 
@@ -1314,9 +1318,8 @@ class KDTerminal extends KDApplication {
     }
 
     saveLine(kdTerminal, text) {
-        var sender = new KDSender(kdTerminal.SAVE_LINE_URL);
-
-        sender.set("senderID", sender.getId())
+        var sender = new KDSender(kdTerminal.SAVE_LINE_URL)
+            .set("senderID", sender.getId())
             .set("line", text)
             .set("userName", kdTerminal.desktop.kernel.currentUser.name)
             .submit()
