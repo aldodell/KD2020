@@ -134,7 +134,7 @@ class KDDesktop extends KDVisualComponent {
         var i;
         for (i = 0; i < this.applicationsInstances.length; i++) {
             var app = this.applicationsInstances[i];
-            if (kdMessage.destinationIdentifier = "*" || kdMessage.destinationIdentifier == app.identifier) {
+            if (kdMessage.destinationIdentifier == "*" || kdMessage.destinationIdentifier == app.identifier) {
                 app.processMessage(kdMessage)
             }
         }

@@ -1464,6 +1464,7 @@ class KDTerminalAlert extends KDApplication {
         alert(args.join(" "));
         return args;
     }
+    
     processMessage(m) {
         if (m.destinationIdentifier == this.identifier) {
             var t = "Message from: " + m.sourceIdentifier;
@@ -1685,10 +1686,9 @@ class KDDesktop extends KDVisualComponent {
      * */
     broadcastLocalMessage(kdMessage) {
         var i;
-
         for (i = 0; i < this.applicationsInstances.length; i++) {
             var app = this.applicationsInstances[i];
-            if (kdMessage.destinationIdentifier = "*" || kdMessage.destinationIdentifier == app.identifier) {
+            if (kdMessage.destinationIdentifier == "*" || kdMessage.destinationIdentifier == app.identifier) {
                 app.processMessage(kdMessage)
             }
         }
