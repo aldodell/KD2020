@@ -12,10 +12,7 @@ $d = $_POST["d"];
 //Get message
 $m = $_POST["m"];
 
-//Check ID MESSAGE file. Create it if don't exits.
-if (!file_exists($fileName_index)) {
-    file_put_contents($fileName_index, "0");
-}
+
 
 //get last id
 $id = intval(file_get_contents($fileName_index)) + 1;
