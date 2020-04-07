@@ -146,7 +146,7 @@ class KDDesktop extends KDVisualComponent {
      * */
     broadcastLocalMessageWithIndex(kdMessage) {
         if (kdMessage.index > this.lastMessageIndex) {
-            broadcastLocalMessage(kdMessage);
+            this.broadcastLocalMessage(kdMessage);
         }
         this.lastMessageIndex = kdMessage.index;
     }
