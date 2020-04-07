@@ -80,3 +80,78 @@
 
     this.remoteMessagesTimer = 0;
     this.lastMessageIndex = -1;
+
+
+
+    build() {
+        super.build();
+        this.form.url = this.url;
+        this.form.build();
+        this.domObject.setAttribute("name", this.getId());
+        this.form.domObject.setAttribute("name", this.getId() + "_form");
+        return this;
+    }
+
+    publish(kdComponent) {
+
+        if (!this.domObject) this.build();
+
+        if (kdComponent == undefined) {
+            var head = document.getElementsByTagName("head")[0];
+            head.appendChild(this.domObject);
+        } else {
+            super.publish(kdComponent);
+        }
+
+        var iframeDoc = this.domObject.contentDocument || this.domObject.contentWindow.document;
+        var iFrameBody = iframeDoc.getElementsByTagName("body")[0];
+        iFrameBody.appendChild(this.form.domObject);
+        return this;
+    }
+
+    setUrl(url) {
+        this.url = url;
+        this.form.url = url;
+        if (this.form.domObject) {
+            this.form.domObject.setAttribute("action", url);
+        }
+        return this;
+    }
+
+    set(name, value) {
+        if (!this.domObject) {
+            this.build().publish();
+        }
+        var hidden = new KDHidden().build().publish(this.form);
+        hidden.setName(name).setValue(value);
+
+        return this;
+    }
+
+    removeSender(kdSender) {
+        var iframe = window.parent.document.getElementById(kdSender.getId());
+        iframe.parentNode.removeChild(iframe);
+    }
+
+    send() {
+        if (this.domObject) {
+            this.form.submit();
+        }
+        if (this.destroyTime > 0) {
+            var sender = this;
+            window.setTimeout(sender.removeSender, sender.destroyTime, sender);
+        }
+        return this;
+    }
+
+    constructor(url) {
+        super();
+        this.htmlName = "iframe";
+        this.url = url;
+        this.form = new KDForm();
+        this.form.url = url;
+        this.method = "post";
+        this.style.visibility = "hidden";
+        /** Time to dettach iFrame from DOM Hierarchy. Zero for do not dettach it */
+        this.destroyTime = 60000;
+    }

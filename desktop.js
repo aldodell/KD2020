@@ -17,19 +17,23 @@ class KDDesktop extends KDVisualComponent {
 
         /* Remote messages handlers: */
         this.remoteMessageReplicatorURL = "kd-messages-replicator.php";
+        this.getLastIndexURL = "kd-messages-get-last-index.php";
+        this.remoteMessageQueue = "kd-messages-queue.js";
         this.messageSender = new KDSender(this.remoteMessageReplicatorURL);
+        this.lastMessageIndex = -1;
+        this.timeBetweenMessagesRequest = 10000; //Time to request messages from server
 
     }
 
     build() {
         super.build();
-        this.messageSender.build();
+        //this.messageSender.build();
         return this;
     }
 
     publish(kdComponent) {
         super.publish(kdComponent);
-        this.messageSender.publish();
+        //this.messageSender.publish();
         return this;
     }
 
@@ -41,10 +45,16 @@ class KDDesktop extends KDVisualComponent {
     }
 
     getApplicationInstance(identifier) {
-
-
+        var i;
+        for (i = 0; i < this.applicationsInstances.length; i++) {
+            var app = this.applicationsInstances[i];
+            if (identifier == app.identifier) {
+                return app;
+            }
+        }
         return undefined;
     }
+
 
     run() {
 
@@ -108,7 +118,6 @@ class KDDesktop extends KDVisualComponent {
                     });
                 }
             }
-
         }
     }
 
@@ -123,13 +132,26 @@ class KDDesktop extends KDVisualComponent {
      * */
     broadcastLocalMessage(kdMessage) {
         var i;
-        for (i = 0; i < this.applicationsInstances.length; i++) {
-            var app = this.applicationsInstances[i];
-            if (kdMessage.destinationIdentifier = "*" || kdMessage.destinationIdentifier == app.identifier) {
-                app.processMesage(kdMessage)
+        if (kdMessage.index > k) {
+            for (i = 0; i < this.applicationsInstances.length; i++) {
+                var app = this.applicationsInstances[i];
+                if (kdMessage.destinationIdentifier = "*" || kdMessage.destinationIdentifier == app.identifier) {
+                    app.processMesage(kdMessage)
+                }
             }
         }
     }
+
+
+    /** Filter messages to be broadcasting considering its index
+     * */
+    broadcastLocalMessageWithIndex(kdMessage) {
+        if (kdMessage.index > this.lastMessageIndex) {
+            broadcastLocalMessage(kdMessage);
+        }
+        this.lastMessageIndex = kdMessage.index;
+    }
+
 
     /** This method send the message to the server. 
      * The server get this messsage and put it on a queue.
@@ -137,9 +159,36 @@ class KDDesktop extends KDVisualComponent {
      * Each desktop download last messages and decodify it to obtain most recient.
      * */
     broadcastRemoteMessage(kdMessage) {
-        this.messageSender.setUrl(this.remoteMessageReplicatorURL);
-        this.messageSender.set("message", kdMessage.exportJSON());
-        this.messageSender.send();
+        this.messageSender.set("d", this.getNameOfInstance());
+        this.messageSender.set("m", kdMessage.exportJSON());
+        this.messageSender.submit();
     }
+
+    /** Loop for request messages */
+    requestMessagesLoop(kdDesktop) {
+        var request = new KDScript()
+            .build()
+            .publish()
+            .load(kdDesktop.remoteMessageQueue)
+            .selfDestroy(kdDesktop.timeBetweenMessagesRequest);
+    }
+
+    /** Start request messages to server */
+    startRequestMessages() {
+        var request = new KDScript().build()
+            .publish()
+            .addParameter("d", this.getNameOfInstance())
+            .load(this.getLastIndexURL)
+            .selfDestroy(20000);
+        this.requestMessagesHanlder = window.setInterval(this.requestMessagesLoop, this.timeBetweenMessagesRequest,this);
+    }
+
+    /** Start request messages to server */
+    stopRequestMessages() {
+        this.requestMessagesHanlder = window.clearInterval(this.requestMessagesHanlder);
+    }
+
+
+
 
 }

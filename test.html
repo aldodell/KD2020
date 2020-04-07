@@ -7,9 +7,6 @@
     <script src="api.js"></script>
     <script>
 
-
-
-
         var kernel = new KDKernel();
         var desktop = new KDDesktop(kernel).build().publish();
 
@@ -35,7 +32,6 @@
                     .setParameters(7, 449, 16, 33, 12, 13, 7)
                     .showSprite(0, 2);
 
-
             }
             run() {
                 this.mainWindow.show();
@@ -56,18 +52,7 @@
         desktop.addApplicationClass(KDShowUser);
 
         desktop.run();
-        //desktop.startRemoteMessagesHandler();
-
-
-
-        var m1 = new KDMessage("a", "b");
-        m1.setValue("saludo", "Hola mundo");
-        m1.setValue("agradecimiento", "¡Gracias a Dios!");
-
-        alert(m1.exportJSON());
-
-        desktop.broadcastRemoteMessage(m1);
-
+        desktop.startRequestMessages();
 
 
 

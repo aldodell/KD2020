@@ -115,8 +115,15 @@ class KDComponent extends KDObject {
         }
     }
 
+    /** Remove this element from DOM */
     remove() {
         this.domObject.parentNode.removeChild(this.domObject);
+    }
+
+    /** Remove this element from DOM until a time */
+    selfDestroy(time) {
+        var c = this;
+        window.setTimeout(c.remove, time);
     }
 }
 
@@ -465,7 +472,14 @@ class KDScript extends KDComponent {
         super();
         this.htmlName = "script";
         this.published = false;
+        this.params = new Array();
 
+    }
+
+    addParameter(key, value) {
+        var o = {"key": key, "value": value};
+        this.params.push(o);
+        return this;
     }
 
     build() {
@@ -492,13 +506,21 @@ class KDScript extends KDComponent {
                 .removeChild(this.domObject);
         }
 
+        //build parameters:
+        var suffix = "?";
+        for (let p of this.params) {
+            suffix += p.key + "=" + encodeURI(p.value) + "&";
+            alert(suffix);
+        }
+
+        if (this.params.length == 0) suffix = "";
+
         //Build, publish (or republish)
         if (async == undefined) async = true;
         this.build();
         this.publish();
-        this.domObject.setAttribute("src", url);
+        this.domObject.setAttribute("src", url + suffix);
         this.domObject.setAttribute("async", async);
-
         return this;
     }
 
@@ -547,93 +569,101 @@ class KDHidden extends KDVisualComponent {
         super();
         this.htmlName = "input";
         this.htmlType = "hidden";
+        this.name = "noname";
+        this.value = "novalue";
 
     }
 
+    setName(name) {
+        this.name = name;
+        if (this.domObject.value) {
+            this.domObject.name = name;
+
+        } else {
+            //  this.throwException("KDHidden object has not been builded and published yet");
+        }
+        return this;
+    }
+
     setValue(value) {
-        this.domObject.value = value;
+        this.value = value;
+        if (this.domObject.value) {
+            this.domObject.value = value;
+        } else {
+            // this.throwException("KDHidden object has not been builded and published yet");
+        }
+        return this;
+    }
+
+    build() {
+        super.build();
+        this.domObject.value = this.value;
+        this.domObject.name = this.name;
         return this;
     }
 }
 
+
+class KDIFrame extends KDVisualComponent {
+    constructor() {
+        super();
+        this.htmlName = "IFRAME";
+    }
+    publish() {
+        super.publish(kdHeadTag);
+    }
+}
+
+
 /**
  * Wrap a form and hidden fields to send values to a script
  * @example var sender = new KDSender("myURL.php");
+ * 
+ * 
  * */
-class KDSender extends KDVisualComponent {
+class KDSender extends KDObject {
 
-    build() {
-        super.build();
-        this.form.url = this.url;
-        this.form.build();
-        this.domObject.setAttribute("name", this.getId());
-        this.form.domObject.setAttribute("name", this.getId() + "_form");
+    set(key, value) {
+        var h = new KDHidden();
+        h.build().publish(this.form);
+        h.setName(key).setValue(value);
         return this;
     }
 
-    publish(kdComponent) {
+    submit() {
+        this.form.submit();
 
-        if (!this.domObject) this.build();
-
-        if (kdComponent == undefined) {
-            var head = document.getElementsByTagName("head")[0];
-            head.appendChild(this.domObject);
-        } else {
-            super.publish(kdComponent);
+        //Self clear form:
+        if (this.timeToClear > 0) {
+            var theForm = this.form.domObject;
+            window.setTimeout(function () { for (let e of theForm.childNodes) { e.parentNode.removeChild(e); } }, this.timeToClear);
         }
-
-        var iframeDoc = this.domObject.contentDocument || this.domObject.contentWindow.document;
-        var iFrameBody = iframeDoc.getElementsByTagName("body")[0];
-        iFrameBody.appendChild(this.form.domObject);
         return this;
     }
 
-    setUrl(url) {
+
+
+
+    constructor(url, kdIframe, timeToClear) {
+        super()
         this.url = url;
-        this.form.url = url;
-        if (this.form.domObject) {
-            this.form.domObject.setAttribute("action", url);
-        }
-        return this;
-    }
-
-    set(name, value) {
-        if (!this.domObject) {
-            this.build().publish();
-        }
-        var hidden = new KDHidden().build().publish(this.form);
-        hidden.setName(name).setValue(value);
-
-        return this;
-    }
-
-    removeSender(kdSender) {
-        var iframe = window.parent.document.getElementById(kdSender.getId());
-        iframe.parentNode.removeChild(iframe);
-    }
-
-    send() {
-        if (this.domObject) {
-            this.form.submit();
-        }
-        if (this.destroyTime > 0) {
-            var sender = this;
-            window.setTimeout(sender.removeSender, sender.destroyTime, sender);
-        }
-        return this;
-    }
-
-    constructor(url) {
-        super();
-        this.htmlName = "iframe";
-        this.url = url;
+        this.iframe = kdIframe == undefined ? new KDIFrame() : kdIframe;
+        this.timeToClear = timeToClear == undefined ? 10000 : timeToClear;
+        this.iframe.style.visibility = "hidden";
         this.form = new KDForm();
         this.form.url = url;
-        this.method = "post";
-        this.style.visibility = "hidden";
-        /** Time to dettach iFrame from DOM Hierarchy. Zero for do not dettach it */
-        this.destroyTime = 60000;
+        this.form.method = "POST";
+
+        //Construction process
+        this.iframe.build().publish(kdHeadTag);
+        this.iframe.domObject.name = this.iframe.getId();
+        this.form.build().publish();
+        this.form.domObject.target = this.iframe.getId();
+
+
+
     }
+
 }
 
 

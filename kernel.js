@@ -22,6 +22,11 @@ class KDObject {
             if (window[name] == this) return name;
         }
     }
+
+    throwException(message) {
+        alert(message);
+    }
+
 }
 
 /** Wrap messages to share between apps 
@@ -54,11 +59,12 @@ class KDMessage extends KDObject {
 
 
     /** Import values and other data from JSON string  into this message */
-    importJSON(json) {
-        this.index = json.index;
+    importJSON(json, index) {
+        this.index = index == undefined ? json.index : index;
         this.values = json.values;
         this.destinationIdentifier = json.destinationIdentifier;
         this.sourceIdentifier = json.sourceIdentifier;
+        return this;
     }
 
     /** Create a JSON string with this message */
@@ -96,11 +102,9 @@ class KDKernel extends KDObject {
     createUser(userName) {
         var user = new KDUser(userName);
         var sender = new KDSender(this.CREATE_USER_URL)
-            .build()
-            .publish()
             .set("name", userName)
             .set("securityLevel", user.securityLevel)
-            .send();
+            .submit();
         return this;
     }
 
@@ -111,12 +115,10 @@ class KDKernel extends KDObject {
 
         var sender = new KDSender(this.LOAD_USER_URL);
         sender
-            .build()
-            .publish()
             .set("obj", this.getNameOfInstance())
             .set("name", userName)
             .set("senderID", sender.getId())
-            .send();
+            .submit();
 
         /** send messages to all apps about user change */
         var msg = new KDMessage("kernel", "*");
