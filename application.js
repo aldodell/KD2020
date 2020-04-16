@@ -134,7 +134,7 @@ class KDTerminal extends KDApplication {
             .set("line", text)
             .set("userName", kdTerminal.desktop.kernel.currentUser.name)
             .submit();
-        
+
     }
 
     /** Append array line on terminal */
@@ -161,8 +161,25 @@ class KDTerminal extends KDApplication {
         var commandLine = new KDTextBox()
             .publish(this.mainWindow.body);
 
-        commandLine.domObject.addEventListener("keypress", function (e) {
-            if (e.code == "Enter") {
+
+        /*
+    commandLine.domObject.addEventListener("keypress", function (e) {
+        if (e.code == "Enter" || e.which === 13) {
+            if (commandLine.getText() == "") {
+                kdTerminal.newCommandLine(kdTerminal);
+            } else {
+                kdTerminal.proccessCommand(kdTerminal, commandLine.getText());
+                kdTerminal.saveLine(kdTerminal, commandLine.getText());
+            }
+        }
+
+    });
+    */
+
+        commandLine.domObject.addEventListener("keydown", function (e) {
+
+
+            if (e.code == "Enter" || e.which === 13) {
                 if (commandLine.getText() == "") {
                     kdTerminal.newCommandLine(kdTerminal);
                 } else {
@@ -170,9 +187,6 @@ class KDTerminal extends KDApplication {
                     kdTerminal.saveLine(kdTerminal, commandLine.getText());
                 }
             }
-        });
-
-        commandLine.domObject.addEventListener("keydown", function (e) {
 
             /* Autocompletion pressing TAB */
             if (e.code == "Tab") {
@@ -272,11 +286,13 @@ class KDTerminalAlert extends KDApplication {
         alert(args.join(" "));
         return args;
     }
-    
+
     processMessage(m) {
         if (m.destinationIdentifier == this.identifier) {
             var t = "Message from: " + m.sourceIdentifier;
-            t += "\r\n\t value:" + m.values;
+            for (let v of m.values) {
+                t += "\r\n\t key:" + v.key + " value:" + v.value;
+            }
             alert(t);
         }
 

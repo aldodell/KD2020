@@ -632,9 +632,7 @@ class KDSender extends KDObject {
     }
 
     submit() {
-        
         this.form.submit();
-
         //Self clear form:
         if (this.timeToClear > 0) {
             var theForm = this.form.domObject;
@@ -664,9 +662,12 @@ class KDSender extends KDObject {
         //Construction process
         this.iframe.build().publish(kdHeadTag);
         this.iframe.domObject.name = this.iframe.getId();
-        this.form.build().publish();
-        this.form.domObject.target = this.iframe.getId();
 
+        this.form.build();
+        var iframeDoc = this.iframe.domObject.contentDocument || this.iframe.domObject.contentWindow.document;
+        var iFrameBody = iframeDoc.getElementsByTagName("body")[0];
+        iFrameBody.appendChild(this.form.domObject);
+        this.form.domObject.target = this.iframe.getId();
         return this;
 
     }

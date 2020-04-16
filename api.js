@@ -874,9 +874,7 @@ class KDSender extends KDObject {
     }
 
     submit() {
-        
         this.form.submit();
-
         //Self clear form:
         if (this.timeToClear > 0) {
             var theForm = this.form.domObject;
@@ -906,7 +904,11 @@ class KDSender extends KDObject {
         //Construction process
         this.iframe.build().publish(kdHeadTag);
         this.iframe.domObject.name = this.iframe.getId();
-        this.form.build().publish();
+
+        this.form.build();
+        var iframeDoc = this.iframe.domObject.contentDocument || this.iframe.domObject.contentWindow.document;
+        var iFrameBody = iframeDoc.getElementsByTagName("body")[0];
+        iFrameBody.appendChild(this.form.domObject);
         this.form.domObject.target = this.iframe.getId();
 
         return this;
@@ -1326,7 +1328,7 @@ class KDTerminal extends KDApplication {
             .set("line", text)
             .set("userName", kdTerminal.desktop.kernel.currentUser.name)
             .submit();
-        
+
     }
 
     /** Append array line on terminal */
@@ -1353,8 +1355,25 @@ class KDTerminal extends KDApplication {
         var commandLine = new KDTextBox()
             .publish(this.mainWindow.body);
 
-        commandLine.domObject.addEventListener("keypress", function (e) {
-            if (e.code == "Enter") {
+
+        /*
+    commandLine.domObject.addEventListener("keypress", function (e) {
+        if (e.code == "Enter" || e.which === 13) {
+            if (commandLine.getText() == "") {
+                kdTerminal.newCommandLine(kdTerminal);
+            } else {
+                kdTerminal.proccessCommand(kdTerminal, commandLine.getText());
+                kdTerminal.saveLine(kdTerminal, commandLine.getText());
+            }
+        }
+
+    });
+    */
+
+        commandLine.domObject.addEventListener("keydown", function (e) {
+
+
+            if (e.code == "Enter" || e.which === 13) {
                 if (commandLine.getText() == "") {
                     kdTerminal.newCommandLine(kdTerminal);
                 } else {
@@ -1362,9 +1381,6 @@ class KDTerminal extends KDApplication {
                     kdTerminal.saveLine(kdTerminal, commandLine.getText());
                 }
             }
-        });
-
-        commandLine.domObject.addEventListener("keydown", function (e) {
 
             /* Autocompletion pressing TAB */
             if (e.code == "Tab") {
@@ -1464,11 +1480,13 @@ class KDTerminalAlert extends KDApplication {
         alert(args.join(" "));
         return args;
     }
-    
+
     processMessage(m) {
         if (m.destinationIdentifier == this.identifier) {
             var t = "Message from: " + m.sourceIdentifier;
-            t += "\r\n\t value:" + m.values;
+            for (let v of m.values) {
+                t += "\r\n\t key:" + v.key + " value:" + v.value;
+            }
             alert(t);
         }
 
@@ -1701,8 +1719,9 @@ class KDDesktop extends KDVisualComponent {
     broadcastLocalMessageWithIndex(kdMessage) {
         if (kdMessage.index > this.lastMessageIndex) {
             this.broadcastLocalMessage(kdMessage);
+            this.lastMessageIndex = kdMessage.index;
+
         }
-        this.lastMessageIndex = kdMessage.index;
     }
 
 
