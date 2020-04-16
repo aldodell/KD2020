@@ -101,7 +101,7 @@ class KDKernel extends KDObject {
     createUser(userName) {
         var user = new KDUser(userName);
         var sender = new KDSender(this.CREATE_USER_URL);
-        alert(sender.form.getId());
+  
       
         sender
             .set("name", userName)

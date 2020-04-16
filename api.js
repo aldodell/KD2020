@@ -6,7 +6,6 @@
 /** KicsyDell Index object */
 var KD_OBJECTS_INDEX = 0;
 
-
 /** Base object */
 class KDObject {
     constructor() {
@@ -74,8 +73,6 @@ class KDMessage extends KDObject {
 }
 
 
-
-
 /** Wrap info about current user */
 class KDUser extends KDObject {
     constructor(userName) {
@@ -83,7 +80,6 @@ class KDUser extends KDObject {
         this.name = undefined ? "guest" : userName;
         this.securityLevel = 0;
         this.passwordHash = 0;
-
     }
 }
 
@@ -102,11 +98,10 @@ class KDKernel extends KDObject {
         return false;
     }
 
-
     createUser(userName) {
         var user = new KDUser(userName);
         var sender = new KDSender(this.CREATE_USER_URL);
-        alert(sender.form.getId());
+  
       
         sender
             .set("name", userName)
@@ -148,10 +143,6 @@ class KDKernel extends KDObject {
         this.desktop = false;
     }
 }
-
-
-
-
 
 /** Wrap size for components*/
 class KDSize {
@@ -239,15 +230,13 @@ class KDPosition {
         var y = (screen.availHeight - kdSize.height) / 2;
         return new KDPosition(x, y);
     }
-
 }
 
 class KDUnits {
     static px(n) {
         return n + "px";
     }
-}
-/** Wrap CSS style properties
+}/** Wrap CSS style properties
  * To use it simply add properties like form: .backgroundColor='blue' and then use 'apply' method
  * */
 class KDStyle {
@@ -281,10 +270,7 @@ class KDStyle {
         this[property] = value;
         return this;
     }
-
 }
-
-
 
 /**
  * Font styles
@@ -379,7 +365,6 @@ class KDComponent extends KDObject {
 
 class KDHeadTag extends KDComponent {
     build() {
-
         this.domObject = document.getElementsByTagName("head")[0];
         return this;
     }
@@ -426,7 +411,6 @@ class KDVisualComponent extends KDComponent {
     setAvailableScreenSize() {
         this.setSize(new KDSize(screen.availWidth, screen.availHeight));
     }
-
 
 
     /** Set the actually position of a component
@@ -902,7 +886,7 @@ class KDSender extends KDObject {
         super();
         this.url = url;
         this.iframe = kdIframe == undefined ? new KDIFrame() : kdIframe;
-        this.timeToClear = timeToClear == undefined ? 60000 : timeToClear;
+        this.timeToClear = timeToClear == undefined ? 60000  : timeToClear;
         this.iframe.style.visibility = "hidden";
         this.form = new KDForm();
         this.form.url = url;

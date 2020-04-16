@@ -12,8 +12,6 @@ $d = $_POST["d"];
 //Get message
 $m = $_POST["m"];
 
-
-
 //get last id
 $id = intval(file_get_contents($fileName_index)) + 1;
 

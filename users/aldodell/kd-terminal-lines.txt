@@ -1,8 +1,0 @@
-show-user
-show-user
-create-user andreina
-load-user andreina
-load-user aldodell
-load-user aldodell
-load-user aldodell
-load-user aldodell
