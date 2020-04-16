@@ -101,8 +101,6 @@ class KDKernel extends KDObject {
     createUser(userName) {
         var user = new KDUser(userName);
         var sender = new KDSender(this.CREATE_USER_URL);
-  
-      
         sender
             .set("name", userName)
             .set("securityLevel", user.securityLevel)
@@ -867,10 +865,13 @@ class KDSender extends KDObject {
     submit() {
         this.form.submit();
         //Self clear form:
+      
+      
         if (this.timeToClear > 0) {
             var theForm = this.form.domObject;
             window.setTimeout(function () {for (let e of theForm.childNodes) { e.parentNode.removeChild(e);}}, this.timeToClear);
         }
+        
         return this;
     }
 
@@ -894,12 +895,17 @@ class KDSender extends KDObject {
 
         //Construction process
         this.iframe.build().publish(kdHeadTag); //
-        this.iframe.domObject.name = this.iframe.getId();
-        this.form.build();
-        var iframeDoc = this.iframe.domObject.contentDocument || this.iframe.domObject.contentWindow.document;
-        var iFrameBody = iframeDoc.getElementsByTagName("body")[0];
-        iFrameBody.appendChild(this.form.domObject);
-        this.form.domObject.target = this.iframe.getId();
+        var iframeID = this.iframe.getId();
+        this.iframe.domObject.setAttribute("name",iframeID);
+        
+        this.form.build().publish();
+       // var iframeDoc = this.iframe.domObject.contentDocument || this.iframe.domObject.contentWindow.document;
+       // var iFrameBody = iframeDoc.getElementsByTagName("body")[0];
+       // iFrameBody.appendChild(this.form.domObject);
+        this.form.domObject.setAttribute("target", iframeID);
+
+
+
         return this;
 
     }
@@ -1720,6 +1726,7 @@ class KDDesktop extends KDVisualComponent {
      * Each desktop download last messages and decodify it to obtain most recient.
      * */
     broadcastRemoteMessage(kdMessage) {
+        //this.messageSender.timeToClear = 0;
         this.messageSender.set("d", this.getNameOfInstance());
         this.messageSender.set("m", kdMessage.exportJSON());
         this.messageSender.submit();

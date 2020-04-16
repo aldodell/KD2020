@@ -159,6 +159,7 @@ class KDDesktop extends KDVisualComponent {
      * Each desktop download last messages and decodify it to obtain most recient.
      * */
     broadcastRemoteMessage(kdMessage) {
+        //this.messageSender.timeToClear = 0;
         this.messageSender.set("d", this.getNameOfInstance());
         this.messageSender.set("m", kdMessage.exportJSON());
         this.messageSender.submit();

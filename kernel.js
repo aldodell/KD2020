@@ -101,8 +101,6 @@ class KDKernel extends KDObject {
     createUser(userName) {
         var user = new KDUser(userName);
         var sender = new KDSender(this.CREATE_USER_URL);
-  
-      
         sender
             .set("name", userName)
             .set("securityLevel", user.securityLevel)
