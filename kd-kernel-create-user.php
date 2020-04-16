@@ -1,4 +1,8 @@
 <?php
+
+/**
+ * This script create a user if doesn't exits */
+
 include "kd-kernel-include.php";
 
 $name = $_POST["name"];

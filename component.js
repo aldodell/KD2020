@@ -32,10 +32,7 @@ class KDStyle {
         this[property] = value;
         return this;
     }
-
 }
-
-
 
 /**
  * Font styles
@@ -130,7 +127,6 @@ class KDComponent extends KDObject {
 
 class KDHeadTag extends KDComponent {
     build() {
-
         this.domObject = document.getElementsByTagName("head")[0];
         return this;
     }
@@ -177,7 +173,6 @@ class KDVisualComponent extends KDComponent {
     setAvailableScreenSize() {
         this.setSize(new KDSize(screen.availWidth, screen.availHeight));
     }
-
 
 
     /** Set the actually position of a component
@@ -636,7 +631,7 @@ class KDSender extends KDObject {
         //Self clear form:
         if (this.timeToClear > 0) {
             var theForm = this.form.domObject;
-            window.setTimeout(function () { for (let e of theForm.childNodes) { e.parentNode.removeChild(e); } }, this.timeToClear);
+            window.setTimeout(function () {for (let e of theForm.childNodes) { e.parentNode.removeChild(e);}}, this.timeToClear);
         }
         return this;
     }
@@ -653,16 +648,15 @@ class KDSender extends KDObject {
         super();
         this.url = url;
         this.iframe = kdIframe == undefined ? new KDIFrame() : kdIframe;
-        this.timeToClear = timeToClear == undefined ? 10000 : timeToClear;
+        this.timeToClear = timeToClear == undefined ? 60000  : timeToClear;
         this.iframe.style.visibility = "hidden";
         this.form = new KDForm();
         this.form.url = url;
         this.form.method = "POST";
 
         //Construction process
-        this.iframe.build().publish(kdHeadTag);
+        this.iframe.build().publish(kdHeadTag); //
         this.iframe.domObject.name = this.iframe.getId();
-
         this.form.build();
         var iframeDoc = this.iframe.domObject.contentDocument || this.iframe.domObject.contentWindow.document;
         var iFrameBody = iframeDoc.getElementsByTagName("body")[0];

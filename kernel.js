@@ -6,7 +6,6 @@
 /** KicsyDell Index object */
 var KD_OBJECTS_INDEX = 0;
 
-
 /** Base object */
 class KDObject {
     constructor() {
@@ -74,8 +73,6 @@ class KDMessage extends KDObject {
 }
 
 
-
-
 /** Wrap info about current user */
 class KDUser extends KDObject {
     constructor(userName) {
@@ -83,12 +80,15 @@ class KDUser extends KDObject {
         this.name = undefined ? "guest" : userName;
         this.securityLevel = 0;
         this.passwordHash = 0;
-
     }
 }
 
 
-/** Enviroment KERNEL class */
+/** Master KERNEL class 
+ * Must be instantiate a KDKernel class before instantiate a KDDesktop class.
+ * This class manage user and other low level stuffs.
+ *  
+*/
 class KDKernel extends KDObject {
 
     static isTouchAvailable() {
@@ -98,10 +98,12 @@ class KDKernel extends KDObject {
         return false;
     }
 
-
     createUser(userName) {
         var user = new KDUser(userName);
-        var sender = new KDSender(this.CREATE_USER_URL)
+        var sender = new KDSender(this.CREATE_USER_URL);
+        alert(sender.form.getId());
+      
+        sender
             .set("name", userName)
             .set("securityLevel", user.securityLevel)
             .submit();
@@ -141,10 +143,6 @@ class KDKernel extends KDObject {
         this.desktop = false;
     }
 }
-
-
-
-
 
 /** Wrap size for components*/
 class KDSize {
@@ -232,7 +230,6 @@ class KDPosition {
         var y = (screen.availHeight - kdSize.height) / 2;
         return new KDPosition(x, y);
     }
-
 }
 
 class KDUnits {

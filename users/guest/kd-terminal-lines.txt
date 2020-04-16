@@ -59,3 +59,4 @@ abc
 hola mundo
 nada
 c++
+create-user u1

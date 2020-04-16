@@ -88,7 +88,11 @@ class KDUser extends KDObject {
 }
 
 
-/** Enviroment KERNEL class */
+/** Master KERNEL class 
+ * Must be instantiate a KDKernel class before instantiate a KDDesktop class.
+ * This class manage user and other low level stuffs.
+ *  
+*/
 class KDKernel extends KDObject {
 
     static isTouchAvailable() {
@@ -101,7 +105,10 @@ class KDKernel extends KDObject {
 
     createUser(userName) {
         var user = new KDUser(userName);
-        var sender = new KDSender(this.CREATE_USER_URL)
+        var sender = new KDSender(this.CREATE_USER_URL);
+        alert(sender.form.getId());
+      
+        sender
             .set("name", userName)
             .set("securityLevel", user.securityLevel)
             .submit();
@@ -878,7 +885,7 @@ class KDSender extends KDObject {
         //Self clear form:
         if (this.timeToClear > 0) {
             var theForm = this.form.domObject;
-            window.setTimeout(function () { for (let e of theForm.childNodes) { e.parentNode.removeChild(e); } }, this.timeToClear);
+            window.setTimeout(function () {for (let e of theForm.childNodes) { e.parentNode.removeChild(e);}}, this.timeToClear);
         }
         return this;
     }
@@ -895,22 +902,20 @@ class KDSender extends KDObject {
         super();
         this.url = url;
         this.iframe = kdIframe == undefined ? new KDIFrame() : kdIframe;
-        this.timeToClear = timeToClear == undefined ? 10000 : timeToClear;
+        this.timeToClear = timeToClear == undefined ? 60000 : timeToClear;
         this.iframe.style.visibility = "hidden";
         this.form = new KDForm();
         this.form.url = url;
         this.form.method = "POST";
 
         //Construction process
-        this.iframe.build().publish(kdHeadTag);
+        this.iframe.build().publish(kdHeadTag); //
         this.iframe.domObject.name = this.iframe.getId();
-
         this.form.build();
         var iframeDoc = this.iframe.domObject.contentDocument || this.iframe.domObject.contentWindow.document;
         var iFrameBody = iframeDoc.getElementsByTagName("body")[0];
         iFrameBody.appendChild(this.form.domObject);
         this.form.domObject.target = this.iframe.getId();
-
         return this;
 
     }
