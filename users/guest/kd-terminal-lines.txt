@@ -58,3 +58,4 @@ message-sender alert Aleluya Jesús Resucitó
 message-sender alert Jesús Vive!
 message-sender alert Vive Jesús
 message-sender alert Vive "Jesús resucitado"
+message-sender alert Vive "Jesús resucitado"
