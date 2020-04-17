@@ -691,17 +691,18 @@ class KDSender extends KDObject {
     putForm() {
         if (this.form == null || this.form.domObject == null) {
             this.form = new KDForm();
-            this.form.url = url;
+            this.form.url = this.url;
             this.form.method = "POST";
             this.form.build().publish();
-            this.form.domObject.setAttribute("target", KERNEL_IFRAME_ID);
+            this.form.domObject.setAttribute("target", this.KERNEL_IFRAME_ID);
+
         }
     }
 
 
     constructor(url, timeToClear) {
         super();
-        var KERNEL_IFRAME_ID = "KD-KERNEL-IFRAME";
+        this.KERNEL_IFRAME_ID = "KD-KERNEL-IFRAME";
         this.url = url;
         this.timeToClear = timeToClear == undefined ? 3000 : timeToClear;
         return this;
