@@ -1797,8 +1797,8 @@ class KDDesktop extends KDVisualComponent {
         var request = new KDScript()
             .build()
             .publish()
-            .load(kdDesktop.remoteMessageQueue)
-            .selfDestroy(kdDesktop.timeBetweenMessagesRequest);
+            .load(kdDesktop.remoteMessageQueue,false)
+            .selfDestroy(kdDesktop.timeBetweenMessagesRequest*2);
     }
 
     /** Start request messages to server */
@@ -1807,7 +1807,7 @@ class KDDesktop extends KDVisualComponent {
             .publish()
             .addParameter("d", this.getNameOfInstance())
             .load(this.getLastIndexURL)
-            .selfDestroy(20000);
+            .selfDestroy(this.timeBetweenMessagesRequest);
         this.requestMessagesHanlder = window.setInterval(this.requestMessagesLoop, this.timeBetweenMessagesRequest, this);
     }
 
