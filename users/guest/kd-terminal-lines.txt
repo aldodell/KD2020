@@ -40,3 +40,21 @@ message-sender alert macOS safari
 message-sender alert macOS safari
 message-sender alert macOs Safari
 message-sender alert firefox abc2
+message-sender alert firefox abc2
+message-sender alert iOS safari 
+message-sender alert ff 2
+message-sender alert ff 3
+message-sender alert ff 4
+message-sender alert ff 5
+message-sender alert ff 6
+message-sender alert macOS safari
+message-sender alert ff 7
+message-sender alert ff 8
+message-sender alert ff 9
+message-sender alert ff 10
+message-sender alert mac os
+message-sender alert ff 11
+message-sender alert Aleluya Jesús Resucitó
+message-sender alert Jesús Vive!
+message-sender alert Vive Jesús
+message-sender alert Vive "Jesús resucitado"
