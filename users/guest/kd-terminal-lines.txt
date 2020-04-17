@@ -25,3 +25,10 @@ message-sender alert qwerty 1234
 message-sender alert a b c d
 message-sender alert j u
 message-sender alert z x
+message-sender alert k l
+message-sender alert a b
+message-sender alert c d
+message-sender alert k l
+message-sender alert n m
+message-sender alert w e
+message-sender alert j k

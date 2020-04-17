@@ -1639,7 +1639,7 @@ class KDDesktop extends KDVisualComponent {
         this.remoteMessageQueue = "kd-messages-queue.js";
         this.messageSender = new KDSender(this.remoteMessageReplicatorURL);
         this.lastMessageIndex = -1;
-        this.timeBetweenMessagesRequest = 10000; //Time to request messages from server
+        this.timeBetweenMessagesRequest = 1000; //Time to request messages from server
 
     }
 
