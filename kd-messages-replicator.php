@@ -45,7 +45,7 @@ $r .= "_m.importJSON($m);";
 $r .= "_m.index = $id;";
 */
 $r .= "$d.broadcastLocalMessageWithIndex(new KDMessage().importJSON($m,$id));\r\n";
-$r .= "alert(desktop.getId());\r\n";
+
 
 //put the last message at end of file:
 file_put_contents($fileName_messages, $r, FILE_APPEND);

@@ -290,8 +290,8 @@ class KDTerminalAlert extends KDApplication {
     processMessage(m) {
         if (m.destinationIdentifier == this.identifier) {
             var t = "Message from: " + m.sourceIdentifier;
-            for (let v of m.values) {
-                t += "\r\n\t key:" + v.key + " value:" + v.value;
+            for (let key of m.values) {
+                t += "\r\n\t key:" + key + " value:" + v[key];
             }
             alert(t);
         }

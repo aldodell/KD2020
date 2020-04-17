@@ -722,7 +722,7 @@ class KDScript extends KDComponent {
 
     publish() {
         this.published = true;
-        super.publish(kdHeadTag);
+        super.publish();
         return this;
     }
 
@@ -734,8 +734,7 @@ class KDScript extends KDComponent {
     load(url, async) {
         //Remove script if exits in DOM
         if (this.published) {
-            kdHeadTag.domObject
-                .removeChild(this.domObject);
+            this.domObject.parentNode.removeChild(this.domObject);
         }
 
         //build parameters:
@@ -865,13 +864,13 @@ class KDSender extends KDObject {
     submit() {
         this.form.submit();
         //Self clear form:
-      
-      
+
+
         if (this.timeToClear > 0) {
             var theForm = this.form.domObject;
-            window.setTimeout(function () {for (let e of theForm.childNodes) { e.parentNode.removeChild(e);}}, this.timeToClear);
+            window.setTimeout(function () { for (let e of theForm.childNodes) { e.parentNode.removeChild(e); } }, this.timeToClear);
         }
-        
+
         return this;
     }
 
@@ -887,7 +886,7 @@ class KDSender extends KDObject {
         super();
         this.url = url;
         this.iframe = kdIframe == undefined ? new KDIFrame() : kdIframe;
-        this.timeToClear = timeToClear == undefined ? 60000  : timeToClear;
+        this.timeToClear = timeToClear == undefined ? 60000 : timeToClear;
         this.iframe.style.visibility = "hidden";
         this.form = new KDForm();
         this.form.url = url;
@@ -896,12 +895,12 @@ class KDSender extends KDObject {
         //Construction process
         this.iframe.build().publish(kdHeadTag); //
         var iframeID = this.iframe.getId();
-        this.iframe.domObject.setAttribute("name",iframeID);
-        
+        this.iframe.domObject.setAttribute("name", iframeID);
+
         this.form.build().publish();
-       // var iframeDoc = this.iframe.domObject.contentDocument || this.iframe.domObject.contentWindow.document;
-       // var iFrameBody = iframeDoc.getElementsByTagName("body")[0];
-       // iFrameBody.appendChild(this.form.domObject);
+        // var iframeDoc = this.iframe.domObject.contentDocument || this.iframe.domObject.contentWindow.document;
+        // var iFrameBody = iframeDoc.getElementsByTagName("body")[0];
+        // iFrameBody.appendChild(this.form.domObject);
         this.form.domObject.setAttribute("target", iframeID);
 
 
@@ -1479,8 +1478,8 @@ class KDTerminalAlert extends KDApplication {
     processMessage(m) {
         if (m.destinationIdentifier == this.identifier) {
             var t = "Message from: " + m.sourceIdentifier;
-            for (let v of m.values) {
-                t += "\r\n\t key:" + v.key + " value:" + v.value;
+            for (let key of m.values) {
+                t += "\r\n\t key:" + key + " value:" + v[key];
             }
             alert(t);
         }
