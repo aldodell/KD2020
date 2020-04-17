@@ -23,3 +23,5 @@ message-sender alert q w
 message-sender alert a b123
 message-sender alert qwerty 1234
 message-sender alert a b c d
+message-sender alert j u
+message-sender alert z x
