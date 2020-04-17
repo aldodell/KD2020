@@ -134,11 +134,32 @@ class KDKernel extends KDObject {
 
     constructor() {
         super();
+
+        /* General use iframe */
+        var KERNEL_IFRAME_ID = "KD-KERNEL-IFRAME";
+        var iframe = document.getElementById(KERNEL_IFRAME_ID);
+      
+        if (iframe == null) {
+            iframe = document.createElement("IFRAME");
+        }
+        
+        iframe.setAttribute("id", KERNEL_IFRAME_ID);
+        iframe.setAttribute("name", KERNEL_IFRAME_ID);
+        iframe.setAttribute("style", "display:none;");
+        document.body.appendChild(iframe);
+
+        /*
+        var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+        var iframeHtml = iframeDocument.getElementsByTagName("html")[0];
+        this.iframeBody = iframeHtml.getElementsByTagName("body")[0];
+        */
+
         this.CREATE_USER_URL = 'kd-kernel-create-user.php';
         this.LOAD_USER_URL = 'kd-kernel-load-user.php';
         this.currentUser = new KDUser("guest");
         this.createUser(this.currentUser.name);
         this.desktop = false;
+
     }
 }
 
@@ -359,6 +380,16 @@ class KDComponent extends KDObject {
     selfDestroy(time) {
         window.setTimeout(this.remove, time, this);
     }
+
+
+    /** Use to get an existing tag element on DOM */
+    wrap(id) {
+        this.domObject = document.getElementById(id);
+        if (this.domObject == null) {
+            this.throwException(id + " doesn't exists on this frame.");
+        }
+    }
+
 }
 
 class KDHeadTag extends KDComponent {
@@ -836,13 +867,44 @@ class KDHidden extends KDVisualComponent {
 
 
 class KDIFrame extends KDVisualComponent {
+
+    getReference() {
+        /*
+        var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+        var iframeHtml = iframeDocument.getElementsByTagName("html")[0];
+        this.iframeBody = iframeHtml.getElementsByTagName("body")[0];
+        */
+        if (this.domObject != null) {
+            var iframeDocument = this.domObject.contentDocument || this.domObject.contentWindow.document;
+            var iframeHtml = iframeDocument.getElementsByTagName("html")[0];
+            this.iframeBody = iframeHtml.getElementsByTagName("body")[0];
+        } else {
+            this.throwException("KDIframe doesn't exits on DOM. ID=" + this.getId());
+        }
+        return this;
+
+    }
+
+
+
+    publish(kdComponent) {
+        super.publish(kdComponent);
+        this.getReference();
+
+    }
+
+    wrap(id) {
+        super.wrap(id);
+        this.getReference();
+    }
+
     constructor() {
         super();
         this.htmlName = "IFRAME";
+        this.iframeBody = null;
     }
-    publish() {
-        super.publish(kdHeadTag);
-    }
+
+
 }
 
 
@@ -865,12 +927,10 @@ class KDSender extends KDObject {
         this.form.submit();
         //Self clear form:
 
-
         if (this.timeToClear > 0) {
             var theForm = this.form.domObject;
             window.setTimeout(function () { for (let e of theForm.childNodes) { e.parentNode.removeChild(e); } }, this.timeToClear);
         }
-
         return this;
     }
 
@@ -882,29 +942,20 @@ class KDSender extends KDObject {
     }
 
 
-    constructor(url, kdIframe, timeToClear) {
+    constructor(url, timeToClear) {
         super();
+
+        var KERNEL_IFRAME_ID = "KD-KERNEL-IFRAME";
         this.url = url;
-        this.iframe = kdIframe == undefined ? new KDIFrame() : kdIframe;
         this.timeToClear = timeToClear == undefined ? 60000 : timeToClear;
-        this.iframe.style.visibility = "hidden";
         this.form = new KDForm();
         this.form.url = url;
         this.form.method = "POST";
-
-        //Construction process
-        this.iframe.build().publish(kdHeadTag); //
-        var iframeID = this.iframe.getId();
-        this.iframe.domObject.setAttribute("name", iframeID);
-
         this.form.build().publish();
-        // var iframeDoc = this.iframe.domObject.contentDocument || this.iframe.domObject.contentWindow.document;
-        // var iFrameBody = iframeDoc.getElementsByTagName("body")[0];
-        // iFrameBody.appendChild(this.form.domObject);
-        this.form.domObject.setAttribute("target", iframeID);
-
-
-
+        this.form.domObject.setAttribute("target", KERNEL_IFRAME_ID);
+        var iframe = new KDIFrame();
+        iframe.build();
+        iframe.wrap(KERNEL_IFRAME_ID);
         return this;
 
     }
@@ -1480,6 +1531,7 @@ class KDTerminalAlert extends KDApplication {
             var t = "Message from: " + m.sourceIdentifier;
             for (const key in m.values) {
                 t += "\r\n\t key:" + key + " value:" + m.values[key];
+                console.debug(t);
             }
             alert(t);
         }

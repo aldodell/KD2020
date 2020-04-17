@@ -134,11 +134,32 @@ class KDKernel extends KDObject {
 
     constructor() {
         super();
+
+        /* General use iframe */
+        var KERNEL_IFRAME_ID = "KD-KERNEL-IFRAME";
+        var iframe = document.getElementById(KERNEL_IFRAME_ID);
+      
+        if (iframe == null) {
+            iframe = document.createElement("IFRAME");
+        }
+        
+        iframe.setAttribute("id", KERNEL_IFRAME_ID);
+        iframe.setAttribute("name", KERNEL_IFRAME_ID);
+        iframe.setAttribute("style", "display:none;");
+        document.body.appendChild(iframe);
+
+        /*
+        var iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+        var iframeHtml = iframeDocument.getElementsByTagName("html")[0];
+        this.iframeBody = iframeHtml.getElementsByTagName("body")[0];
+        */
+
         this.CREATE_USER_URL = 'kd-kernel-create-user.php';
         this.LOAD_USER_URL = 'kd-kernel-load-user.php';
         this.currentUser = new KDUser("guest");
         this.createUser(this.currentUser.name);
         this.desktop = false;
+
     }
 }
 

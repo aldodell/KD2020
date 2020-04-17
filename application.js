@@ -292,6 +292,7 @@ class KDTerminalAlert extends KDApplication {
             var t = "Message from: " + m.sourceIdentifier;
             for (const key in m.values) {
                 t += "\r\n\t key:" + key + " value:" + m.values[key];
+                console.debug(t);
             }
             alert(t);
         }
