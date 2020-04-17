@@ -373,6 +373,8 @@ class KDComponent extends KDObject {
     remove(kdComponent) {
         if (kdComponent.domObject) {
             kdComponent.domObject.parentNode.removeChild(kdComponent.domObject);
+            kdComponent.domObject = null;
+            kdComponent = null;
         }
     }
 
@@ -917,6 +919,7 @@ class KDIFrame extends KDVisualComponent {
 class KDSender extends KDObject {
 
     set(key, value) {
+        this.putForm();
         var h = new KDHidden();
         h.build().publish(this.form);
         h.setName(key).setValue(value);
@@ -928,8 +931,9 @@ class KDSender extends KDObject {
         //Self clear form:
 
         if (this.timeToClear > 0) {
-            var theForm = this.form.domObject;
-            window.setTimeout(function () { for (let e of theForm.childNodes) { e.parentNode.removeChild(e); } }, this.timeToClear);
+            //     var theForm = this.form.domObject;
+            //     window.setTimeout(function () { for (let e of theForm.childNodes) { e.parentNode.removeChild(e); } }, this.timeToClear);
+            this.form.selfDestroy(this.timeToClear);
         }
         return this;
     }
@@ -941,23 +945,23 @@ class KDSender extends KDObject {
         return this;
     }
 
+    putForm() {
+        if (this.form == null || this.form.domObject == null) {
+            this.form = new KDForm();
+            this.form.url = url;
+            this.form.method = "POST";
+            this.form.build().publish();
+            this.form.domObject.setAttribute("target", KERNEL_IFRAME_ID);
+        }
+    }
+
 
     constructor(url, timeToClear) {
         super();
-
         var KERNEL_IFRAME_ID = "KD-KERNEL-IFRAME";
         this.url = url;
-        this.timeToClear = timeToClear == undefined ? 60000 : timeToClear;
-        this.form = new KDForm();
-        this.form.url = url;
-        this.form.method = "POST";
-        this.form.build().publish();
-        this.form.domObject.setAttribute("target", KERNEL_IFRAME_ID);
-        var iframe = new KDIFrame();
-        iframe.build();
-        iframe.wrap(KERNEL_IFRAME_ID);
+        this.timeToClear = timeToClear == undefined ? 3000 : timeToClear;
         return this;
-
     }
 
 }
