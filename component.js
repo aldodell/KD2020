@@ -665,7 +665,7 @@ class KDIFrame extends KDVisualComponent {
  * */
 class KDSender extends KDObject {
 
-    set(key, value) {
+    addParameter(key, value) {
         this.putForm();
         var h = new KDHidden();
         h.build().publish(this.form);

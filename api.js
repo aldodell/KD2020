@@ -48,7 +48,7 @@ class KDMessage extends KDObject {
         this.index = 0;
 
     }
-    setValue(key, value) {
+    addParameter(key, value) {
         this.values[key] = value;
     }
 
@@ -106,8 +106,8 @@ class KDKernel extends KDObject {
         var user = new KDUser(userName);
         var sender = new KDSender(this.CREATE_USER_URL);
         sender
-            .set("name", userName)
-            .set("securityLevel", user.securityLevel)
+            .addParameter("name", userName)
+            .addParameter("securityLevel", user.securityLevel)
             .submit();
         return this;
     }
@@ -119,9 +119,9 @@ class KDKernel extends KDObject {
 
         var sender = new KDSender(this.LOAD_USER_URL);
         sender
-            .set("obj", this.getNameOfInstance())
-            .set("name", userName)
-            .set("senderID", sender.getId())
+            .addParameter("obj", this.getNameOfInstance())
+            .addParameter("name", userName)
+            .addParameter("senderID", sender.getId())
             .submit();
 
         /** send messages to all apps about user change */
@@ -926,7 +926,7 @@ class KDIFrame extends KDVisualComponent {
  * */
 class KDSender extends KDObject {
 
-    set(key, value) {
+    addParameter(key, value) {
         this.putForm();
         var h = new KDHidden();
         h.build().publish(this.form);
@@ -1394,7 +1394,7 @@ class KDTerminal extends KDApplication {
     appendLines(lines) {
         for (line in lines) {
             var h = new KDHidden();
-            h.setValue(line);
+            h.addParameter(line);
             h.build().publish(this.mainWindow.body);
         }
     }
@@ -1575,7 +1575,7 @@ class KDMessageSender extends KDApplication {
         //Send a message to app with first param as identifier
         var m = new KDMessage(this.identifier, args[0]);
         for (var i = 1; i < args.length; i += 2) {
-            m.setValue(args[i], args[i + 1]);
+            m.addParameter(args[i], args[i + 1]);
         }
         this.desktop.broadcastRemoteMessage(m);
         return "Message send to " + args[0];
@@ -1648,9 +1648,14 @@ class KDDesktop extends KDVisualComponent {
 
         /* Remote messages handlers: */
         this.remoteMessageReplicatorURL = "kd-messages-replicator.php";
+        this.remoteMessageReaderURL = "kd-messages-reader.php";
+       
         this.getLastIndexURL = "kd-messages-get-last-index.php";
         this.remoteMessageQueueURL = "kd-messages-queue.js";
-        this.messageSender = new KDSender(this.remoteMessageReplicatorURL);
+
+        this.messageReplicator = new KDSender(this.remoteMessageReplicatorURL);
+       
+
         this.lastMessageIndex = -1;
         this.timeBetweenMessagesRequest = 5000; //Time to request messages from server
         this.localMessagesQueue = new Array(); //Array with messages queue
@@ -1810,16 +1815,17 @@ class KDDesktop extends KDVisualComponent {
      * Each desktop download last messages and decodify it to obtain most recient.
      * */
     broadcastRemoteMessage(kdMessage) {
-        this.messageSender.set("d", this.getNameOfInstance());
-        this.messageSender.set("m", kdMessage.exportJSON());
-        this.messageSender.submit();
+        this.messageReplicator.addParameter("d", this.getNameOfInstance());
+        this.messageReplicator.addParameter("m", kdMessage.exportJSON());
+        this.messageReplicator.submit();
     }
 
     /** Loop for request messages */
     requestMessagesLoop(kdDesktop) {
         kdDesktop.requestMessages
+            .addParameter("d", this.getNameOfInstance())
             .addParameter("i", this.lastMessageIndex)
-            .load(kdDesktop.remoteMessageQueueURL, true);
+            .load(kdDesktop.remoteMessageReaderURL, true);
 
     }
 

@@ -141,7 +141,7 @@ class KDTerminal extends KDApplication {
     appendLines(lines) {
         for (line in lines) {
             var h = new KDHidden();
-            h.setValue(line);
+            h.addParameter(line);
             h.build().publish(this.mainWindow.body);
         }
     }
@@ -322,7 +322,7 @@ class KDMessageSender extends KDApplication {
         //Send a message to app with first param as identifier
         var m = new KDMessage(this.identifier, args[0]);
         for (var i = 1; i < args.length; i += 2) {
-            m.setValue(args[i], args[i + 1]);
+            m.addParameter(args[i], args[i + 1]);
         }
         this.desktop.broadcastRemoteMessage(m);
         return "Message send to " + args[0];

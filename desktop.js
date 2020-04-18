@@ -17,9 +17,14 @@ class KDDesktop extends KDVisualComponent {
 
         /* Remote messages handlers: */
         this.remoteMessageReplicatorURL = "kd-messages-replicator.php";
+        this.remoteMessageReaderURL = "kd-messages-reader.php";
+       
         this.getLastIndexURL = "kd-messages-get-last-index.php";
         this.remoteMessageQueueURL = "kd-messages-queue.js";
-        this.messageSender = new KDSender(this.remoteMessageReplicatorURL);
+
+        this.messageReplicator = new KDSender(this.remoteMessageReplicatorURL);
+       
+
         this.lastMessageIndex = -1;
         this.timeBetweenMessagesRequest = 5000; //Time to request messages from server
         this.localMessagesQueue = new Array(); //Array with messages queue
@@ -179,16 +184,17 @@ class KDDesktop extends KDVisualComponent {
      * Each desktop download last messages and decodify it to obtain most recient.
      * */
     broadcastRemoteMessage(kdMessage) {
-        this.messageSender.set("d", this.getNameOfInstance());
-        this.messageSender.set("m", kdMessage.exportJSON());
-        this.messageSender.submit();
+        this.messageReplicator.addParameter("d", this.getNameOfInstance());
+        this.messageReplicator.addParameter("m", kdMessage.exportJSON());
+        this.messageReplicator.submit();
     }
 
     /** Loop for request messages */
     requestMessagesLoop(kdDesktop) {
         kdDesktop.requestMessages
+            .addParameter("d", this.getNameOfInstance())
             .addParameter("i", this.lastMessageIndex)
-            .load(kdDesktop.remoteMessageQueueURL, true);
+            .load(kdDesktop.remoteMessageReaderURL, true);
 
     }
 

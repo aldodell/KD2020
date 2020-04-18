@@ -48,7 +48,7 @@ class KDMessage extends KDObject {
         this.index = 0;
 
     }
-    setValue(key, value) {
+    addParameter(key, value) {
         this.values[key] = value;
     }
 
@@ -106,8 +106,8 @@ class KDKernel extends KDObject {
         var user = new KDUser(userName);
         var sender = new KDSender(this.CREATE_USER_URL);
         sender
-            .set("name", userName)
-            .set("securityLevel", user.securityLevel)
+            .addParameter("name", userName)
+            .addParameter("securityLevel", user.securityLevel)
             .submit();
         return this;
     }
@@ -119,9 +119,9 @@ class KDKernel extends KDObject {
 
         var sender = new KDSender(this.LOAD_USER_URL);
         sender
-            .set("obj", this.getNameOfInstance())
-            .set("name", userName)
-            .set("senderID", sender.getId())
+            .addParameter("obj", this.getNameOfInstance())
+            .addParameter("name", userName)
+            .addParameter("senderID", sender.getId())
             .submit();
 
         /** send messages to all apps about user change */
