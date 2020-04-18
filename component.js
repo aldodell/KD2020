@@ -513,7 +513,7 @@ class KDScript extends KDComponent {
      * */
     load(url, async) {
         //Remove script if exits in DOM
-        if (this.published) {
+        if (this.domObject) {
             this.domObject.parentNode.removeChild(this.domObject);
         }
 
