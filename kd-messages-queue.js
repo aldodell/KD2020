@@ -1,9 +1,1 @@
-desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"hola":"mundo101"}},30));
-desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"qw":"erty"}},31));
-desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"qw":"erty"}},32));
-desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"a":"b"}},33));
-desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"abc":"def"}},34));
-desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"abc":"def"}},35));
-desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"abf":"gdf"}},36));
-desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"abc":"defg"}},37));
-desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"abc":"def"}},38));
+desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"hola":"mundo1"}},1));
