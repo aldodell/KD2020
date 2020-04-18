@@ -11,7 +11,7 @@
         var desktop = new KDDesktop(kernel).build().publish();
 
         var m = new KDMessage("a", "b");
-        m.set("clave", "valor");
+        m.setValue("clave", "valor");
         desktop.broadcastRemoteMessage(m);
 
         PARAR();

@@ -39,7 +39,7 @@ $j = $messagesQuantity - $MAX_MESSAGES;
 if ($j < 0) {$j = $messagesQuantity;}
 for ($i = 0; $i < $j; $i++) {$r .= $messagesArray[$i] . "\r\n";}
 
-$r .= json_encode($kdMessage) . "\r\n";
+$r .= json_encode($kdMessage);
 
 //put the last message at end of file:
 file_put_contents($fileName_messages, $r);
