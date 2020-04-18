@@ -10,12 +10,6 @@
         var kernel = new KDKernel();
         var desktop = new KDDesktop(kernel).build().publish();
 
-        var m = new KDMessage("a", "b");
-        m.addParameter("clave", "valor");
-        desktop.broadcastRemoteMessage(m);
-        desktop.requestMessagesLoop(desktop);
-
-        PARAR();
 
 
         class ExampleApp extends KDApplication {

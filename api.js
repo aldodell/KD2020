@@ -1823,8 +1823,8 @@ class KDDesktop extends KDVisualComponent {
     /** Loop for request messages */
     requestMessagesLoop(kdDesktop) {
         kdDesktop.requestMessages
-            .addParameter("d", this.getNameOfInstance())
-            .addParameter("i", this.lastMessageIndex)
+            .addParameter("d", kdDesktop.getNameOfInstance())
+            .addParameter("i", kdDesktop.lastMessageIndex)
             .load(kdDesktop.remoteMessageReaderURL, true);
 
     }
