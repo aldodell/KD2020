@@ -1651,8 +1651,10 @@ class KDDesktop extends KDVisualComponent {
         this.remoteMessageQueue = "kd-messages-queue.js";
         this.messageSender = new KDSender(this.remoteMessageReplicatorURL);
         this.lastMessageIndex = -1;
-        this.timeBetweenMessagesRequest = 1000; //Time to request messages from server
+        this.timeBetweenMessagesRequest = 2000; //Time to request messages from server
 
+        this.requestMessages = new KDScript("-desktop-requestMessagesLoop");
+        this.requestLastIndex = new KDScript("-desktop-startRequestMessages")
     }
 
     build() {
@@ -1796,17 +1798,17 @@ class KDDesktop extends KDVisualComponent {
 
     /** Loop for request messages */
     requestMessagesLoop(kdDesktop) {
-        var request = new KDScript("-desktop-requestMessagesLoop")
+        kdDesktop.requestMessages
             .load(kdDesktop.remoteMessageQueue, false)
-            .selfDestroy(kdDesktop.timeBetweenMessagesRequest * 2);
+            .selfDestroy(kdDesktop.timeBetweenMessagesRequest);
     }
 
     /** Start request messages to server */
     startRequestMessages() {
-        var request = new KDScript("-desktop-startRequestMessages")
+        this.requestLastIndex
             .addParameter("d", this.getNameOfInstance())
             .load(this.getLastIndexURL)
-            .selfDestroy(this.timeBetweenMessagesRequest);
+            .selfDestroy(this.timeBetweenMessagesRequest * 10);
         this.requestMessagesHandlder = window.setInterval(this.requestMessagesLoop, this.timeBetweenMessagesRequest, this);
     }
 
@@ -1814,8 +1816,5 @@ class KDDesktop extends KDVisualComponent {
     stopRequestMessages() {
         window.clearInterval(this.requestMessagesHandlder);
     }
-
-
-
 
 }

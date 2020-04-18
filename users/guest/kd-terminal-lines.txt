@@ -73,3 +73,7 @@ message-sender alert qw erty
 message-sender alert a b
 message-sender alert hola mundo
 message-sender alert abc def
+message-sender alert abc def
+message-sender aler abc gty
+message-sender alert abf gdf
+message-sender alert hola mundo 
