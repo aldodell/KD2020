@@ -37,7 +37,9 @@ $kdMessage->index = $id;
 //Take last messages from files
 $j = $messagesQuantity - $MAX_MESSAGES;
 if ($j < 0) {$j = $messagesQuantity;}
-for ($i = 0; $i < $j; $i++) {$r .= $messagesArray[$i] . "\r\n";}
+for ($i = 0; $i < $j; $i++) {
+    $r .= $messagesArray[$i] . "\r\n";
+}
 
 $m1 = json_encode($kdMessage);
 $r .= $m1;
