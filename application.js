@@ -325,7 +325,6 @@ class KDMessageSender extends KDApplication {
             m.setValue(args[i], args[i + 1]);
         }
         this.desktop.broadcastRemoteMessage(m);
-
         return "Message send to " + args[0];
     }
 }

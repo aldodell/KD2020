@@ -159,7 +159,6 @@ class KDDesktop extends KDVisualComponent {
      * Each desktop download last messages and decodify it to obtain most recient.
      * */
     broadcastRemoteMessage(kdMessage) {
-        //this.messageSender.timeToClear = 0;
         this.messageSender.set("d", this.getNameOfInstance());
         this.messageSender.set("m", kdMessage.exportJSON());
         this.messageSender.submit();
@@ -167,26 +166,23 @@ class KDDesktop extends KDVisualComponent {
 
     /** Loop for request messages */
     requestMessagesLoop(kdDesktop) {
-        var request = new KDScript()
-            .build()
-            .publish()
-            .load(kdDesktop.remoteMessageQueue,false)
-            .selfDestroy(kdDesktop.timeBetweenMessagesRequest*2);
+        var request = new KDScript("-desktop-requestMessagesLoop")
+            .load(kdDesktop.remoteMessageQueue, false)
+            .selfDestroy(kdDesktop.timeBetweenMessagesRequest * 2);
     }
 
     /** Start request messages to server */
     startRequestMessages() {
-        var request = new KDScript().build()
-            .publish()
+        var request = new KDScript("-desktop-startRequestMessages")
             .addParameter("d", this.getNameOfInstance())
             .load(this.getLastIndexURL)
             .selfDestroy(this.timeBetweenMessagesRequest);
-        this.requestMessagesHanlder = window.setInterval(this.requestMessagesLoop, this.timeBetweenMessagesRequest, this);
+        this.requestMessagesHandlder = window.setInterval(this.requestMessagesLoop, this.timeBetweenMessagesRequest, this);
     }
 
     /** Start request messages to server */
     stopRequestMessages() {
-        this.requestMessagesHanlder = window.clearInterval(this.requestMessagesHanlder);
+        window.clearInterval(this.requestMessagesHandlder);
     }
 
 

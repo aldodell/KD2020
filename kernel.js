@@ -8,8 +8,12 @@ var KD_OBJECTS_INDEX = 0;
 
 /** Base object */
 class KDObject {
-    constructor() {
-        this.index = KD_OBJECTS_INDEX++;
+    constructor(index) {
+        if (index == undefined) {
+            this.index = KD_OBJECTS_INDEX++;
+        } else {
+            this.index = index;
+        }
     }
 
     getId() {
@@ -138,11 +142,11 @@ class KDKernel extends KDObject {
         /* General use iframe */
         var KERNEL_IFRAME_ID = "KD-KERNEL-IFRAME";
         var iframe = document.getElementById(KERNEL_IFRAME_ID);
-      
+
         if (iframe == null) {
             iframe = document.createElement("IFRAME");
         }
-        
+
         iframe.setAttribute("id", KERNEL_IFRAME_ID);
         iframe.setAttribute("name", KERNEL_IFRAME_ID);
         iframe.setAttribute("style", "display:none;");

@@ -8,8 +8,12 @@ var KD_OBJECTS_INDEX = 0;
 
 /** Base object */
 class KDObject {
-    constructor() {
-        this.index = KD_OBJECTS_INDEX++;
+    constructor(index) {
+        if (index == undefined) {
+            this.index = KD_OBJECTS_INDEX++;
+        } else {
+            this.index = index;
+        }
     }
 
     getId() {
@@ -138,11 +142,11 @@ class KDKernel extends KDObject {
         /* General use iframe */
         var KERNEL_IFRAME_ID = "KD-KERNEL-IFRAME";
         var iframe = document.getElementById(KERNEL_IFRAME_ID);
-      
+
         if (iframe == null) {
             iframe = document.createElement("IFRAME");
         }
-        
+
         iframe.setAttribute("id", KERNEL_IFRAME_ID);
         iframe.setAttribute("name", KERNEL_IFRAME_ID);
         iframe.setAttribute("style", "display:none;");
@@ -309,14 +313,17 @@ kdCenterSurfaceStyle.display = "inline-block";
  * Component class base
  * */
 class KDComponent extends KDObject {
-    constructor() {
-        super();
+    constructor(index) {
+        super(index);
+
         // HTML tag name
         this.htmlName = "div";
         // HTML type component
         this.htmlType = "";
         //Pointer to DOM representation
         this.domObject = false;
+        //Are published?
+        this.published = false;
     }
 
     /**
@@ -359,6 +366,7 @@ class KDComponent extends KDObject {
             obj = kdComponent.domObject;
         }
         obj.appendChild(this.domObject);
+        this.published = true;
         return this;
     }
 
@@ -733,8 +741,9 @@ class KDCanvas extends KDVisualComponent {
  * 
  * */
 class KDScript extends KDComponent {
-    constructor() {
-        super();
+
+    constructor(index) {
+        super(index);
         this.htmlName = "script";
         this.published = false;
         this.params = new Array();
@@ -753,9 +762,8 @@ class KDScript extends KDComponent {
         return this;
     }
 
-    publish() {
-        this.published = true;
-        super.publish();
+    publish(kdComponent) {
+        super.publish(kdComponent);
         return this;
     }
 
@@ -774,7 +782,6 @@ class KDScript extends KDComponent {
         var suffix = "?";
         for (let p of this.params) {
             suffix += p.key + "=" + encodeURI(p.value) + "&";
-
         }
 
         if (this.params.length == 0) suffix = "";
@@ -931,8 +938,6 @@ class KDSender extends KDObject {
         //Self clear form:
 
         if (this.timeToClear > 0) {
-            //     var theForm = this.form.domObject;
-            //     window.setTimeout(function () { for (let e of theForm.childNodes) { e.parentNode.removeChild(e); } }, this.timeToClear);
             this.form.selfDestroy(this.timeToClear);
         }
         return this;
@@ -956,7 +961,6 @@ class KDSender extends KDObject {
             this.form.method = "POST";
             this.form.build().publish();
             this.form.domObject.setAttribute("target", this.KERNEL_IFRAME_ID);
-
         }
     }
 
@@ -1573,7 +1577,6 @@ class KDMessageSender extends KDApplication {
             m.setValue(args[i], args[i + 1]);
         }
         this.desktop.broadcastRemoteMessage(m);
-
         return "Message send to " + args[0];
     }
 }
@@ -1786,7 +1789,6 @@ class KDDesktop extends KDVisualComponent {
      * Each desktop download last messages and decodify it to obtain most recient.
      * */
     broadcastRemoteMessage(kdMessage) {
-        //this.messageSender.timeToClear = 0;
         this.messageSender.set("d", this.getNameOfInstance());
         this.messageSender.set("m", kdMessage.exportJSON());
         this.messageSender.submit();
@@ -1794,26 +1796,23 @@ class KDDesktop extends KDVisualComponent {
 
     /** Loop for request messages */
     requestMessagesLoop(kdDesktop) {
-        var request = new KDScript()
-            .build()
-            .publish()
-            .load(kdDesktop.remoteMessageQueue,false)
-            .selfDestroy(kdDesktop.timeBetweenMessagesRequest*2);
+        var request = new KDScript("-desktop-requestMessagesLoop")
+            .load(kdDesktop.remoteMessageQueue, false)
+            .selfDestroy(kdDesktop.timeBetweenMessagesRequest * 2);
     }
 
     /** Start request messages to server */
     startRequestMessages() {
-        var request = new KDScript().build()
-            .publish()
+        var request = new KDScript("-desktop-startRequestMessages")
             .addParameter("d", this.getNameOfInstance())
             .load(this.getLastIndexURL)
             .selfDestroy(this.timeBetweenMessagesRequest);
-        this.requestMessagesHanlder = window.setInterval(this.requestMessagesLoop, this.timeBetweenMessagesRequest, this);
+        this.requestMessagesHandlder = window.setInterval(this.requestMessagesLoop, this.timeBetweenMessagesRequest, this);
     }
 
     /** Start request messages to server */
     stopRequestMessages() {
-        this.requestMessagesHanlder = window.clearInterval(this.requestMessagesHanlder);
+        window.clearInterval(this.requestMessagesHandlder);
     }
 
 

@@ -52,14 +52,17 @@ kdCenterSurfaceStyle.display = "inline-block";
  * Component class base
  * */
 class KDComponent extends KDObject {
-    constructor() {
-        super();
+    constructor(index) {
+        super(index);
+
         // HTML tag name
         this.htmlName = "div";
         // HTML type component
         this.htmlType = "";
         //Pointer to DOM representation
         this.domObject = false;
+        //Are published?
+        this.published = false;
     }
 
     /**
@@ -102,6 +105,7 @@ class KDComponent extends KDObject {
             obj = kdComponent.domObject;
         }
         obj.appendChild(this.domObject);
+        this.published = true;
         return this;
     }
 
@@ -476,8 +480,9 @@ class KDCanvas extends KDVisualComponent {
  * 
  * */
 class KDScript extends KDComponent {
-    constructor() {
-        super();
+
+    constructor(index) {
+        super(index);
         this.htmlName = "script";
         this.published = false;
         this.params = new Array();
@@ -496,9 +501,8 @@ class KDScript extends KDComponent {
         return this;
     }
 
-    publish() {
-        this.published = true;
-        super.publish();
+    publish(kdComponent) {
+        super.publish(kdComponent);
         return this;
     }
 
@@ -517,7 +521,6 @@ class KDScript extends KDComponent {
         var suffix = "?";
         for (let p of this.params) {
             suffix += p.key + "=" + encodeURI(p.value) + "&";
-
         }
 
         if (this.params.length == 0) suffix = "";
@@ -674,8 +677,6 @@ class KDSender extends KDObject {
         //Self clear form:
 
         if (this.timeToClear > 0) {
-            //     var theForm = this.form.domObject;
-            //     window.setTimeout(function () { for (let e of theForm.childNodes) { e.parentNode.removeChild(e); } }, this.timeToClear);
             this.form.selfDestroy(this.timeToClear);
         }
         return this;
@@ -699,7 +700,6 @@ class KDSender extends KDObject {
             this.form.method = "POST";
             this.form.build().publish();
             this.form.domObject.setAttribute("target", this.KERNEL_IFRAME_ID);
-
         }
     }
 
