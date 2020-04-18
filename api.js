@@ -1799,8 +1799,8 @@ class KDDesktop extends KDVisualComponent {
     /** Loop for request messages */
     requestMessagesLoop(kdDesktop) {
         kdDesktop.requestMessages
-            .load(kdDesktop.remoteMessageQueue, false)
-            .selfDestroy(kdDesktop.timeBetweenMessagesRequest);
+            .load(kdDesktop.remoteMessageQueue, true);
+
     }
 
     /** Start request messages to server */

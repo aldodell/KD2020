@@ -1,4 +1,3 @@
-desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"hola":"mundo0"}},28));
 desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"hola":"mundo100"}},29));
 desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"hola":"mundo101"}},30));
 desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"qw":"erty"}},31));
@@ -7,3 +6,4 @@ desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"so
 desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"abc":"def"}},34));
 desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"abc":"def"}},35));
 desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"abf":"gdf"}},36));
+desktop.broadcastLocalMessageWithIndex(new KDMessage().importJSON({"index":0,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"abc":"defg"}},37));

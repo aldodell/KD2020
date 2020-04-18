@@ -77,3 +77,5 @@ message-sender alert abc def
 message-sender aler abc gty
 message-sender alert abf gdf
 message-sender alert hola mundo 
+alert Hola
+message-sender alert abc defg
