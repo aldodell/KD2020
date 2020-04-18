@@ -1649,10 +1649,11 @@ class KDDesktop extends KDVisualComponent {
         /* Remote messages handlers: */
         this.remoteMessageReplicatorURL = "kd-messages-replicator.php";
         this.getLastIndexURL = "kd-messages-get-last-index.php";
-        this.remoteMessageQueue = "kd-messages-queue.js";
+        this.remoteMessageQueueURL = "kd-messages-queue.js";
         this.messageSender = new KDSender(this.remoteMessageReplicatorURL);
         this.lastMessageIndex = -1;
-        this.timeBetweenMessagesRequest = 500; //Time to request messages from server
+        this.timeBetweenMessagesRequest = 5000; //Time to request messages from server
+        this.localMessagesQueue = new Array(); //Array with messages queue
 
         this.requestMessages = new KDScript("-desktop-requestMessagesLoop");
         this.requestLastIndex = new KDScript("-desktop-startRequestMessages")
@@ -1775,16 +1776,33 @@ class KDDesktop extends KDVisualComponent {
     }
 
 
+    /** DEPRECATED */
     /** Filter messages to be broadcasting considering its index
      * */
-    broadcastLocalMessageWithIndex(kdMessage) {
+    /* broadcastLocalMessageWithIndex(kdMessage) {
         if (kdMessage.index > this.lastMessageIndex) {
             this.broadcastLocalMessage(kdMessage);
             this.lastMessageIndex = kdMessage.index;
+        }
+    }
+    */
 
+
+    broadcastLocalMessageQueue() {
+        var m = "";
+        while (this.localMessagesQueue.length > 0) {
+            m = this.localMessagesQueue.shift();
+            if (m.index > this.lastMessageIndex) {
+                this.broadcastLocalMessage(m);
+                this.lastMessageIndex = m.index;
+            }
         }
     }
 
+
+    addMessageToLocalQueue(kdMessage) {
+        this.localMessagesQueue.push(kdMessage);
+    }
 
     /** This method send the message to the server. 
      * The server get this messsage and put it on a queue.
@@ -1800,16 +1818,19 @@ class KDDesktop extends KDVisualComponent {
     /** Loop for request messages */
     requestMessagesLoop(kdDesktop) {
         kdDesktop.requestMessages
-            .load(kdDesktop.remoteMessageQueue, true);
+            .addParameter("i", this.lastMessageIndex)
+            .load(kdDesktop.remoteMessageQueueURL, true);
 
     }
 
     /** Start request messages to server */
     startRequestMessages() {
-        this.requestLastIndex
-            .addParameter("d", this.getNameOfInstance())
-            .load(this.getLastIndexURL)
-            .selfDestroy(this.timeBetweenMessagesRequest * 10);
+        /*
+          this.requestLastIndex
+              .addParameter("d", this.getNameOfInstance())
+              .load(this.getLastIndexURL)
+              .selfDestroy(this.timeBetweenMessagesRequest * 10);
+              */
         this.requestMessagesHandlder = window.setInterval(this.requestMessagesLoop, this.timeBetweenMessagesRequest, this);
     }
 

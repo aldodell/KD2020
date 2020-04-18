@@ -10,6 +10,12 @@
         var kernel = new KDKernel();
         var desktop = new KDDesktop(kernel).build().publish();
 
+        var m = new KDMessage("a", "b");
+        desktop.broadcastRemoteMessage(m);
+
+        PARAR();
+
+
         class ExampleApp extends KDApplication {
             constructor(dkDesktop) {
                 super(dkDesktop, "mario");
@@ -40,7 +46,7 @@
         };
 
 
-        
+
         desktop.addApplicationClass(ExampleApp);
         desktop.addApplicationClass(KDTerminal);
         desktop.addApplicationClass(KDTerminalClock);
