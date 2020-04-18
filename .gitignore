@@ -1,5 +1,5 @@
 *.out
 *.dSYM
 .DS_Store
-kd-messages-index.txt
-kd-messages-queue.js
+kd-messages-index.*
+kd-messages-queue.*
