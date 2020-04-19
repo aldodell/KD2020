@@ -38,7 +38,8 @@ $kdMessage->index = $id;
 $j = $messagesQuantity - $MAX_MESSAGES;
 if ($j < 0) {$j = $messagesQuantity;}
 for ($i = 0; $i < $j; $i++) {
-    $r .= $messagesArray[$i] . "\r\n";
+    $r .= trim($messagesArray[$i]) . "\r\n";
+
 }
 
 $m1 = json_encode($kdMessage);
@@ -47,6 +48,8 @@ $r .= $m1;
 //put the last message at end of file:
 file_put_contents($fileName_messages, $r);
 
+
+/*
 //put last message on file
 $messagesArray[] = $m1;
 
@@ -55,3 +58,4 @@ for ($i = 0; $i < $messagesQuantity; $i++) {
     $mt = $messagesArray[$i];
     echo "$d.addMessageToLocalQueue($mt);\r\n";
 }
+*/

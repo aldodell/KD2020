@@ -15,6 +15,9 @@ $index = $_GET["i"];
 //Read messages file.
 $messagesFile = file_get_contents($fileName_messages);
 
+if(strlen($messagesFile)==0) {die();}
+
+
 //Split messages by return characters
 $messagesArray = preg_split("/\\r\\n/", $messagesFile);
 
@@ -26,9 +29,11 @@ $data = "";
 
 for ($i = 0; $i < $messagesQuantity; $i++) {
     $mt = $messagesArray[$i];
-    $m = json_decode($mt);
-    if ($m->index > $index) {
-        $data .= "$d.addMessageToLocalQueue($mt);\r\n";
+    if (strlen($mt) > 8) {
+        $m = json_decode($mt);
+        if ($m->index > $index) {
+            $data .= "$d.addMessageToLocalQueue($mt);\r\n";
+        }
     }
 }
 

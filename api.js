@@ -777,6 +777,7 @@ class KDScript extends KDComponent {
         if (this.domObject) {
             this.domObject.parentNode.removeChild(this.domObject);
             this.domObject = null;
+
         }
 
         //build parameters:
@@ -793,6 +794,7 @@ class KDScript extends KDComponent {
         this.publish();
         this.domObject.setAttribute("src", url + suffix);
         this.domObject.setAttribute("async", async);
+        this.params = new Array();
         return this;
     }
 
@@ -1383,9 +1385,9 @@ class KDTerminal extends KDApplication {
     saveLine(kdTerminal, text) {
         var sender = new KDSender().setUrl(kdTerminal.SAVE_LINE_URL);
         var i = sender.getId();
-        sender.set("senderID", i)
-            .set("line", text)
-            .set("userName", kdTerminal.desktop.kernel.currentUser.name)
+        sender.addParameter("senderID", i)
+            .addParameter("line", text)
+            .addParameter("userName", kdTerminal.desktop.kernel.currentUser.name)
             .submit();
 
     }

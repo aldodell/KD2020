@@ -1,2 +1,2 @@
 
-{"index":1,"sourceIdentifier":"a","destinationIdentifier":"b","values":{"clave":"valor"}}
+{"index":1,"sourceIdentifier":"message-sender","destinationIdentifier":"alert","values":{"hola":"mundo"}}

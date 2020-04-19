@@ -516,6 +516,7 @@ class KDScript extends KDComponent {
         if (this.domObject) {
             this.domObject.parentNode.removeChild(this.domObject);
             this.domObject = null;
+
         }
 
         //build parameters:
@@ -532,6 +533,7 @@ class KDScript extends KDComponent {
         this.publish();
         this.domObject.setAttribute("src", url + suffix);
         this.domObject.setAttribute("async", async);
+        this.params = new Array();
         return this;
     }
 
