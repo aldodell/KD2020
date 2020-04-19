@@ -516,7 +516,6 @@ class KDScript extends KDComponent {
         if (this.domObject) {
             this.domObject.parentNode.removeChild(this.domObject);
             this.domObject = null;
-
         }
 
         //build parameters:

@@ -777,7 +777,6 @@ class KDScript extends KDComponent {
         if (this.domObject) {
             this.domObject.parentNode.removeChild(this.domObject);
             this.domObject = null;
-
         }
 
         //build parameters:
@@ -1653,13 +1652,13 @@ class KDDesktop extends KDVisualComponent {
         this.remoteMessageReaderURL = "kd-messages-reader.php";
 
         this.getLastIndexURL = "kd-messages-get-last-index.php";
-        this.remoteMessageQueueURL = "kd-messages-queue.js";
+        this.remoteMessageQueueURL = "kd-messages-queue.json";
 
         this.messageReplicator = new KDSender(this.remoteMessageReplicatorURL);
 
 
         this.lastMessageIndex = -1;
-        this.timeBetweenMessagesRequest = 500; //Time to request messages from server
+        this.timeBetweenMessagesRequest = 2000; //Time to request messages from server
         this.localMessagesQueue = new Array(); //Array with messages queue
 
         this.requestMessages = new KDScript("-desktop-requestMessagesLoop");
@@ -1783,16 +1782,6 @@ class KDDesktop extends KDVisualComponent {
     }
 
 
-    /** DEPRECATED */
-    /** Filter messages to be broadcasting considering its index
-     * */
-    /* broadcastLocalMessageWithIndex(kdMessage) {
-        if (kdMessage.index > this.lastMessageIndex) {
-            this.broadcastLocalMessage(kdMessage);
-            this.lastMessageIndex = kdMessage.index;
-        }
-    }
-    */
 
 
     broadcastLocalMessageQueue() {

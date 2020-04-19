@@ -114,3 +114,7 @@ message-sender alert ewer ty
 message-sender alert hola mundo
 message-sender alert ewer ty
 message-sender alert mac os
+message-sender alert iOS iPad
+message-sender alert Hola Todos
+message-sender alert h o
+message-sender alert iOS ipad
