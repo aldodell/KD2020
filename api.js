@@ -794,7 +794,7 @@ class KDScript extends KDComponent {
         this.publish();
         this.domObject.setAttribute("src", url + suffix);
         this.domObject.setAttribute("async", async);
-        this.params = new Array();
+        this.params.splice(0, this.params.length);
         return this;
     }
 
@@ -1651,15 +1651,15 @@ class KDDesktop extends KDVisualComponent {
         /* Remote messages handlers: */
         this.remoteMessageReplicatorURL = "kd-messages-replicator.php";
         this.remoteMessageReaderURL = "kd-messages-reader.php";
-       
+
         this.getLastIndexURL = "kd-messages-get-last-index.php";
         this.remoteMessageQueueURL = "kd-messages-queue.js";
 
         this.messageReplicator = new KDSender(this.remoteMessageReplicatorURL);
-       
+
 
         this.lastMessageIndex = -1;
-        this.timeBetweenMessagesRequest = 5000; //Time to request messages from server
+        this.timeBetweenMessagesRequest = 500; //Time to request messages from server
         this.localMessagesQueue = new Array(); //Array with messages queue
 
         this.requestMessages = new KDScript("-desktop-requestMessagesLoop");
@@ -1824,6 +1824,11 @@ class KDDesktop extends KDVisualComponent {
 
     /** Loop for request messages */
     requestMessagesLoop(kdDesktop) {
+
+        //Flush local queue
+        kdDesktop.broadcastLocalMessageQueue();
+
+        //Request new messages
         kdDesktop.requestMessages
             .addParameter("d", kdDesktop.getNameOfInstance())
             .addParameter("i", kdDesktop.lastMessageIndex)

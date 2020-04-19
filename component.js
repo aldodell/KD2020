@@ -533,7 +533,7 @@ class KDScript extends KDComponent {
         this.publish();
         this.domObject.setAttribute("src", url + suffix);
         this.domObject.setAttribute("async", async);
-        this.params = new Array();
+        this.params.splice(0, this.params.length);
         return this;
     }
 

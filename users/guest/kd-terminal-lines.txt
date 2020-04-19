@@ -102,3 +102,15 @@ message-sender alert 123 4567890
 message-sender alert hola mundo
 message-sender alert mnbpoiu lkhjhj
 message-sender alert wein hold
+message-sender alert a b
+message-sender alert c d
+message-sender alert ec fd
+message-sender alert  z x
+message-sender alert s d
+message-sender alert 123 4567
+message-sender alert hola mundo
+message-sender alert Hola mundo2
+message-sender alert ewer ty
+message-sender alert hola mundo
+message-sender alert ewer ty
+message-sender alert mac os
