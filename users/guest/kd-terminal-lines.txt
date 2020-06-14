@@ -118,3 +118,16 @@ message-sender alert iOS iPad
 message-sender alert Hola Todos
 message-sender alert h o
 message-sender alert iOS ipad
+message-sender alert k o
+message-sender alert 123 4567
+message-sender alert and jkl
+message-sender alert A B
+message-sender alert z x
+message-sender alert z1 x
+message-sender alert qwerty 1234
+message-sender alert A B
+message-sender alert hola mundo3
+message-sender alert hola mundo4
+message-sender alert iOS iPad 
+message-sender alert ya list!
+message-sender alert ya list!

@@ -24,7 +24,6 @@ class KDDesktop extends KDVisualComponent {
 
         this.messageReplicator = new KDSender(this.remoteMessageReplicatorURL);
 
-
         this.lastMessageIndex = -1;
         this.timeBetweenMessagesRequest = 2000; //Time to request messages from server
         this.localMessagesQueue = new Array(); //Array with messages queue
@@ -174,9 +173,19 @@ class KDDesktop extends KDVisualComponent {
      * Each desktop download last messages and decodify it to obtain most recient.
      * */
     broadcastRemoteMessage(kdMessage) {
+
+        var req = new XMLHttpRequest();
+        req.open("POST", this.remoteMessageReplicatorURL);
+        req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        req.send("d=" + this.getNameOfInstance() + "&m=" + kdMessage.exportJSON());
+        
+
+
+        /*
         this.messageReplicator.addParameter("d", this.getNameOfInstance());
         this.messageReplicator.addParameter("m", kdMessage.exportJSON());
         this.messageReplicator.submit();
+        */
     }
 
     /** Loop for request messages */

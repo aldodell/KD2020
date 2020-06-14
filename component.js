@@ -666,6 +666,7 @@ class KDIFrame extends KDVisualComponent {
  * */
 class KDSender extends KDObject {
 
+    /*
     addParameter(key, value) {
         this.putForm();
         var h = new KDHidden();
@@ -673,28 +674,57 @@ class KDSender extends KDObject {
         h.setName(key).setValue(value);
         return this;
     }
+    */
+
+    addParameter(key, value) {
+        var o = { "key": key, "value": value };
+        this.params.push(o);
+        return this;
+    }
 
     submit() {
+
+        //build parameters:
+        var suffix = " ";
+        for (let p of this.params) {
+            suffix += p.key + "=" + encodeURI(p.value) + "&";
+        }
+        suffix = suffix.trim();
+        suffix.substring(0, suffix.length - 1);
+        if (this.params.length == 0) suffix = "";
+
+
+        var req = new XMLHttpRequest();
+        req.open("POST", this.url);
+        req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        req.send(suffix);
+
+        //"d=" + this.getNameOfInstance() + "&m=" + kdMessage.exportJSON()
+        /*
         this.form.submit();
         //Self clear form:
 
         if (this.timeToClear > 0) {
             this.form.selfDestroy(this.timeToClear);
         }
+        */
         return this;
     }
 
     setUrl(url) {
         this.url = url;
-        if (this.form) {
-            this.form.url = url;
-            if (this.form.domObject) {
-                this.form.domObject.setAttribute("action", url);
-            }
-        }
+        /*
+          if (this.form) {
+              this.form.url = url;
+              if (this.form.domObject) {
+                  this.form.domObject.setAttribute("action", url);
+              }
+          }
+          */
         return this;
     }
 
+    /*
     putForm() {
         if (this.form == null || this.form.domObject == null) {
             this.form = new KDForm();
@@ -704,13 +734,15 @@ class KDSender extends KDObject {
             this.form.domObject.setAttribute("target", this.KERNEL_IFRAME_ID);
         }
     }
+    */
 
 
     constructor(url, timeToClear) {
         super();
-        this.KERNEL_IFRAME_ID = "KD-KERNEL-IFRAME";
+        // this.KERNEL_IFRAME_ID = "KD-KERNEL-IFRAME";
         this.url = url;
-        this.timeToClear = timeToClear == undefined ? 3000 : timeToClear;
+        // this.timeToClear = timeToClear == undefined ? 3000 : timeToClear;
+        this.params = new Array();
         return this;
     }
 
