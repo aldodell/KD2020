@@ -172,6 +172,23 @@ class KDVisualComponent extends KDComponent {
         this.size = new KDSize(100, 20);
         this.style.zIndex = "0";
     }
+
+
+    /** 
+     * Could be use to arrange and align inner components
+     * and the component itself.
+     * Is use this method it is necessary call super.performLayout(...) on 
+     * override implementation.
+     * */
+    performLayout(kdPosition, kdSize) {
+        kdPosition == undefined ? this.getPosition() : kdPosition;
+        kdSize == undefined ? this.getSize() : kdSize;
+        this.setPosition(kdPosition);
+        this.setSize(kdSize);
+    }
+
+
+
     /**
      * Set component size. @param size is a KDSize object.
      *  @returns itself reference to do chain property handling.
