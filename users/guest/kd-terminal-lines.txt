@@ -131,3 +131,19 @@ message-sender alert hola mundo4
 message-sender alert iOS iPad 
 message-sender alert ya list!
 message-sender alert ya list!
+?
+!
+show-user
+mario
+!
+clock
+alert
+alert clock
+clock | alert
+clock|alert
+message-sender alert abc
+message-sender alert abc 123
+message-sender alert q 1
+message-sender alert clave valor
+message-sender alert epslex 2
+message-sender alert a 1
