@@ -228,6 +228,9 @@ class KDPosition {
             return this.move((kdSize1.width - kdSize2.width) / 2, 0);
         };
 
+        /** 
+         * Return a new KDPosition object using dx and dy as offset
+         * */
         this.offset = function (dx, dy) {
             return new KDPosition(this.x + dx, this.y + dy);
         }

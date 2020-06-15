@@ -111,7 +111,11 @@ class KDComponent extends KDObject {
 
     /** Add a child component */
     add(kdComponent) {
-        if (this.domObject) {
+
+        //If component hasn't been build, so build it.
+        if (this.domObject == false) {
+            this.throwException(this.getId() + " is traying to add " + kdComponent.getId() + " component, but is not published yet");
+        } else {
             kdComponent.publish(this);
         }
     }
