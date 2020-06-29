@@ -770,6 +770,74 @@ class KDSender extends KDObject {
 }
 
 
+
+/**
+ * Framework to arrange components
+ * /
+ * */
+class KDArrangementRow {
+
+    constructor(rowProportion) {
+        this.rowProportion = rowProportion == undefined ? 1 : rowProportion;
+        this.components = new Array();
+        this.proportions = new Array();
+        this.cellsProportion = 0;
+    }
+
+    add(kdComponent, proportion) {
+        proportion = proportion == undefined ? 1 : proportion;
+        this.cellsProportion += proportion;
+        this.components.push(kdComponent);
+        this.proportions.push(proportion);
+        return this;
+    }
+}
+
+class KDArrangementList {
+
+    constructor() {
+        this.rows = new Array();
+        this.totalRowsProportion = 0;
+        this.horizontalSeparator = 10;
+        this.verticalSeparator = 10;
+    }
+
+    addRow(kdArrangementRow) {
+        this.rows.push(kdArrangementRow);
+        this.totalRowsProportion += kdArrangementRow.rowProportion;
+    }
+
+    arrange(kdPosition, kdSize) {
+        var countRows = this.rows.length;
+        var verticalSpan = kdSize.height - ((countRows + 1) * this.verticalSeparator);
+
+        var i, j, x, y;
+        for (i = 0; i < countRows; i++) {
+            var row = this.rows[i];
+
+            x = kdPosition.x + this.horizontalSeparator;
+            y = kdPosition.y + this.verticalSeparator;
+
+            for (j = 0; j < row.components.length; j++) {
+                var horizontalSpan = kdSize.width - ((row.components.length + 1) * this.horizontalSeparator);
+                var p = new KDPosition(x, y);
+                var s = new KDSize((horizontalSpan * row.proportions[j] / row.cellsProportion), (verticalSpan * row.rowProportion / this.totalRowsProportion));
+                row.components[j].performLayout(p, s);
+                x += s.width + this.horizontalSeparator;
+            }
+            y += this.verticalSeparator + (verticalSpan * row.rowProportion / this.totalRowProportions);
+        }
+
+
+
+
+
+
+    }
+
+}
+
+
 /** INCOMPLETE */
 class KDSpriteViewer extends KDLayer {
     constructor() {

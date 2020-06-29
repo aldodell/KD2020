@@ -100,6 +100,7 @@ class KDWindow extends KDLayer {
         this.body.setPosition(new KDPosition(0, this.headHeight));
         this.foot.setPosition(new KDPosition(0, kdSize.height - this.foodHeight));
         this.commandArea.setPosition(new KDPosition(1, 1));
+
         this.onSetSize(this, kdSize);
         return this;
     }

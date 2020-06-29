@@ -1034,6 +1034,74 @@ class KDSender extends KDObject {
 }
 
 
+
+/**
+ * Framework to arrange components
+ * /
+ * */
+class KDArrangementRow {
+
+    constructor(rowProportion) {
+        this.rowProportion = rowProportion == undefined ? 1 : rowProportion;
+        this.components = new Array();
+        this.proportions = new Array();
+        this.cellsProportion = 0;
+    }
+
+    add(kdComponent, proportion) {
+        proportion = proportion == undefined ? 1 : proportion;
+        this.cellsProportion += proportion;
+        this.components.push(kdComponent);
+        this.proportions.push(proportion);
+        return this;
+    }
+}
+
+class KDArrangementList {
+
+    constructor() {
+        this.rows = new Array();
+        this.totalRowsProportion = 0;
+        this.horizontalSeparator = 10;
+        this.verticalSeparator = 10;
+    }
+
+    addRow(kdArrangementRow) {
+        this.rows.push(kdArrangementRow);
+        this.totalRowsProportion += kdArrangementRow.rowProportion;
+    }
+
+    arrange(kdPosition, kdSize) {
+        var countRows = this.rows.length;
+        var verticalSpan = kdSize.height - ((countRows + 1) * this.verticalSeparator);
+
+        var i, j, x, y;
+        for (i = 0; i < countRows; i++) {
+            var row = this.rows[i];
+
+            x = kdPosition.x + this.horizontalSeparator;
+            y = kdPosition.y + this.verticalSeparator;
+
+            for (j = 0; j < row.components.length; j++) {
+                var horizontalSpan = kdSize.width - ((row.components.length + 1) * this.horizontalSeparator);
+                var p = new KDPosition(x, y);
+                var s = new KDSize((horizontalSpan * row.proportions[j] / row.cellsProportion), (verticalSpan * row.rowProportion / this.totalRowsProportion));
+                row.components[j].performLayout(p, s);
+                x += s.width + this.horizontalSeparator;
+            }
+            y += this.verticalSeparator + (verticalSpan * row.rowProportion / this.totalRowProportions);
+        }
+
+
+
+
+
+
+    }
+
+}
+
+
 /** INCOMPLETE */
 class KDSpriteViewer extends KDLayer {
     constructor() {
@@ -1292,6 +1360,7 @@ class KDWindow extends KDLayer {
         this.body.setPosition(new KDPosition(0, this.headHeight));
         this.foot.setPosition(new KDPosition(0, kdSize.height - this.foodHeight));
         this.commandArea.setPosition(new KDPosition(1, 1));
+
         this.onSetSize(this, kdSize);
         return this;
     }
@@ -1935,6 +2004,7 @@ class QQSM extends KDApplication {
         super(kdDesktop, "qqsm");
         this.title = "QQSM";
         var mainWindowSize = new KDSize(600, 400);
+        this.questionIndex = -1;
 
         //Draw main window
         this.mainWindow = new KDWindow()
@@ -1981,23 +2051,44 @@ class QQSM extends KDApplication {
         //Performing layout when size change programmatically
         this.mainWindow.app = this;
 
-        this.mainWindow.onSetSize = function (win, kdSize) {
-            var t = kdSize.height / 70;
-            var questionHeight = kdSize.height * 0.4;
-            var optionHeight = kdSize.height * 0.2;
-            var optionWidth = (kdSize.width - (3 * t)) / 2;
-            var optionSize = new KDSize(optionWidth, optionHeight);
-            win.app.questionBox.performLayout(new KDPosition(t, t), new KDSize(kdSize.width - (2 * t), questionHeight));
-            win.app.optionA.performLayout(new KDPosition(t, t + questionHeight + t), optionSize);
-            win.app.optionB.performLayout(new KDPosition(t + optionWidth + t, t + questionHeight + t), optionSize);
-            win.app.optionC.performLayout(new KDPosition(t, t + questionHeight + t + optionHeight + t), optionSize);
-            win.app.optionD.performLayout(new KDPosition(t + optionWidth + t, t + questionHeight + t + optionHeight + t), optionSize);
+        //Build arragement object
+        this.arragementList = new KDArrangementList();
+
+        this.arragementList.addRow(new KDArrangementRow().add(this.questionBox));
+        this.arragementList.addRow(new KDArrangementRow().add(this.optionA).add(this.optionB));
+        this.arragementList.addRow(new KDArrangementRow().add(this.optionC).add(this.optionD));
+
+
+        this.mainWindow.onSetSize = function (win, size) {
+    
+            win.app.arragementList.arrange(new KDPosition(0, 0), size);
+
+            /*
+             var t = kdSize.height / 70;
+             var questionHeight = kdSize.height * 0.4;
+             var optionHeight = kdSize.height * 0.2;
+             var optionWidth = (kdSize.width - (3 * t)) / 2;
+             var optionSize = new KDSize(optionWidth, optionHeight);
+             win.app.questionBox.performLayout(new KDPosition(t, t), new KDSize(kdSize.width - (2 * t), questionHeight));
+             win.app.optionA.performLayout(new KDPosition(t, t + questionHeight + t), optionSize);
+             win.app.optionB.performLayout(new KDPosition(t + optionWidth + t, t + questionHeight + t), optionSize);
+             win.app.optionC.performLayout(new KDPosition(t, t + questionHeight + t + optionHeight + t), optionSize);
+             win.app.optionD.performLayout(new KDPosition(t + optionWidth + t, t + questionHeight + t + optionHeight + t), optionSize);
+         
+         */
+
+
         };
 
 
     }
 
 
+    loadQuestion() {
+        this.questionIndex++;
+        this.questionBox
+
+    }
 
 
     //overloading run()
