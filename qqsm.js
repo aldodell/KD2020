@@ -6,32 +6,67 @@ Aplicación de prueba
 class QQSM extends KDApplication {
     constructor(kdDesktop) {
         super(kdDesktop, "qqsm");
+        this.title = "QQSM";
         var mainWindowSize = new KDSize(600, 400);
 
+        //Draw main window
         this.mainWindow = new KDWindow()
             .publish(kdDesktop)
             .setSize(mainWindowSize)
             .setPosition(KDPosition.centerScreen(mainWindowSize))
-            .setTitle("QQSM 0.1")
+            .setTitle(this.title)
             .hide();
 
+        //Draw question box and its styes
+        this.questionBoxStyle = new KDStyle();
+        this.questionBoxStyle.backgroundColor = "gray";
+        this.questionBox = new KDLayer().build();
+        this.questionBoxStyle.apply(this.questionBox);
+        this.mainWindow.add(this.questionBox);
 
 
-        var questionLayer = new KDLayer()
-            .setSize(mainWindowSize)
-            .setPosition(KDPosition.centerScreen(mainWindowSize))
-            .build()
-            .publish();
+        //Options style
+        this.optionStyle = new KDStyle();
+        this.optionStyle.backgroundColor = "navy";
 
-        this.mainWindow.add(questionLayer);
+        //Draw option A
+        this.optionA = new KDButton().build();
+        this.optionStyle.apply(this.optionA);
+        this.mainWindow.add(this.optionA);
+
+        //Draw option B
+        this.optionB = new KDButton().build();
+        this.optionStyle.apply(this.optionB);
+        this.mainWindow.add(this.optionB);
+
+        //Draw option C
+        this.optionC = new KDButton().build();
+        this.optionStyle.apply(this.optionC);
+        this.mainWindow.add(this.optionC);
 
 
+        //Draw option D
+        this.optionD = new KDButton().build();
+        this.optionStyle.apply(this.optionD);
+        this.mainWindow.add(this.optionD);
 
-        this.mainWindow.KDVisualComponent_performLayout = this.mainWindow.performLayout;
-        this.mainWindow.performLayout = function (kdPosition, kdSize) {
-            this.KDVisualComponent_performLayout(kdPosition, kdSize);
-            alert(kdSize);
-        }
+
+        //Performing layout when size change programmatically
+        this.mainWindow.app = this;
+
+        this.mainWindow.onSetSize = function (win, kdSize) {
+            var t = kdSize.height / 70;
+            var questionHeight = kdSize.height * 0.4;
+            var optionHeight = kdSize.height * 0.2;
+            var optionWidth = (kdSize.width - (3 * t)) / 2;
+            var optionSize = new KDSize(optionWidth, optionHeight);
+            win.app.questionBox.performLayout(new KDPosition(t, t), new KDSize(kdSize.width - (2 * t), questionHeight));
+            win.app.optionA.performLayout(new KDPosition(t, t + questionHeight + t), optionSize);
+            win.app.optionB.performLayout(new KDPosition(t + optionWidth + t, t + questionHeight + t), optionSize);
+            win.app.optionC.performLayout(new KDPosition(t, t + questionHeight + t + optionHeight + t), optionSize);
+            win.app.optionD.performLayout(new KDPosition(t + optionWidth + t, t + questionHeight + t + optionHeight + t), optionSize);
+        };
+
 
     }
 
@@ -40,8 +75,9 @@ class QQSM extends KDApplication {
 
     //overloading run()
     run() {
+
         this.mainWindow.show();
-        this.mainWindow.performLayout();
+        this.mainWindow.setSize(new KDSize(600, 500));
 
     }
 }

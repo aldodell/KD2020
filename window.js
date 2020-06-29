@@ -9,14 +9,18 @@ class KDWindowTheme {
 
         //By default:
         this.frame.boxShadow = "10px 10px 10px gray";
+
         this.head.backgroundColor = "gold";
-        this.head.borderStyle = "solid";
-        this.head.borderWidth = "1px";
+        this.head.margin = "0px";
+        this.head.padding = "0px";
+        this.border = "solid 1px black";
+
 
         this.body.copyFrom(this.head);
         this.foot.copyFrom(this.head);
+        this.commandArea.copyFrom(this.head);
 
-        this.body.backgroundColor = "oldLace";
+        this.body.backgroundColor = "oldLace"; //oldLace
         this.foot.backgroundColor = "wheat";
         this.head.textAlign = "center";
 
@@ -49,8 +53,12 @@ class KDWindow extends KDLayer {
         this.commandWidth = 30;
         this.theme = KDWindowThemeByDefault;
         this.desktop = false;
-        /** This method can be used for make window layout */
-        this.onSetSizeEvent = function (kdSize) { return kdSize; }
+
+        /** 
+         * This method can be used for make window layout 
+         * Must be override 
+         * */
+        this.onSetSize = function (kdWindow, kdSize) { };
     }
 
     build() {
@@ -87,14 +95,23 @@ class KDWindow extends KDLayer {
         this.head.setSize(new KDSize(kdSize.width, this.headHeight));
         this.body.setSize(new KDSize(kdSize.width, kdSize.height - this.headHeight - this.foodHeight));
         this.foot.setSize(new KDSize(kdSize.width, this.foodHeight));
-        this.commandArea.setSize(new KDSize(this.headHeight, this.commandWidth));
+        this.commandArea.setSize(new KDSize(this.commandWidth, this.headHeight - 2));
         this.head.setPosition(new KDPosition(0, 0));
         this.body.setPosition(new KDPosition(0, this.headHeight));
         this.foot.setPosition(new KDPosition(0, kdSize.height - this.foodHeight));
-        this.commandArea.setPosition(new KDPosition(0, 0));
-        this.onSetSizeEvent(kdSize);
+        this.commandArea.setPosition(new KDPosition(1, 1));
+        this.onSetSize(this, kdSize);
         return this;
     }
+
+
+
+    /** Set size and position to fill body area */
+    fillBody(kdComponent) {
+        kdComponent.setSize(this.body.getSize().offset(-2, -2));
+        kdComponent.setPosition(new KDPosition(1, 1));
+    }
+
 
 
     /** Add a child component */
@@ -112,8 +129,10 @@ class KDWindow extends KDLayer {
     }
 
     setOnTop() {
-        
+
         this.style.add("zIndex", this.desktop.windowZIndex++);
         this.style.apply(this);
     }
+
+
 }

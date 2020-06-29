@@ -148,3 +148,12 @@ message-sender alert clave valor
 message-sender alert epslex 2
 message-sender alert a 1
 qqsm
+message-sender qqsm changeSize height 400
+message-sender qqsm command changeSize height 400
+message-sender qqsm command changeSize height 200
+message-sender qqsm command changeSize height 600
+message-sender qqsm command changeSize height 600 width 600
+message-sender qqsm command changeSize height 600 width 400
+message-sender qqsm command changeSize width 400 height 200
+message-sender qqsm command changeSize width 600 height 200
+message-sender qqsm command changeSize width 600 height 600
