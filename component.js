@@ -771,7 +771,9 @@ class KDSender extends KDObject {
 
 
 /**
- * Framework to arrange components
+ * Framework to arrange components.
+ * A KDArrangementRow stores one or some components to be arranged.
+ * @param {number} rowProportion is a positive number wich assign vertical proportion to entire row. By default is 1.
  * /
  * */
 class KDArrangementRow {
@@ -783,6 +785,10 @@ class KDArrangementRow {
         this.cellsProportion = 0;
     }
 
+    /**
+     * @param {KDComponent} kdComponent A KDComponent instance
+     * @param {number} proportion A positive number wich represent weight or proportion of width for components on row. By default its value is 1.
+     * */
     add(kdComponent, proportion) {
         proportion = proportion == undefined ? 1 : proportion;
         this.cellsProportion += proportion;
@@ -793,7 +799,9 @@ class KDArrangementRow {
 }
 
 class KDArrangementList {
-
+    /**
+     * @constructor
+     * */
     constructor() {
         this.rows = new Array();
         this.totalRowsProportion = 0;
@@ -806,6 +814,11 @@ class KDArrangementList {
         this.totalRowsProportion += kdArrangementRow.rowProportion;
     }
 
+    /**
+     * @description This method make a list of rows with its associated components.
+     * @param {KDPosition} kdPosition Initial position on entire list.
+     * @param {KDSize} kdSize Size of entire list.
+     * 
     arrange(kdPosition, kdSize) {
         var countRows = this.rows.length;
         var verticalSpan = kdSize.height - ((countRows + 1) * this.verticalSeparator);

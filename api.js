@@ -1035,7 +1035,9 @@ class KDSender extends KDObject {
 
 
 /**
- * Framework to arrange components
+ * Framework to arrange components.
+ * A KDArrangementRow stores one or some components to be arranged.
+ * @param {number} rowProportion is a positive number wich assign vertical proportion to entire row. By default is 1.
  * /
  * */
 class KDArrangementRow {
@@ -1047,6 +1049,10 @@ class KDArrangementRow {
         this.cellsProportion = 0;
     }
 
+    /**
+     * @param {KDComponent} kdComponent A KDComponent instance
+     * @param {number} proportion A positive number wich represent weight or proportion of width for components on row. By default its value is 1.
+     * */
     add(kdComponent, proportion) {
         proportion = proportion == undefined ? 1 : proportion;
         this.cellsProportion += proportion;
@@ -1057,7 +1063,9 @@ class KDArrangementRow {
 }
 
 class KDArrangementList {
-
+    /**
+     * @constructor
+     * */
     constructor() {
         this.rows = new Array();
         this.totalRowsProportion = 0;
@@ -1070,6 +1078,11 @@ class KDArrangementList {
         this.totalRowsProportion += kdArrangementRow.rowProportion;
     }
 
+    /**
+     * @description This method make a list of rows with its associated components.
+     * @param {KDPosition} kdPosition Initial position on entire list.
+     * @param {KDSize} kdSize Size of entire list.
+     * 
     arrange(kdPosition, kdSize) {
         var countRows = this.rows.length;
         var verticalSpan = kdSize.height - ((countRows + 1) * this.verticalSeparator);
@@ -2044,6 +2057,7 @@ class QQSM extends KDApplication {
 
         //Build arragement object
         this.arragementList = new KDArrangementList();
+        
 
         this.arragementList.addRow(new KDArrangementRow(3).add(this.questionBox));
         this.arragementList.addRow(new KDArrangementRow().add(this.optionA).add(this.optionB));
@@ -2052,22 +2066,6 @@ class QQSM extends KDApplication {
 
         this.mainWindow.onSetSize = function (win, size) {
             win.app.arragementList.arrange(new KDPosition(0, 0), win.body.getSize());
-
-            /*
-             var t = kdSize.height / 70;
-             var questionHeight = kdSize.height * 0.4;
-             var optionHeight = kdSize.height * 0.2;
-             var optionWidth = (kdSize.width - (3 * t)) / 2;
-             var optionSize = new KDSize(optionWidth, optionHeight);
-             win.app.questionBox.performLayout(new KDPosition(t, t), new KDSize(kdSize.width - (2 * t), questionHeight));
-             win.app.optionA.performLayout(new KDPosition(t, t + questionHeight + t), optionSize);
-             win.app.optionB.performLayout(new KDPosition(t + optionWidth + t, t + questionHeight + t), optionSize);
-             win.app.optionC.performLayout(new KDPosition(t, t + questionHeight + t + optionHeight + t), optionSize);
-             win.app.optionD.performLayout(new KDPosition(t + optionWidth + t, t + questionHeight + t + optionHeight + t), optionSize);
-         
-         */
-
-
         };
 
 
