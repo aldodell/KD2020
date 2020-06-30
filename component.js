@@ -770,7 +770,6 @@ class KDSender extends KDObject {
 }
 
 
-
 /**
  * Framework to arrange components
  * /
@@ -798,8 +797,8 @@ class KDArrangementList {
     constructor() {
         this.rows = new Array();
         this.totalRowsProportion = 0;
-        this.horizontalSeparator = 10;
-        this.verticalSeparator = 10;
+        this.horizontalSeparator = 4;
+        this.verticalSeparator = 4;
     }
 
     addRow(kdArrangementRow) {
@@ -812,12 +811,10 @@ class KDArrangementList {
         var verticalSpan = kdSize.height - ((countRows + 1) * this.verticalSeparator);
 
         var i, j, x, y;
+        y = kdPosition.y + this.verticalSeparator;
         for (i = 0; i < countRows; i++) {
             var row = this.rows[i];
-
             x = kdPosition.x + this.horizontalSeparator;
-            y = kdPosition.y + this.verticalSeparator;
-
             for (j = 0; j < row.components.length; j++) {
                 var horizontalSpan = kdSize.width - ((row.components.length + 1) * this.horizontalSeparator);
                 var p = new KDPosition(x, y);
@@ -825,13 +822,8 @@ class KDArrangementList {
                 row.components[j].performLayout(p, s);
                 x += s.width + this.horizontalSeparator;
             }
-            y += this.verticalSeparator + (verticalSpan * row.rowProportion / this.totalRowProportions);
+            y += this.verticalSeparator + (verticalSpan * row.rowProportion / this.totalRowsProportion);
         }
-
-
-
-
-
 
     }
 

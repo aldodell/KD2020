@@ -7,14 +7,13 @@ class QQSM extends KDApplication {
     constructor(kdDesktop) {
         super(kdDesktop, "qqsm");
         this.title = "QQSM";
-        var mainWindowSize = new KDSize(600, 400);
+
+
         this.questionIndex = -1;
 
         //Draw main window
         this.mainWindow = new KDWindow()
             .publish(kdDesktop)
-            .setSize(mainWindowSize)
-            .setPosition(KDPosition.centerScreen(mainWindowSize))
             .setTitle(this.title)
             .hide();
 
@@ -58,14 +57,13 @@ class QQSM extends KDApplication {
         //Build arragement object
         this.arragementList = new KDArrangementList();
 
-        this.arragementList.addRow(new KDArrangementRow().add(this.questionBox));
+        this.arragementList.addRow(new KDArrangementRow(3).add(this.questionBox));
         this.arragementList.addRow(new KDArrangementRow().add(this.optionA).add(this.optionB));
         this.arragementList.addRow(new KDArrangementRow().add(this.optionC).add(this.optionD));
 
 
         this.mainWindow.onSetSize = function (win, size) {
-    
-            win.app.arragementList.arrange(new KDPosition(0, 0), size);
+            win.app.arragementList.arrange(new KDPosition(0, 0), win.body.getSize());
 
             /*
              var t = kdSize.height / 70;
@@ -97,9 +95,9 @@ class QQSM extends KDApplication {
 
     //overloading run()
     run() {
-
-        this.mainWindow.show();
-        this.mainWindow.setSize(new KDSize(600, 500));
-
+        var mainWindowSize = new KDSize(600, 400);
+        this.mainWindow.show()
+            .setSize(mainWindowSize)
+            .setPosition(KDPosition.centerScreen(mainWindowSize));
     }
 }

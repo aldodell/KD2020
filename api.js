@@ -1034,7 +1034,6 @@ class KDSender extends KDObject {
 }
 
 
-
 /**
  * Framework to arrange components
  * /
@@ -1062,8 +1061,8 @@ class KDArrangementList {
     constructor() {
         this.rows = new Array();
         this.totalRowsProportion = 0;
-        this.horizontalSeparator = 10;
-        this.verticalSeparator = 10;
+        this.horizontalSeparator = 4;
+        this.verticalSeparator = 4;
     }
 
     addRow(kdArrangementRow) {
@@ -1076,12 +1075,10 @@ class KDArrangementList {
         var verticalSpan = kdSize.height - ((countRows + 1) * this.verticalSeparator);
 
         var i, j, x, y;
+        y = kdPosition.y + this.verticalSeparator;
         for (i = 0; i < countRows; i++) {
             var row = this.rows[i];
-
             x = kdPosition.x + this.horizontalSeparator;
-            y = kdPosition.y + this.verticalSeparator;
-
             for (j = 0; j < row.components.length; j++) {
                 var horizontalSpan = kdSize.width - ((row.components.length + 1) * this.horizontalSeparator);
                 var p = new KDPosition(x, y);
@@ -1089,13 +1086,8 @@ class KDArrangementList {
                 row.components[j].performLayout(p, s);
                 x += s.width + this.horizontalSeparator;
             }
-            y += this.verticalSeparator + (verticalSpan * row.rowProportion / this.totalRowProportions);
+            y += this.verticalSeparator + (verticalSpan * row.rowProportion / this.totalRowsProportion);
         }
-
-
-
-
-
 
     }
 
@@ -2003,14 +1995,13 @@ class QQSM extends KDApplication {
     constructor(kdDesktop) {
         super(kdDesktop, "qqsm");
         this.title = "QQSM";
-        var mainWindowSize = new KDSize(600, 400);
+
+
         this.questionIndex = -1;
 
         //Draw main window
         this.mainWindow = new KDWindow()
             .publish(kdDesktop)
-            .setSize(mainWindowSize)
-            .setPosition(KDPosition.centerScreen(mainWindowSize))
             .setTitle(this.title)
             .hide();
 
@@ -2054,14 +2045,13 @@ class QQSM extends KDApplication {
         //Build arragement object
         this.arragementList = new KDArrangementList();
 
-        this.arragementList.addRow(new KDArrangementRow().add(this.questionBox));
+        this.arragementList.addRow(new KDArrangementRow(3).add(this.questionBox));
         this.arragementList.addRow(new KDArrangementRow().add(this.optionA).add(this.optionB));
         this.arragementList.addRow(new KDArrangementRow().add(this.optionC).add(this.optionD));
 
 
         this.mainWindow.onSetSize = function (win, size) {
-    
-            win.app.arragementList.arrange(new KDPosition(0, 0), size);
+            win.app.arragementList.arrange(new KDPosition(0, 0), win.body.getSize());
 
             /*
              var t = kdSize.height / 70;
@@ -2093,9 +2083,9 @@ class QQSM extends KDApplication {
 
     //overloading run()
     run() {
-
-        this.mainWindow.show();
-        this.mainWindow.setSize(new KDSize(600, 500));
-
+        var mainWindowSize = new KDSize(600, 400);
+        this.mainWindow.show()
+            .setSize(mainWindowSize)
+            .setPosition(KDPosition.centerScreen(mainWindowSize));
     }
 }
