@@ -157,3 +157,10 @@ message-sender qqsm command changeSize height 600 width 400
 message-sender qqsm command changeSize width 400 height 200
 message-sender qqsm command changeSize width 600 height 200
 message-sender qqsm command changeSize width 600 height 600
+help
+?
+!
+clock
+alert
+show-user
+qqsm

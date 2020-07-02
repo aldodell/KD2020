@@ -1,4 +1,32 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: api.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: api.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  * Kernel of KicsyDell Api 2020 release
  * */
 
@@ -124,7 +152,7 @@ class KDUser extends KDObject {
 class KDKernel extends KDObject {
 
     static isTouchAvailable() {
-        if (('ontouchstart' in window) || window.DocumentTouch && document instanceof DocumentTouch) {
+        if (('ontouchstart' in window) || window.DocumentTouch &amp;&amp; document instanceof DocumentTouch) {
             return true;
         }
         return false;
@@ -862,7 +890,7 @@ class KDScript extends KDComponent {
         //build parameters:
         var suffix = "?";
         for (let p of this.params) {
-            suffix += p.key + "=" + encodeURI(p.value) + "&";
+            suffix += p.key + "=" + encodeURI(p.value) + "&amp;";
         }
 
         if (this.params.length == 0) suffix = "";
@@ -1031,7 +1059,7 @@ class KDSender extends KDObject {
         //build parameters:
         var suffix = " ";
         for (let p of this.params) {
-            suffix += p.key + "=" + encodeURI(p.value) + "&";
+            suffix += p.key + "=" + encodeURI(p.value) + "&amp;";
         }
         suffix = suffix.trim();
         suffix.substring(0, suffix.length - 1);
@@ -1143,10 +1171,10 @@ class KDArrangementList {
 
         var i, j, x, y;
         y = kdPosition.y + this.verticalSeparator;
-        for (i = 0; i < countRows; i++) {
+        for (i = 0; i &lt; countRows; i++) {
             var row = this.rows[i];
             x = kdPosition.x + this.horizontalSeparator;
-            for (j = 0; j < row.components.length; j++) {
+            for (j = 0; j &lt; row.components.length; j++) {
                 var horizontalSpan = kdSize.width - ((row.components.length + 1) * this.horizontalSeparator);
                 var p = new KDPosition(x, y);
                 var s = new KDSize((horizontalSpan * row.proportions[j] / row.cellsProportion), (verticalSpan * row.rowProportion / this.totalRowsProportion));
@@ -1405,7 +1433,7 @@ class KDWindow extends KDLayer {
         super.add(this.body);
         super.add(this.foot);
         super.add(this.commandArea);
-        this.commandArea.showCenterText("&#x2193");
+        this.commandArea.showCenterText("&amp;#x2193");
         var theWindow = this;
         var commandArea = this.commandArea;
         this.commandArea.domObject.addEventListener("click", function () { theWindow.hide() });
@@ -1489,7 +1517,7 @@ class KDArgumentsParser extends KDObject {
         var tokens = text.split(re1);
         this.command = tokens[0];
         var i = 1;
-        for (i = 1; i < tokens.length; i++) {
+        for (i = 1; i &lt; tokens.length; i++) {
             this.arguments.push(tokens[i]);
         }
     }
@@ -1567,7 +1595,7 @@ class KDTerminal extends KDApplication {
 
         if (text == "!") {
             var r = "";
-            for (i = 0; i < kdTerminal.desktop.applicationsInstances.length; i++) {
+            for (i = 0; i &lt; kdTerminal.desktop.applicationsInstances.length; i++) {
                 var app = kdTerminal.desktop.applicationsInstances[i];
                 r += app.identifier + " ";
             }
@@ -1583,9 +1611,9 @@ class KDTerminal extends KDApplication {
         var resultText = "";
         var sentences = text.split("|");
         var isValid = false;
-        for (j = 0; j < sentences.length; j++) {
+        for (j = 0; j &lt; sentences.length; j++) {
             var parser = new KDArgumentsParser(sentences[j]);
-            for (i = 0; i < kdTerminal.desktop.applicationsInstances.length; i++) {
+            for (i = 0; i &lt; kdTerminal.desktop.applicationsInstances.length; i++) {
                 var app = kdTerminal.desktop.applicationsInstances[i];
                 if (app.identifier == parser.command) {
                     var args = parser.arguments;
@@ -1678,7 +1706,7 @@ class KDTerminal extends KDApplication {
                     this.focus();
                     return false;
                 }
-                for (i = 0; i < kdTerminal.desktop.applicationsInstances.length; i++) {
+                for (i = 0; i &lt; kdTerminal.desktop.applicationsInstances.length; i++) {
                     var app = kdTerminal.desktop.applicationsInstances[i];
                     k = app.identifier.indexOf(t);
                     l = t.length;
@@ -1697,7 +1725,7 @@ class KDTerminal extends KDApplication {
             } else if (e.code == "ArrowDown") {
                 var nodes = kdTerminal.mainWindow.body.domObject.getElementsByTagName("input");
 
-                if (kdTerminal._indexCommandLine < nodes.length) {
+                if (kdTerminal._indexCommandLine &lt; nodes.length) {
                     kdTerminal._indexCommandLine++;
                     commandLine.setText(nodes[kdTerminal._indexCommandLine].value);
                 }
@@ -1802,7 +1830,7 @@ class KDMessageSender extends KDApplication {
     run(args) {
         //Send a message to app with first param as identifier
         var m = new KDMessage(this.identifier, args[0]);
-        for (var i = 1; i < args.length; i += 2) {
+        for (var i = 1; i &lt; args.length; i += 2) {
             m.addParameter(args[i], args[i + 1]);
         }
         this.desktop.broadcastRemoteMessage(m);
@@ -1912,7 +1940,7 @@ class KDDesktop extends KDVisualComponent {
 
     getApplicationInstance(identifier) {
         var i;
-        for (i = 0; i < this.applicationsInstances.length; i++) {
+        for (i = 0; i &lt; this.applicationsInstances.length; i++) {
             var app = this.applicationsInstances[i];
             if (identifier == app.identifier) {
                 return app;
@@ -1939,7 +1967,7 @@ class KDDesktop extends KDVisualComponent {
 
         var i = 0;
         var j = 0;
-        for (i = 0; i < this.applicationsClasses.length; i++) {
+        for (i = 0; i &lt; this.applicationsClasses.length; i++) {
             this.applicationsInstances[i] = new this.applicationsClasses[i](this);
 
             if (this.applicationsInstances[i].mainWindow != undefined) {
@@ -1976,7 +2004,7 @@ class KDDesktop extends KDVisualComponent {
                     appLayer.domObject.addEventListener("touchend", function (touchEvent) {
                         var currentTime = new Date().getTime();
                         var tapLength = currentTime - this.lastTap;
-                        if (tapLength < 500 && tapLength > 0) {
+                        if (tapLength &lt; 500 &amp;&amp; tapLength > 0) {
                             touchEvent.preventDefault();
                             this.app.run();
                         }
@@ -1998,7 +2026,7 @@ class KDDesktop extends KDVisualComponent {
      * */
     broadcastLocalMessage(kdMessage) {
         var i;
-        for (i = 0; i < this.applicationsInstances.length; i++) {
+        for (i = 0; i &lt; this.applicationsInstances.length; i++) {
             var app = this.applicationsInstances[i];
             if (kdMessage.destinationIdentifier == "*" || kdMessage.destinationIdentifier == app.identifier) {
                 app.processMessage(kdMessage)
@@ -2036,7 +2064,7 @@ class KDDesktop extends KDVisualComponent {
         var req = new XMLHttpRequest();
         req.open("POST", this.remoteMessageReplicatorURL);
         req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        req.send("d=" + this.getNameOfInstance() + "&m=" + kdMessage.exportJSON());
+        req.send("d=" + this.getNameOfInstance() + "&amp;m=" + kdMessage.exportJSON());
         
 
 
@@ -2167,3 +2195,26 @@ class QQSM extends KDApplication {
 }
 
 
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="KDApplication.html">KDApplication</a></li><li><a href="KDArgumentsParser.html">KDArgumentsParser</a></li><li><a href="KDArrangementList.html">KDArrangementList</a></li><li><a href="KDArrangementRow.html">KDArrangementRow</a></li><li><a href="KDAsyncTask.html">KDAsyncTask</a></li><li><a href="KDButton.html">KDButton</a></li><li><a href="KDCanvas.html">KDCanvas</a></li><li><a href="KDComponent.html">KDComponent</a></li><li><a href="KDDesktop.html">KDDesktop</a></li><li><a href="KDForm.html">KDForm</a></li><li><a href="KDHidden.html">KDHidden</a></li><li><a href="KDIFrame.html">KDIFrame</a></li><li><a href="KDImage.html">KDImage</a></li><li><a href="KDKernel.html">KDKernel</a></li><li><a href="KDLayer.html">KDLayer</a></li><li><a href="KDMessage.html">KDMessage</a></li><li><a href="KDMessageSender.html">KDMessageSender</a></li><li><a href="KDObject.html">KDObject</a></li><li><a href="KDPosition.html">KDPosition</a></li><li><a href="KDScript.html">KDScript</a></li><li><a href="KDSender.html">KDSender</a></li><li><a href="KDSize.html">KDSize</a></li><li><a href="KDSpriteViewer.html">KDSpriteViewer</a></li><li><a href="KDStyle.html">KDStyle</a></li><li><a href="KDTextArea.html">KDTextArea</a></li><li><a href="KDTextBox.html">KDTextBox</a></li><li><a href="KDUser.html">KDUser</a></li><li><a href="KDVisualComponent.html">KDVisualComponent</a></li><li><a href="KDWindow.html">KDWindow</a></li><li><a href="KDWindowTheme.html">KDWindowTheme</a></li><li><a href="QQSM.html">QQSM</a></li></ul><h3>Global</h3><ul><li><a href="global.html#KD_OBJECTS_INDEX">KD_OBJECTS_INDEX</a></li><li><a href="global.html#kdCenterSurfaceStyle">kdCenterSurfaceStyle</a></li><li><a href="global.html#kdIconFont">kdIconFont</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Tue Jun 30 2020 19:08:52 GMT-0400 (GMT-04:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

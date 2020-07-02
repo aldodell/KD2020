@@ -9,6 +9,7 @@ class KDStyle {
     }
 
     /** Apply CSS style properties to kdComponent
+     * @param {KDComponent} {@link KDComponent} that will be formated.
      * */
     apply(kdComponent) {
         if (kdComponent.domObject) {
@@ -20,7 +21,9 @@ class KDStyle {
         return this;
     }
 
-    /** Copy all styles from other KDStyle object */
+    /** Copy all styles from other {@link KDStyle} object 
+     * @param {KDStyle} kdStyle
+    */
     copyFrom(kdStyle) {
         for (let s in kdStyle) {
             this[s] = kdStyle[s];
@@ -28,6 +31,11 @@ class KDStyle {
         return this;
     }
 
+    /**
+     * Add a CSS parameter to this wrapper.
+     * @param {string} property 
+     * @param {string} value 
+     */
     add(property, value) {
         this[property] = value;
         return this;
@@ -35,13 +43,16 @@ class KDStyle {
 }
 
 /**
+ * 
  * Font styles
  * */
 var kdIconFont = new KDStyle();
 kdIconFont.fontSize = "10";
 kdIconFont.textAlign = "center";
 
-/** Ready to use style that make a surface where all its
+/**
+
+ * Ready to use style that make a surface where all its
  * elements are horizontally centered
  * */
 var kdCenterSurfaceStyle = new KDStyle();
@@ -49,26 +60,27 @@ kdCenterSurfaceStyle.textAlign = "center";
 kdCenterSurfaceStyle.display = "inline-block";
 
 /**
- * Component class base
- * */
+ * Component class base. 
+ * @extends KDObject
+ */
 class KDComponent extends KDObject {
     constructor(index) {
         super(index);
 
-        // HTML tag name
+        /** HTML tag name */
         this.htmlName = "div";
-        // HTML type component
+        /** HTML type component */
         this.htmlType = "";
-        //Pointer to DOM representation
+        /** Pointer to DOM representation */
         this.domObject = false;
-        //Are published?
+        /** Are published */
         this.published = false;
     }
 
     /**
      *  Build component method.
      * This method build the component and prepare it to show
-     * Use then @method publish to merge this component on the DOM hierarchy.
+     * Use then method publish to merge this component on the DOM hierarchy.
      * @returns itself reference to do chain property handling.
      *  */
     build() {
@@ -160,6 +172,7 @@ var kdHeadTag = new KDHeadTag();
 
 
 /** Visual components base classes
+ * @extends KDComponent
  * */
 class KDVisualComponent extends KDComponent {
     constructor() {
@@ -405,7 +418,9 @@ class KDTextBox extends KDVisualComponent {
     }
 }
 
-/** Simple button 
+/** 
+ * Simple button 
+ * @extends KDVisualComponent
  * */
 class KDButton extends KDVisualComponent {
     constructor() {
@@ -429,6 +444,7 @@ class KDButton extends KDVisualComponent {
 
 
 /** Simple image 
+ * @extends KDVisualComponent
  * */
 class KDImage extends KDVisualComponent {
     constructor() {
@@ -445,7 +461,8 @@ class KDImage extends KDVisualComponent {
     }
 }
 
-/** TextArea HTML wrapper
+/** TextArea HTML wrapper.
+ * @extends KDVisualComponent
  * */
 class KDTextArea extends KDVisualComponent {
     constructor() {
@@ -474,6 +491,10 @@ class KDTextArea extends KDVisualComponent {
     }
 }
 
+/**
+ * Create a HTML5 canvas.
+ * @extends KDVisualComponent
+ */
 class KDCanvas extends KDVisualComponent {
     constructor() {
         super();
@@ -498,6 +519,7 @@ class KDCanvas extends KDVisualComponent {
  * Usage:
  * var s = new KDScript()
  * s.load(url, true); -> first argument is URL to be loaded.
+ * @extends KDComponent
  * 
  * */
 class KDScript extends KDComponent {
@@ -567,7 +589,9 @@ class KDScript extends KDComponent {
 }
 
 /** 
- * This class wrap a HTML FORM*/
+ * This class wrap a HTML FORM
+ * @extends KDVisualComponent
+ * */
 class KDForm extends KDVisualComponent {
     constructor() {
         super();
@@ -596,6 +620,7 @@ class KDForm extends KDVisualComponent {
 }
 
 /** Simple hidden
+ * @extends KDVisualComponent
  * */
 class KDHidden extends KDVisualComponent {
     constructor() {
@@ -637,6 +662,9 @@ class KDHidden extends KDVisualComponent {
 }
 
 
+/**
+ * @extends KDVisualComponent
+ * */
 class KDIFrame extends KDVisualComponent {
 
     getReference() {
@@ -681,22 +709,19 @@ class KDIFrame extends KDVisualComponent {
 
 /**
  * Wrap a form and hidden fields to send values to a script
- * @example var sender = new KDSender("myURL.php");
+ * @extends KDVisualComponent
+ * @example
+ * var sender = new KDSender("myURL.php");
  * 
  * 
  * */
 class KDSender extends KDObject {
 
-    /*
-    addParameter(key, value) {
-        this.putForm();
-        var h = new KDHidden();
-        h.build().publish(this.form);
-        h.setName(key).setValue(value);
-        return this;
-    }
-    */
-
+    /**
+     * Add a parameter into sender intance.
+     * @param {*} key 
+     * @param {*} value 
+     */
     addParameter(key, value) {
         var o = { "key": key, "value": value };
         this.params.push(o);
@@ -720,15 +745,7 @@ class KDSender extends KDObject {
         req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         req.send(suffix);
 
-        //"d=" + this.getNameOfInstance() + "&m=" + kdMessage.exportJSON()
-        /*
-        this.form.submit();
-        //Self clear form:
-
-        if (this.timeToClear > 0) {
-            this.form.selfDestroy(this.timeToClear);
-        }
-        */
+       
         return this;
     }
 
@@ -798,6 +815,9 @@ class KDArrangementRow {
     }
 }
 
+/**
+ * Creat a list of {@link KDArrangementRow} objects.
+ */
 class KDArrangementList {
     /**
      * @constructor
@@ -818,7 +838,7 @@ class KDArrangementList {
      * @description This method make a list of rows with its associated components.
      * @param {KDPosition} kdPosition Initial position on entire list.
      * @param {KDSize} kdSize Size of entire list.
-     * 
+     */
     arrange(kdPosition, kdSize) {
         var countRows = this.rows.length;
         var verticalSpan = kdSize.height - ((countRows + 1) * this.verticalSeparator);

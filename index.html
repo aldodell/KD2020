@@ -1,0 +1,40 @@
+<html>
+
+
+<head>
+    <meta charset="utf-8">
+    <title>Api KD startup</title>
+    <meta name="description" content="">
+</head>
+
+<body>
+
+
+    <script src="api.js"></script>
+    <script>
+
+        //Create kernel
+        var kernel = new KDKernel();
+        //Create desktop
+        var desktop = new KDDesktop(kernel).build().publish();
+        //Load defaults apps:
+
+        desktop.addApplicationClass(KDTerminal);
+        desktop.addApplicationClass(KDTerminalClock);
+        desktop.addApplicationClass(KDTerminalAlert);
+        desktop.addApplicationClass(KDMessageSender);
+        desktop.addApplicationClass(KDCreateUser);
+        desktop.addApplicationClass(KDLoadUser);
+        desktop.addApplicationClass(KDShowUser);
+        desktop.addApplicationClass(QQSM);
+
+        //Run desktop
+        desktop.run();
+        //Start messages looping
+        desktop.startRequestMessages();
+
+
+    </script>
+</body>
+
+</html>

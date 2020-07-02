@@ -36,6 +36,11 @@ class KDObject {
  * @param sourceIdentifier 
 */
 class KDMessage extends KDObject {
+    /**
+     * Class to wrap data for sharing between KD applications
+     * @param {string} sourceIdentifier 
+     * @param {string} destinationIdentifier 
+     */
     constructor(sourceIdentifier, destinationIdentifier) {
         super();
         this.sourceIdentifier = sourceIdentifier;
@@ -48,20 +53,37 @@ class KDMessage extends KDObject {
         this.index = 0;
 
     }
+
+    /**
+     * Put a value associated with a key
+     * @param {string} key 
+     * @param {*} value 
+     */
     addParameter(key, value) {
         this.values[key] = value;
     }
 
+    /**
+     * @returns Return a value associated with a key. 
+     * @param {string} key 
+     */
     getValue(key) {
         return this.values[key];
     }
 
+    /**
+     * @returns Returns an identfier for this KD object.
+     */
     getId() {
         return "kdm" + this.index;
     }
 
 
-    /** Import values and other data from JSON string  into this message */
+    /**
+     * Import values and other data from JSON string  into this message 
+     * @param {*} json 
+     * @param {*} index 
+     */
     importJSON(json, index) {
         this.index = index == undefined ? json.index : index;
         this.values = json.values;
@@ -70,15 +92,20 @@ class KDMessage extends KDObject {
         return this;
     }
 
-    /** Create a JSON string with this message */
+    /**
+     * Create a JSON string with this message
+     */
     exportJSON() {
         return JSON.stringify(this);
     }
 }
 
 
-/** Wrap info about current user */
+/**
+ * Wrap info about current user
+ */
 class KDUser extends KDObject {
+
     constructor(userName) {
         super();
         this.name = undefined ? "guest" : userName;
@@ -88,7 +115,8 @@ class KDUser extends KDObject {
 }
 
 
-/** Master KERNEL class 
+/** 
+ * Master KERNEL class 
  * Must be instantiate a KDKernel class before instantiate a KDDesktop class.
  * This class manage user and other low level stuffs.
  *  
@@ -181,7 +209,11 @@ class KDSize {
     }
 
 
-    /** Increment (or decrement) size by (dx,dy)*/
+    /**
+     * Increment (or decrement) size by (dx,dy)
+     * @param {number} dx 
+     * @param {number} dy 
+     */
     offset(dx, dy) {
         return new KDSize(this.width + dx, this.height + dy);
     }
@@ -198,7 +230,9 @@ class KDSize {
 }
 
 
-/** Wrap position for components*/
+/** 
+ * Wrap position for components
+ * */
 class KDPosition {
     constructor(x, y) {
         this.x = x;

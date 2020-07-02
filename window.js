@@ -1,3 +1,6 @@
+/**
+ * @description Class that encapsulates logic to apply a theme to a window 
+*/
 class KDWindowTheme {
     constructor() {
 
@@ -29,6 +32,10 @@ class KDWindowTheme {
 
     }
 
+    /**
+     * @description Method used to apply CSS style theme to a KDWindow
+     * @param {KDWindow} kdWindow  Window that will be styled.
+     * */
     apply(kdWindow) {
         this.frame.apply(kdWindow);
         this.head.apply(kdWindow.head);
@@ -39,8 +46,17 @@ class KDWindowTheme {
 
 var KDWindowThemeByDefault = new KDWindowTheme();
 
-/** Window class */
+/**
+ * KDWindow class
+ * A window have three layers: head, body and foot.
+ * The body layer is where are place all usables components.
+ * The head allow the title and futher functions.
+ * The foot is reserverd for futher functions.
+ */
 class KDWindow extends KDLayer {
+    /**
+     * @constructor
+     */
     constructor() {
         super();
         this.head = new KDLayer();
@@ -54,10 +70,12 @@ class KDWindow extends KDLayer {
         this.theme = KDWindowThemeByDefault;
         this.desktop = false;
 
-        /** 
-         * This method can be used for make window layout 
-         * Must be override 
-         * */
+        /**
+         * This method is a callback call by setSize and other methods of this kind.
+         * Must be overriden.
+         * @param {KDWindow} kdWindow 
+         * @param {KDSize} kdSize 
+         */
         this.onSetSize = function (kdWindow, kdSize) { };
     }
 
@@ -122,6 +140,9 @@ class KDWindow extends KDLayer {
         }
     }
 
+    /**
+     * @param {string} Set a title to de KDWindow
+     * */
     setTitle(title) {
         if (this.domObject) {
             this.head.showCenterText(title);
@@ -129,8 +150,10 @@ class KDWindow extends KDLayer {
         return this;
     }
 
+    /**
+     * @description Send this windows to foreground
+     * */
     setOnTop() {
-
         this.style.add("zIndex", this.desktop.windowZIndex++);
         this.style.apply(this);
     }

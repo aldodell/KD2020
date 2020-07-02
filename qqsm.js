@@ -56,7 +56,7 @@ class QQSM extends KDApplication {
 
         //Build arragement object
         this.arragementList = new KDArrangementList();
-        
+
 
         this.arragementList.addRow(new KDArrangementRow(3).add(this.questionBox));
         this.arragementList.addRow(new KDArrangementRow().add(this.optionA).add(this.optionB));
@@ -86,3 +86,5 @@ class QQSM extends KDApplication {
             .setPosition(KDPosition.centerScreen(mainWindowSize));
     }
 }
+
+
