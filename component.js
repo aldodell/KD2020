@@ -190,7 +190,7 @@ class KDVisualComponent extends KDComponent {
     /** 
      * Could be use to arrange and align inner components
      * and the component itself.
-     * Is use this method it is necessary call super.performLayout(...) on 
+     * If use this method it is necessary call super.performLayout(...) on 
      * override implementation.
      * */
     performLayout(kdPosition, kdSize) {
